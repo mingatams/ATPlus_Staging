@@ -1,0 +1,7 @@
+<apex:page cache="true" expires="600" title="USAID Portfolio Map" showHeader="false" doctype="html-5.0" >
+    <apex:includeScript value="http://maps.googleapis.com/maps/api/js?v=3&sensor=true"/>
+    <!--  <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/dojo/1.6/dojo/dojo.js"/> -->
+    <apex:includeScript value="{!URLFOR($Resource.Dojo161, 'dojo.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.Dojo161, 'usaid-dojo.js')}"/>
+    <apex:insert name="body" />
+</apex:page>

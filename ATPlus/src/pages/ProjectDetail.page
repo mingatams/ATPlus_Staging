@@ -1,0 +1,1413 @@
+<apex:page cache="false" expires="600" title="Project Detail" showHeader="false" doctype="html-5.0" controller="ProjectDetailControllerNew" standardStylesheets="false">
+        <apex:stylesheet value="{!URLFOR($Resource.AidTrackerMapFrontEnd, 'resources/USAIDTracker.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.AidTrackerMapFrontEnd, 'resources/USAIDTrackerDefaultTheme.css')}"/>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" version="XHTML+RDFa 1.0" dir="ltr"
+  xmlns:fb="http://www.facebook.com/2008/fbml"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:dc="http://purl.org/dc/terms/"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:og="http://ogp.me/ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:sioc="http://rdfs.org/sioc/ns#"
+  xmlns:sioct="http://rdfs.org/sioc/types#"
+  xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+<head profile="http://www.w3.org/1999/xhtml/vocab">
+
+<!--  Start of Standard Website Header -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+<link rel="shortcut icon" href="http://www.usaid.gov/sites/all/themes/usaid/favicon.ico" type="image/vnd.microsoft.icon" />
+<link rel="canonical" href="http://www.usaid.gov/" />
+
+<link type="text/css" rel="stylesheet" href="{!URLFOR($Resource.WebsiteResources, 'css_7.css')}" media="all" />
+<link type="text/css" rel="stylesheet" href="{!URLFOR($Resource.WebsiteResources, 'css_fD.css')}" media="all" />
+<link type="text/css" rel="stylesheet" href="{!URLFOR($Resource.WebsiteResources, 'jquery.timeentry.css?mkli0w')}" media="all" />
+<link type="text/css" rel="stylesheet" href="{!URLFOR($Resource.WebsiteResources, 'css_D.css')}" media="all" />
+<link type="text/css" rel="stylesheet" href="{!URLFOR($Resource.WebsiteResources, 'css_B.css')}" media="screen" />
+<link type="text/css" rel="stylesheet" href="{!URLFOR($Resource.WebsiteResources, 'css_i.css')}" media="all" />
+<link type="text/css" rel="stylesheet" href="{!URLFOR($Resource.WebsiteResources, 'css_fe.css')}" media="all" />
+<link type="text/css" rel="stylesheet" href="{!URLFOR($Resource.WebsiteResources, 'css_2.css')}" media="print" />
+<link type="text/css" rel="stylesheet" href="{!URLFOR($Resource.WebsiteResources, 'css_4.css')}" media="all" />
+<link type="text/css" rel="stylesheet" href="{!URLFOR($Resource.WebsiteResources, 'css_c.css')}" media="all" />
+
+<!--[if (lt IE 9)&(!IEMobile)]>
+<link type="text/css" rel="stylesheet" href="{!URLFOR($Resource.WebsiteResources, 'css_As.css')}" media="all" />
+<![endif]-->
+
+<!--[if gte IE 9]><!-->
+<link type="text/css" rel="stylesheet" href="{!URLFOR($Resource.WebsiteResources, 'css_a.css')}" media="all" />
+<!--<![endif]-->
+
+<!--[if IE 6]>
+<link type="text/css" rel="stylesheet" href="http://www.usaid.gov/sites/all/themes/usaid/css/ie-6.css?mkli0w" media="all" />
+<![endif]-->
+
+<!--[if lte IE 7]>
+<link type="text/css" rel="stylesheet" href="http://www.usaid.gov/sites/all/themes/usaid/css/ie-lte-7.css?mkli0w" media="all" />
+<![endif]-->
+
+<!--[if lte IE 8]>
+<link type="text/css" rel="stylesheet" href="http://www.usaid.gov/sites/all/themes/usaid/css/ie-lte-8.css?mkli0w" media="all" />
+<![endif]-->
+<link rel="apple-touch-icon" href="{!URLFOR($Resource.WebsiteResources, 'touchIcon.png')}" /> 
+<script type="text/javascript" src="{!URLFOR($Resource.WebsiteResources, 'js_C.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.WebsiteResources, 'js_9.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.WebsiteResources, 'js_7.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.WebsiteResources, 'js_2.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.WebsiteResources, 'js_H.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.WebsiteResources, 'js_4.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.WebsiteResources, 'federated-analytics.js')}"></script>
+<!--  End of Standard Website Header -->
+
+<!--  Start of Custom Header -->
+<link href='http://fonts.googleapis.com/css?family=Abel' rel='stylesheet' type='text/css' />
+<style type="text/css" media="all">
+  #zone-floating-footer-wrapper {
+      bottom: -41px !important;
+  }
+  #zone-floating-footer-wrapper:hover {
+      bottom: 0px !important;
+  }
+.floatfootsocial a b {
+       background-image: url({!URLFOR($Resource.WebsiteResources, 'smicons.jpg')}) !important;
+    }  
+#zone-floating-footer-wrapper {
+    background: #dedede url({!URLFOR($Resource.WebsiteResources, 'stickyfooter.png')}) center no-repeat  !important;
+}   
+.floatfootitem input[type="submit"], .floatfootitem input.form-submit {
+background-image: url({!URLFOR($Resource.WebsiteResources, 'go.gif')}) !important;
+}
+#region-menu .menu li.menu-mlid-1128 ul, #region-menu .menu li.menu-mlid-1141 ul, #region-menu .menu li.menu-mlid-1142 ul, #region-menu .menu li.menu-mlid-1143 ul, #region-menu .menu li.menu-mlid-1144 ul, #region-menu .menu li.menu-mlid-1145 ul {
+background-image: url({!URLFOR($Resource.WebsiteResources, 'bg_mainmenu_hover.png')}) !important;
+}
+#region-menu .menu li li.parent a,#region-menu .menu li li.parent a:hover{
+background-image: url({!URLFOR($Resource.WebsiteResources, 'bg_mainmenu_parent_slide.png')}) !important;
+}
+#region-menu .menu li a.active-trail:hover,#region-menu .menu li a:hover,#region-menu .menu li.hover a {
+background-image: url({!URLFOR($Resource.WebsiteResources, 'bg_mainmenu_hover.png')}) !important;
+}
+</style>
+<script>
+    var mobiles = [
+        "midp","240x320","blackberry","netfront","nokia","panasonic",
+        "portalmmm","sharp","sie-","sonyericsson","symbian",
+        "windows ce","benq","mda","mot-","opera mini",
+        "philips","pocket pc","sagem","samsung","sda",
+        "sgh-","vodafone","xda","palm","iphone",
+        "ipod","ipad","android"
+    ];
+    function isMobile() {
+        var uagent = navigator.userAgent.toLowerCase();
+        var list = this.mobiles;
+        for (var d=0; d < list.length; d++) {
+            if (uagent.indexOf(list[d])!==-1) {
+                return true;
+            }
+        }
+        return false;
+    }
+    if (!isMobile()) {
+        document.getElementById("section-footer").style.display = "";
+    }
+
+</script> 
+<!--  End of Custom Header -->
+
+<!-- Start of Project Detail Specific Header -->
+<meta name="description" content="{!projectDesc}"></meta>
+<meta name="keywords" content="USAID, Proejct Detail, {!publicName}"></meta>
+<title>Project Detail | {!publicName}</title>
+<script type='text/javascript' src='https://www.google.com/jsapi' ></script>
+<apex:includeScript value="{!$Resource.JQuery172_js}"/>
+<apex:includeScript value="{!$Resource.Raphael_js}"/>
+<apex:includeScript value="{!$Resource.Highcharts_js}"/>
+<apex:includeScript value="{!$Resource.Highcharts_export_js}"/>
+<apex:includeScript value="https://maps.googleapis.com/maps/api/js?v=3&sensor=true"/>
+<apex:includeScript value="{!URLFOR($Resource.Dojo161, 'dojo.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.Dojo161, 'usaid-dojo.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.AidTrackerMapProjectDetailFrontEnd)}"/>
+<script type="text/javascript">
+$(document).ready(function() { 
+            if (window.location.href.indexOf("apex") > -1){                  
+               document.getElementById("section-header").innerHTML = "";
+               document.getElementById("section-footer").innerHTML = "";
+               document.getElementById("skip-link").innerHTML = "";
+            }
+            var awdamt = parseFloat("{!AwardAmount}") ;
+            var avgamt = parseFloat("{!AvgAmount}") ;
+            
+            prepareLeftList();
+            
+            var descString = '{!projectDesc}' ;
+           
+            descString =  clean_SpanDiv(descString);
+            descString = addStyleClass(descString);
+            document.getElementById("textDiv").innerHTML = descString;
+          
+            var resultString = '{!projectResults}' ;
+           
+            resultString =  clean_SpanDiv(resultString);
+            resultString  = addStyleClass(resultString);
+            document.getElementById("resultTextDiv").innerHTML = resultString;        
+           
+           
+              
+            if (isNaN(awdamt)) {
+                awdamt = 0;
+            }
+            
+            if (isNaN(avgamt)) {
+                avgamt = 0;
+            }
+             
+            var num1 = toUSD(awdamt);
+            var num2 = toUSD(avgamt);
+            
+
+           
+         var chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'chart_div3',
+                type: 'column',
+                showAxes:false,
+                reflow:true,
+                marginLeft:150,
+                align:'right',
+                height:200
+            },
+            title: {
+                text: ''
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                min: 0,
+                categories: [],             
+                lineColor:'#FFFFFF',
+                lineWidth:0,
+                endOnTick:false,
+                gridLineColor:'#FFFFFF',                
+                labels:{
+                    enabled:false
+                }               
+            },
+            yAxis: {
+                min: 0,
+                lineColor:'#FFFFFF',
+                lineWidth:0,
+                gridLineColor:'#FFFFFF',                
+                labels:{
+                    enabled:false
+                },
+                title: {
+                    text: ''
+                }               
+            },
+            legend: {
+                width: 100,
+                floating: true,
+                layout: 'vertical',
+                backgroundColor: '#FFFFFF',
+                border:0, 
+                borderRadius: 0, 
+                borderWidth: 0,   
+                align: 'left',
+                verticalAlign: 'center',
+                symbolPadding: 5,
+                symbolWidth: 15,
+                x: 0,
+                y: 50, 
+                itemWidth: 30,
+                itemMarginBottom: 10,
+                itemStyle: {
+                    color: '#000000',
+                    fontSize:'9px'//09                    
+                },
+                labelFormatter: function() {
+                    return this.name
+                }
+            },
+            tooltip: {
+                enabled:false
+            },  
+            plotOptions: {
+                series:{
+                    enableMouseTracking: false,
+                    allowPointSelect: false,
+                    legendItemClick: function () {
+                            return false; 
+                    }
+                },
+                column: {
+                    pointPadding: 0.05,
+                    borderWidth: 0,
+                    events:{
+                        legendItemClick: function () {
+                            return false; 
+                        }
+                    }                                        
+                }
+            },
+            series: [{
+                name: 'Obligated Amount       '+ '<br>'+ num1,
+                data: [awdamt],
+                color:'#002A6C'  
+                
+            }, {
+                name: 'Country Estd Average  '+ '<br>' + num2,
+                data: [avgamt],
+                color:'#DDDDDD'
+            }],
+            credits: {
+                enabled:false
+            },
+            exporting: {
+                enabled:false
+            }
+        });   
+   });    
+// }); 
+ 
+ function toUSD(number) {
+     var returnStr;
+     if (number == 0){
+         returnStr = "N/A";
+     } else {
+            var number = number.toString(), 
+            dollars = number.split('.')[0];
+           // cents = (number.split('.')[1] || '') +'00';
+            dollars = dollars.split('').reverse().join('')
+                    .replace(/(\d{3}(?!$))/g, '$1,')
+                    .split('').reverse().join('');
+            returnStr =  '$' + dollars  //+ '.' + cents.slice(0, 2);
+        }
+     return returnStr;   
+ }
+ function clean_SpanDiv( htmlString ) {
+    var styleRegex = /(<(span|div|p|font|h1|h2|h3)\b\s+[^>]*?)(\bstyle\s*=\s*('[^']*'|"[^"]*"|[^\s>]+))/i;
+    var styleMatch = styleRegex.exec( htmlString );
+   
+    while ( styleMatch != null ){ 
+     htmlString = htmlString.replace( styleRegex, "$1" );
+     styleMatch = styleRegex.exec( htmlString );     
+    }
+    
+    htmlString = htmlString.replace(/<[\/]{0,1}(B|b)[^><]*>/g,"");
+    htmlString = htmlString.replace(/<[\/]{0,1}(H3|h3)[^><]*>/g,"");
+    return htmlString;
+ } 
+function addStyleClass(inputString){     
+     inputString = inputString.replace(/<li\s{0,1}/ig,'<li class="descLi"');     
+     return inputString;
+ }
+function prepareLeftList(){
+    var listContainer = document.getElementById("leftBarList");
+    var pInitiative = "{!project.Primary_Initiative__c}";
+    var subType = "{!project.Project_Subtype__c}";
+    //var pParner = "{!imLink.Implementing_Mechanism_Number__r.Partner_Name__c}";
+    //var pParner = {!primaryPartners};
+    var status = "{!project.Status__c}";//#2013
+    var innerHtml = '<li class="leftNavTitle">Country</li>' +
+                     '<li class="leftNavInfo">{!project.MissionName__c}</li>' +
+                     '<li class="fillerLi"> </li>' +
+                     '<li class="leftNavTitle">Sector</li>' +
+                     '<li class="leftNavInfo">{!project.secName__c}</li>' +
+                     '<li class="fillerLi"> </li>';
+    if ((pInitiative != null) && (pInitiative.length > 0 )){
+        innerHtml += '<li class="leftNavTitle">Primary Initiative</li>' +              
+                      '<li class="leftNavInfo">' +pInitiative+'</li>' +
+                      '<li class="fillerLi"> </li>';
+    }
+    if ((subType  != null) && (subType .length > 0 )){
+        innerHtml += '<li class="leftNavTitle">Health SubType</li>' +
+                      '<li class="leftNavInfo">'+subType+'</li>' +
+                      '<li class="fillerLi"> </li>';
+    }
+    //if ((pParner  != null) && (pParner.length  > 0 )){
+    //{!primaryPartners}
+    if ({!NOT(ISNULL(primaryPartners)) && primaryPartners.size > 0}){
+     <!--[JIRA] (AIDC-153)-->
+     //   innerHtml += '<li class="leftNavTitle">Partner</li>'; 
+     //   <apex:repeat var="p" value="{!primaryPartners}">
+      //      innerHtml += '<li class="leftNavInfo"><apex:outputText >{!p}</apex:outputText></li>';
+        </apex:repeat>
+/*         for (var i = 0; i < pParner.length; i++) {
+            innerHtml += '<li class="leftNavInfo">'+pParner[i] +'</li>';
+        } */
+        innerHtml += '<li class="fillerLi"> </li>';
+    }
+    
+    innerHtml += '<li class="leftNavTitle">Project Timeline</li>' +
+                  '<li class="leftNavInfo"><apex:outputText value="{0,date,MM/dd/yyyy}">' +
+                   ' <apex:param value="{!Project.Start_Date__c}" />' +
+                    '</apex:outputText> - ' +
+                    '<apex:outputText value="{0,date,MM/dd/yyyy}">' +
+                    '<apex:param value="{!Project.End_Date__c}" />' +
+                    '</apex:outputText>' +
+                  '</li>              ' +
+                  '<li class="fillerLi"> </li>' +
+                  '<li class="leftNavTitle">PROJECT STATUS</li>' +
+                  '<li class="leftNavInfo">'+status +'</li>' +                  
+                  '<li class="fillerLi"> </li>' +
+               // <!--'<li class="leftNavTitle">AWARD AMOUNT</li>' + Changing Awd Amt tp Obligated anmt as per AIDTRACKERLITE-362 & AIDC-161-->
+                  '<li class="leftNavTitle">TOTAL OBLIGATION</li>' +
+                  '<li class="leftNavInfo" id="aAmount">' +
+                   ' <apex:outputText value="${0, number,###,###}" rendered="{!IF(AwardAmount != 0,true,false)}">' +
+                   ' <apex:param value="{!AwardAmount}" />' +
+                   ' </apex:outputText>                ' +
+                   ' <apex:outputText value="N/A" rendered="{!IF(AwardAmount == 0,true,false)}">' +
+                   ' </apex:outputText>                ' +
+                  '</li>';
+     // social     
+     innerHtml += '<li class="DefaultTheme">' +
+                '<div class="toolbar" style="position:relative;margin-top:32px;top:0;left:0;">' +
+                '<ul class="toolbarList" style="height:100%;">' +                       
+                '<li class="action email" title="Email Us">' +
+                '<a tabindex="0" class="actionIcon" target="_blank" href="mailto:?subject=USAID Project Detail - {!publicName}&amp;body={!$CurrentPage.URL}">' +
+                '</a>' +
+                '</li>' +            
+                '<li class="action facebook" title="Facebook" style="margin-left: 38px !important;">' +
+                '<a tabindex="0" class="actionIcon" target="_blank" href="http://www.facebook.com/sharer.php?u={!$CurrentPage.URL}&amp;t=USAID Project Detail - {!publicName}">' +
+                '</a>' +
+                '</li>' +            
+                '<li class="action twitter" title="Twitter"  style="margin-left: 75px !important;" >' +
+                '<a tabindex="0" class="actionIcon" target="_blank" href="https://twitter.com/intent/tweet?source=webclient&amp;url={!$CurrentPage.URL}&amp;text=USAID Project Detail - {!publicName}">' +
+                '</a>' +
+                '</li>' +            
+                '<li class="action print" title="Print"  style="margin-left: 105px !important;" >' +
+                '<a tabindex="0" class="actionIcon" onclick="window.print();" href="javascript:void(0);">' +
+                '</a>' +
+                '</li>' +            
+                '</ul>' +
+                '</div></li>';
+     document.getElementById("leftBarList").innerHTML = innerHtml;
+
+
+}
+
+
+
+    Date.daysBetween = function( date1, date2 ) {
+    
+      var sdate1=new Date(date1);
+      var edate1=new Date(date2);
+      //Get 1 day in milliseconds
+      var one_day=1000*60*60*24;
+      // Convert both dates to milliseconds
+      var date1_ms = sdate1.getTime();
+      var date2_ms = edate1.getTime();
+      // Calculate the difference in milliseconds
+      var difference_ms = date2_ms - date1_ms;
+      // Convert back to days and return
+      return Math.round(difference_ms/one_day); 
+  }
+    
+    var sYear = "{!Startyear}" ;
+    var eYear = "{!EndYear}" ;
+    var sDate = "{!Project.Start_Date__c}" ;
+    var eDate = "{!Project.End_Date__c}" ;    
+    var curr_year = new Date().getFullYear();
+    var totaldaysDiff=Date.daysBetween(sDate,eDate);
+    var completedDays;
+//    if ( eDate > new Date().toString()){
+        completedDays = Date.daysBetween(sDate,new Date().toString());
+ //   } else {
+ //       completedDays = Date.daysBetween(sDate,eDate);
+ //   }    
+    var percentDays;
+    if (totaldaysDiff> 0 ){
+        percentDays = (completedDays / totaldaysDiff) * 100;
+    } else {
+        percentDays = 0;
+    }    
+       
+    var stopDegree = ((180 * percentDays) / 100) - 180;
+    
+    if (stopDegree > 0){
+        stopDegree = 0;
+    }
+      
+    window.onload = function () { 
+                            
+    var outerX1, outerY1,outerX2, outerY2,innerX1, innerY1, innerX2, innerY2;                                   
+    var paper = new Raphael(document.getElementById('chart_div1'), 250, 200);//230, 200);                                     
+    paper.customAttributes.arc = function (centerX, centerY, startAngle, endAngle, innerR, outerR) {
+            
+    var radians = Math.PI / 180,        
+    largeArc = +(endAngle - startAngle > 180); 
+        
+    outerX1 = centerX + outerR * Math.cos((startAngle) * radians),
+    outerY1 = centerY + outerR * Math.sin((startAngle) * radians),
+    outerX2 = centerX + outerR * Math.cos((endAngle) * radians),
+    outerY2 = centerY + outerR * Math.sin((endAngle) * radians),
+    innerX1 = centerX + innerR * Math.cos((endAngle) * radians),
+    innerY1 = centerY + innerR * Math.sin((endAngle) * radians),
+    innerX2 = centerX + innerR * Math.cos((startAngle) * radians),
+    innerY2 = centerY + innerR * Math.sin((startAngle) * radians);      
+            
+   // build the path array
+    var path = [
+               ["M", outerX1, outerY1], //move to the start point
+               ["A", outerR, outerR, 0, largeArc, 1, outerX2, outerY2], //draw the outer edge of the arc
+               ["L", innerX1, innerY1], //draw a line inwards to the start of the inner edge of the arc
+               ["A", innerR, innerR, 0, largeArc, 0, innerX2, innerY2], //draw the inner arc
+               ["z"] //close the path
+            ];                      
+        return {path: path};
+    };
+
+    var redParams = {stroke: "#DDDDDD", "stroke-width": 1, fill:"#DDDDDD"},
+    cx = 115/*115*/, cy = 135, innerRadius = 30, outerRadius = 60
+    var blueParams = {stroke: "#002A6C", "stroke-width": 1, fill:"#002A6C"}       
+
+    var red = paper.path().attr(redParams).attr({arc: [cx, cy, 180, 0, innerRadius, outerRadius]});
+        
+    var firstOuterX1 = outerX1,  firstOuterY1 = outerY1, firstInnerX1 = innerX1,  firstInnerY1 = innerY1;
+        
+    var blue = paper.path().attr(blueParams).attr({arc: [cx, cy, 180, stopDegree, innerRadius, outerRadius]});
+    var test = paper.text(firstOuterX1+18,firstOuterY1+18,sYear);
+
+    test.animate({cx: 20, cy: 20},2000);
+
+    var test = paper.text(firstInnerX1+18,firstInnerY1+18,eYear);
+
+    test.animate({cx: 20, cy: 20},2000);
+    
+  }
+  window.onload(sYear ,eYear ,stopDegree); 
+  
+ 
+
+</script>
+
+
+
+<style type="text/css">
+
+.pageDiv {    
+    width: 960px:
+    margin-right: auto;
+    margin-left: auto;
+    height: auto;
+    }
+    
+.headerImgDiv {
+    height: auto;    
+    }
+
+.projectTitle {
+    font-family: Abel;
+    font-size:22px;
+    text-transform:uppercase;
+    color:#666666; 
+    text-align:left;
+    display:table;
+    height:60px;
+    position:absolute;
+    }
+    
+ .projectTitle p {
+    disply:table cell;
+    vertical-align:middle;
+    text-align:center;
+    font-size:22px;
+    margin-top:15px;
+    margin-left:10px;
+    font-family: Abel;
+    }
+ 
+.backLinkText{
+    font-family: Abel;
+    font-size:14px;
+    text-align:right;
+    text-transform:uppercase;
+    color:#666666; 
+    width:140; 
+    }             
+    
+.titleDiv {
+    height: 60px;    
+    background-color: #E3E3E3;
+    }
+    
+.titleText {
+    font-family: Abel;
+    font-size:22px;
+    text-transform:uppercase;
+    color:#666666;
+    text-align: left;
+    vertical-align:middle;
+    float: left;
+    width: 82%;
+    height:50px;    
+    }
+    
+.backLinkDiv {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 13px;
+    color: #4A4A4A;
+    float: left;
+    width: 20%;
+    height:50px;
+    vertical-align:middle;
+    text-transform: uppercase;
+    text-align: right;
+    }
+    
+.containerDiv {
+    height: auto;
+    width: 100%;
+    margin-top: 20px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    display:inline-table;    
+    }
+    
+.leftContainer {
+    float: left;
+    width: 18%;
+    height: auto;    
+    }
+    
+.leftContainerDiv1 {
+    height: 400px;    
+    }
+.leftContainerDiv1 ol, .leftContainerDiv1 ul, .leftContainerDiv1 ol li, .leftContainerDiv1 ul li {
+list-style: none !important;
+margin:0 !important;
+padding:0 !important;
+}
+.leftNavTitle{
+   font-family: Arial;
+   font-weight: Bold;
+   font-size:10px;
+   color:#666666;
+   text-transform:uppercase;
+   padding:0px;
+   list-style:none;
+   text-align:left;
+   width:100%;
+   margin-left:0px;
+   }
+   
+.leftNavInfo{
+   font-family: Arial;
+   font-weight:Bold;
+   font-size:10px;
+   color:#1F2028;
+   text-transform:uppercase;
+   padding:0px;
+   list-style:none;
+   text-decoration:none;
+   margin-left:0px;
+   width:100%;
+  }
+  
+.fillerLi{
+    list-style:none;
+    height:20px;
+}
+    
+.leftContainerDiv2 {
+    height: auto;
+    }
+    
+.rightContainerDiv {
+    height: auto;
+    width: 82%;
+    float: left;    
+    }
+    
+.rightContainerDiv1 {
+    height: 30px;
+    width: 100%;
+    font-family: Arial;
+    font-weight: Bold;
+    font-size:15px;
+    color:#2B2B2B;
+    text-transform:uppercase;
+    align:top
+    }
+    
+.rightContainerDiv2 {
+    height: auto;
+    width: 100%;
+    }
+
+.rightContainerDiv2Img {
+    float: left;
+    width: 28%;
+    height: auto;
+    border: 1px solid #BFBFBF;    
+    }
+
+.rightContainerDiv2Text {
+    float: left;
+    width: 70.4%;
+    height: auto;
+    font-family: Arial;
+    font-weight: normal;
+    font-size: 14px;
+    text-align:justify;
+    color: #666666; 
+    align: top; 
+    margin-left:10px;       
+    }
+
+
+.rightcontainerResultDiv{
+   
+   margin-top: 200px !important;   
+   height: auto;
+   width: 100%; 
+   
+  }
+
+.rightcontainerResultDivIE{
+   
+   margin-top: 0px;   
+   height: auto;
+   width: 100%; 
+   
+  }  
+  
+  
+.rightContainerDiv21{
+    height: auto;
+    width: 100%;
+    font-family: Arial;
+    font-weight: Bold;
+    font-size:15px;
+    color:#2B2B2B;
+    text-transform:uppercase;
+    align:top    
+}     
+
+   
+.rightContainerDiv22{
+   height: auto;
+   width: 100%; 
+   display:inline;
+}     
+
+.rightContainerDiv22Img1 {
+    float: left;
+    width: 28%;
+    height: auto;
+        
+    }
+.rightContainerDiv22Text{
+    float: left;
+    width: 70.4%;
+    height: auto;
+    font-family: Arial;
+    font-weight: normal;
+    font-size: 14px;
+    text-align:justify;
+    color: #666666; 
+    align: top; 
+    margin-left:10px;  
+   
+}   
+
+
+.rightContainerDiv3 {
+    margin-top: 200px !important;    
+    height: auto;
+   
+    }
+
+.rightContainerDiv3IE {
+    margin-top: 0px;    
+    height: auto;
+   
+    }
+
+.rightContainerDiv3Ch1 {
+    width:32%;/*30%;*/
+    height: auto;
+    float: left;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:0px;    
+    }
+    
+.rightContainerDiv3Ch2 {
+    width:32%;/*30%;*/
+    height: auto;
+    float: left;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:0px;
+    margin-left: 24px;/*5%;*/    
+    }
+    
+.rightContainerDiv3Ch3 {
+    width:23%;/*30%;*/
+    height: auto;
+    float: left;
+    alignment-adjust: center;
+    margin-top:0px; 
+    margin-left: 20px;/*5%;*/   
+    }
+.rightContainerDiv3Ch4 {
+    height: auto;
+    float: right;
+    alignment-adjust: center;
+    margin-top:20px;    
+    border: 1px solid #dedede;
+}
+        
+.fillerDiv{
+    width:3%;
+    height: auto;
+    float: left;
+    border-style:solid;
+    border-color:#FFFFFF;
+    margin-top:0px;
+    }
+
+.rightContainerDiv4 {
+    display: inline-table;
+    height: auto;        
+    width: 100%;
+    }
+
+.rightContainerDiv5{
+    margin-top:450px !important;
+    
+    height: auto; 
+    
+    }
+.rightContainerDiv5IE{
+    margin-top: 0px;
+    
+    height: auto; 
+    
+    }
+
+.bottomLineDiv{
+    width:100%;
+    border-style:solid;
+    border-color:#DDDDDD;
+    border-left:0px;
+    border-right:0px;
+    border-bottom:0px;
+    margin-bottom:0px;
+    display:inline;
+    }
+
+.ldashboard{
+    width:32%;/*30%;*/
+    height: auto;
+    border-top:5px;
+    border-style:solid;
+    border-color:#DDDDDD;
+    border-left:0px;
+    border-right:0px;
+    border-bottom:0px;
+    font-family: Arial;
+    font-weight: Bold;
+    font-size:14px;
+    color:#666666;
+    text-transform:uppercase;
+    text-align:center;
+    float:left;
+    }
+.rdashboard{
+    width:32%;/*30%;*/
+    height: auto;
+    border-top:5px;
+    border-style:solid;
+    border-color:#DDDDDD;
+    border-left:0px;
+    border-right:0px;
+    border-bottom:0px;
+    font-family: Arial;
+    font-weight: Bold;
+    font-size:14px;
+    color:#666666;
+    text-transform:uppercase;
+    text-align:center;
+    float:left;
+    margin-left: 2%;/*5%;*/
+}
+    
+.dashboardLine{
+    border-top:5px;
+    border-style:solid;
+    border-color:#DDDDDD;
+    border-left:0px;
+    border-right:0px;
+    border-bottom:0px;
+    width:81.9%;
+    margin-left:18%               
+    }        
+
+.descLi{
+   font-family: Arial;
+   font-weight: normal;
+   font-size:14px;
+   color:#666666;
+   list-style-type: disc;
+   list-style-position: inside;
+}      
+</style>
+
+<!--[if IE 7]>
+<style type="text/css">
+.rightcontainerResultDiv{
+     
+   margin-top: 0px !important; 
+   
+  }
+.rightContainerDiv3 {
+      
+    margin-top: 0px !important;  
+    }
+</style> <![endif]-->
+<script>
+  function initialize() {
+     new USAIDTracker.ProjectDetailMap({
+         mapDataUrl: "{!IF($User.Alias=='guest','/AidTrackerMapData', '/apex/AidTrackerMapData')}?id={!$CurrentPage.parameters.id}",
+         debug: true
+     }).present(dojo.byId("detail_map_canvas"));
+  }
+  dojo.ready(initialize);
+</script>  
+<!-- End of Map Specific Header -->
+
+</head>
+
+
+
+<body onbeforeunload="removeCookies()"  class="html not-front not-logged-in page-news-information page-news-information-press-releases context-news-information one-sidebar sidebar-first">
+
+  <div id="skip-link">
+
+    <a href="#main-content" class="element-invisible element-focusable">Skip to main content</a>
+
+  </div>
+
+  <div class="region region-page-top" id="region-page-top">
+  <div class="region-inner region-page-top-inner">
+      </div>
+</div>  <div class="page clearfix" id="page">
+      <div id="section-header" class="section section-header">
+  <div id="zone-branding-wrapper" class="zone-wrapper zone-branding-wrapper clearfix">  
+  <div id="zone-branding" class="zone zone-branding clearfix container-24">
+    <div class="grid-24 region region-branding" id="region-branding">
+  <div class="region-inner region-branding-inner">
+    <div class="branding-data clearfix">
+            <div class="logo-img">
+        <a href="http://www.usaid.gov/" rel="home" title="U.S. Agency for International Development"><img src="{!URLFOR($Resource.WebsiteResources, 'logo.png')}" alt="U.S. Agency for International Development" id="logo" /></a>      </div>
+                        <div class="site-name-slogan element-invisible">
+                        <h2 class="site-title"><a href="http://www.usaid.gov/" title="Home">U.S. Agency for International Development</a></h2>
+                              </div>
+          </div>
+    
+<div class="wrapper-menu">
+<div class="block block-menu block-menu-administrators-menu block-menu-menu-administrators-menu odd block-without-title" id="block-menu-menu-administrators-menu">
+  <div class="block-inner clearfix">
+                
+    <div class="content clearfix">
+      <ul class="menu"><li class="first last leaf"><a href="http://www.usaid.gov/who-we-are/organization/leadership-listing" title="">USAID Leadership</a></li>
+</ul>    </div>
+  </div>
+</div>
+</div>
+  </div>
+</div>  </div>
+</div><div id="zone-menu-wrapper" class="zone-wrapper zone-menu-wrapper clearfix">  
+  <div id="zone-menu" class="zone zone-menu clearfix container-24">
+    <div class="grid-24 region region-menu" id="region-menu">
+  <div class="region-inner region-menu-inner">
+        
+<div class="wrapper-menu-block">
+<div class="block block-menu-block block-2 block-menu-block-2 odd block-without-title" id="block-menu-block-2">
+  <div class="block-inner clearfix">
+                
+    <div class="content clearfix">
+      <div class="menu-block-wrapper menu-block-2 menu-name-main-menu parent-mlid-0 menu-level-1">
+  <ul class="menu menu-top"><li class="first expanded menu-mlid-1128"><a href="http://www.usaid.gov/who-we-are">Who We Are</a><ul class="menu"><li class="mobile_nav"><a class="btn_back" href="#" alt="back">back</a><a alt="Who We Are" href="http://www.usaid.gov/who-we-are">Who We Are</a></li><li class="parent-mlid-1519 item-index-1 parent-title-who-we-are parent"><div class="view view-menu-content view-id-menu_content view-display-id-block view-dom-id-44c2a934b14c5e3a2d036e674b6dfdb5">
+        
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first views-row-last">
+      
+  <div class="views-field views-field-field-menu-image">        <div class="field-content"><a href="http://www.usaid.gov/who-we-are"><img typeof="foaf:Image" src="{!URLFOR($Resource.WebsiteResources, '11LM-Dadaab.JPG')}" alt="Who We Are" title="Who We Are" /></a></div>  </div>  
+  <div class="views-field views-field-field-menu-content-link-1 parent-slide">        <div class="field-content">About USAID<span class="parent-slide-link"><a href="http://www.usaid.gov/who-we-are">Who We Are</a></span></div>  </div>  </div>
+    </div>
+  
+  
+  
+  
+  
+  
+</div></li><li class="first leaf menu-mlid-1519"><a href="http://www.usaid.gov/who-we-are/usaid-history">USAID History</a></li>
+<li class="leaf has-children menu-mlid-3616"><a href="http://www.usaid.gov/annual-letter">Annual Letter</a></li>
+<li class="leaf has-children menu-mlid-1557"><a href="http://www.usaid.gov/who-we-are/organization">Organization</a></li>
+<li class="leaf has-children menu-mlid-1527"><a href="http://www.usaid.gov/who-we-are/agency-policy">Operational Policy (ADS)</a></li>
+<li class="leaf menu-mlid-6361"><a href="http://www.usaid.gov/results-and-data/progress-data/transparency" title="">Transparency</a></li>
+<li class="last leaf menu-mlid-2448"><a href="http://www.usaid.gov/who-we-are/resource-portal" title="">Resource Portal</a></li>
+</ul></li>
+<li class="expanded menu-mlid-1141"><a href="http://www.usaid.gov/what-we-do">What We Do</a><ul class="menu"><li class="mobile_nav"><a class="btn_back" href="#" alt="back">back</a><a alt="What We Do" href="http://www.usaid.gov/what-we-do">What We Do</a></li><li class="parent-mlid-1149 item-index-2 parent-title-what-we-do parent"><div class="view view-menu-content view-id-menu_content view-display-id-block view-dom-id-3f59c45be0532227ec69355bedeb30d7">
+        
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first views-row-last">
+      
+  <div class="views-field views-field-field-menu-image">        <div class="field-content"><a href="http://www.usaid.gov/what-we-do"><img typeof="foaf:Image" src="{!URLFOR($Resource.WebsiteResources, 'Mali.jpg')}" alt="What We Do" title="What We Do" /></a></div>  </div>  
+  <div class="views-field views-field-field-menu-content-link-1 parent-slide">        <div class="field-content">Areas of Focus<span class="parent-slide-link"><a href="http://www.usaid.gov/what-we-do">What We Do</a></span></div>  </div>  </div>
+    </div>
+  
+  
+  
+  
+  
+  
+</div></li><li class="first leaf has-children menu-mlid-1149"><a href="http://www.usaid.gov/what-we-do/agriculture-and-food-security">Agriculture and Food Security</a></li>
+<li class="leaf has-children menu-mlid-1152"><a href="http://www.usaid.gov/what-we-do/democracy-human-rights-and-governance">Democracy, Human Rights and Governance</a></li>
+<li class="leaf has-children menu-mlid-1146"><a href="http://www.usaid.gov/what-we-do/economic-growth-and-trade">Economic Growth and Trade</a></li>
+<li class="leaf has-children menu-mlid-1148"><a href="http://www.usaid.gov/what-we-do/education" title="Education is critical to broad-based economic growth and poverty reduction. Individual earnings increase by 10 percent for each year of school completed.  Education has a multiplier effect, contributing to greater outcomes in other areas such as health and democracy and governance.">Education</a></li>
+<li class="leaf has-children menu-mlid-1147"><a href="http://www.usaid.gov/what-we-do/environment-and-global-climate-change">Environment and Global Climate Change</a></li>
+<li class="leaf has-children menu-mlid-1151"><a href="http://www.usaid.gov/what-we-do/gender-equality-and-womens-empowerment">Gender Equality and Women&#039;s Empowerment</a></li>
+<li class="leaf has-children menu-mlid-1155"><a href="http://www.usaid.gov/what-we-do/global-health">Global Health</a></li>
+<li class="leaf has-children menu-mlid-1154"><a href="http://www.usaid.gov/what-we-do/science-technolog-and-innovation">Science, Technology and Innovation</a></li>
+<li class="leaf has-children menu-mlid-1150"><a href="http://www.usaid.gov/what-we-do/water-and-sanitation">Water and Sanitation</a></li>
+<li class="last leaf has-children menu-mlid-1153"><a href="http://www.usaid.gov/what-we-do/working-crises-and-conflict">Working in Crises and Conflict</a></li>
+</ul></li>
+<li class="expanded menu-mlid-1142"><a href="http://www.usaid.gov/where-we-work">Where We Work</a><ul class="menu"><li class="mobile_nav"><a class="btn_back" href="#" alt="back">back</a><a alt="Where We Work" href="http://www.usaid.gov/where-we-work">Where We Work</a></li><li class="parent-mlid-2220 item-index-3 parent-title-where-we-work parent"><div class="view view-menu-content view-id-menu_content view-display-id-block view-dom-id-f38957baaf94b6b1ea577eb32c4732e2">
+        
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first views-row-last">
+      
+  <div class="views-field views-field-field-menu-image">        <div class="field-content"><a href="http://www.usaid.gov/where-we-work"><img typeof="foaf:Image" src="{!URLFOR($Resource.WebsiteResources, 'usaid_wherewework_1.jpg')}" alt="Where We Work Map" title="Where We Work Map" /></a></div>  </div>  
+  <div class="views-field views-field-field-menu-content-link-1 parent-slide">        <div class="field-content">A Global Presence<span class="parent-slide-link"><a href="http://www.usaid.gov/where-we-work">Where We Work</a></span></div>  </div>  </div>
+    </div>
+  
+  
+  
+  
+  
+  
+</div></li><li class="first leaf menu-mlid-2220"><a href="http://map.usaid.gov" title="">Interactive Map</a></li>
+<li class="leaf has-children menu-mlid-5346"><a href="http://www.usaid.gov/where-we-work/afghanistan-and-pakistan">Afghanistan and Pakistan</a></li>
+<li class="leaf has-children menu-mlid-1156"><a href="http://www.usaid.gov/where-we-work/africa" title="USAID in Africa">Africa</a></li>
+<li class="leaf has-children menu-mlid-1157"><a href="http://www.usaid.gov/where-we-work/asia">Asia</a></li>
+<li class="leaf has-children menu-mlid-1159"><a href="http://www.usaid.gov/where-we-work/europe-and-eurasia">Europe and Eurasia</a></li>
+<li class="leaf has-children menu-mlid-1160"><a href="http://www.usaid.gov/where-we-work/latin-american-and-caribbean">Latin America and the Caribbean</a></li>
+<li class="last leaf has-children menu-mlid-1158"><a href="http://www.usaid.gov/where-we-work/middle-east">Middle East</a></li>
+</ul></li>
+<li class="expanded menu-mlid-1143"><a href="http://www.usaid.gov/results-and-data">Results &amp; Data</a><ul class="menu"><li class="mobile_nav"><a class="btn_back" href="#" alt="back">back</a><a alt="Results & Data" href="http://www.usaid.gov/results-and-data">Results &amp; Data</a></li><li class="parent-mlid-11066 item-index-4 parent-title-results--data parent"><div class="view view-menu-content view-id-menu_content view-display-id-block view-dom-id-e6146adc7b90cc52f4d74a07d02c3114">
+        
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first views-row-last">
+      
+  <div class="views-field views-field-field-menu-image">        <div class="field-content"><a href="http://www.usaid.gov/results-and-data"><img typeof="foaf:Image" src="{!URLFOR($Resource.WebsiteResources, 'usaid.jpg')}" alt="Results and Data" title="Results and Data" /></a></div>  </div>  
+  <div class="views-field views-field-field-menu-content-link-1 parent-slide">        <div class="field-content">The Value of Foreign Aid<span class="parent-slide-link"><a href="http://www.usaid.gov/results-and-data">Results and Data</a></span></div>  </div>  </div>
+    </div>
+  
+  
+  
+  
+  
+  
+</div></li><li class="first leaf menu-mlid-11066"><a href="http://results.usaid.gov" title="">Dollars to Results</a></li>
+<li class="leaf has-children menu-mlid-1502"><a href="http://www.usaid.gov/results-and-data/planning">Planning</a></li>
+<li class="leaf has-children menu-mlid-2616"><a href="http://www.usaid.gov/results-and-data/progress-data">Progress &amp; Data</a></li>
+<li class="leaf has-children menu-mlid-1501"><a href="http://www.usaid.gov/results-and-data/budget-spending">Budget &amp; Spending</a></li>
+<li class="leaf has-children menu-mlid-3539"><a href="http://www.usaid.gov/results-and-data/information-resources">Information Resources</a></li>
+<li class="leaf menu-mlid-3573"><a href="http://www.usaid.gov/results-and-data/mobile-apps">Mobile Apps</a></li>
+<li class="leaf menu-mlid-2196"><a href="http://www.usaid.gov/results-data/success-stories" title="">Transforming Lives</a></li>
+<li class="leaf has-children menu-mlid-3568"><a href="http://www.usaid.gov/results-and-data/highlights">Key Accomplishments</a></li>
+<li class="last leaf menu-mlid-15051"><a href="http://www.usaid.gov/usaidforward">USAID Forward</a></li>
+</ul></li>
+<li class="expanded menu-mlid-1144"><a href="http://www.usaid.gov/news-information" class="">News &amp; Information</a><ul class="menu"><li class="mobile_nav"><a class="btn_back" href="#" alt="back">back</a><a alt="News &amp; Information" href="http://www.usaid.gov/news-information">News &amp; Information</a></li><li class="parent-mlid-1211 item-index-5 parent-title-news--information parent"><div class="view view-menu-content view-id-menu_content view-display-id-block view-dom-id-8c01e16682b585feaec20369452a6994">
+        
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first views-row-last">
+      
+  <div class="views-field views-field-field-menu-image">        <div class="field-content"><a href="http://www.usaid.gov/news-information"><img typeof="foaf:Image" src="{!URLFOR($Resource.WebsiteResources, 'March.jpg')}" alt="News and Information" title="News and Information" /></a></div>  </div>  
+  <div class="views-field views-field-field-menu-content-link-1 parent-slide">        <div class="field-content">Latest News at USAID<span class="parent-slide-link"><a href="http://www.usaid.gov/news-information">News and Information</a></span></div>  </div>  </div>
+    </div>
+  
+  
+  
+  
+  
+  
+</div></li><li class="first leaf active-trail active menu-mlid-1211"><a href="http://www.usaid.gov/news-information/press-releases" title="" class="active-trail active">Press Releases</a></li>
+<li class="leaf menu-mlid-1213"><a href="http://www.usaid.gov/news-information/congressional-testimony" title="">Congressional Testimony</a></li>
+<li class="leaf menu-mlid-1212"><a href="http://www.usaid.gov/news-information/speeches-testimony" title="">Speeches</a></li>
+<li class="leaf menu-mlid-1556"><a href="http://blog.usaid.gov" title="">The Impact Blog</a></li>
+<li class="leaf menu-mlid-6261"><a href="http://www.usaid.gov/news-information/newsletter">Newsletter</a></li>
+<li class="last leaf menu-mlid-3610"><a href="http://transition.usaid.gov/press/frontlines" title="">FrontLines Magazine</a></li>
+</ul></li>
+<li class="last expanded menu-mlid-1145"><a href="http://www.usaid.gov/work-usaid">Work with USAID</a><ul class="menu"><li class="mobile_nav"><a class="btn_back" href="#" alt="back">back</a><a alt="Work with USAID" href="http://www.usaid.gov/work-usaid">Work with USAID</a></li><li class="parent-mlid-7941 item-index-6 parent-title-work-with-usaid parent"><div class="view view-menu-content view-id-menu_content view-display-id-block view-dom-id-f4ce82713367c3eedbd801ebe4222cad">
+        
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first views-row-last">
+      
+  <div class="views-field views-field-field-menu-image">        <div class="field-content"><a href="http://www.usaid.gov/work-usaid"><img typeof="foaf:Image" src="{!URLFOR($Resource.WebsiteResources, 'WATER_006.jpg')}" alt="Work with USAID" title="Work with USAID" /></a></div>  </div>  
+  <div class="views-field views-field-field-menu-content-link-1 parent-slide">        <div class="field-content">Get Involved<span class="parent-slide-link"><a href="http://www.usaid.gov/work-usaid">Work with USAID</a></span></div>  </div>  </div>
+    </div>
+  
+  
+  
+  
+  
+  
+</div></li><li class="first leaf has-children menu-mlid-7941"><a href="http://www.usaid.gov/work-usaid/partnership-opportunities" title="">Partnership Opportunities</a></li>
+<li class="leaf has-children menu-mlid-2226"><a href="http://www.usaid.gov/work-usaid/get-grant-or-contract">Get An Award</a></li>
+<li class="leaf has-children menu-mlid-3509"><a href="http://www.usaid.gov/branding">Branding</a></li>
+<li class="leaf has-children menu-mlid-5651"><a href="http://www.usaid.gov/careers">Careers</a></li>
+<li class="last leaf has-children menu-mlid-4446"><a href="http://www.usaid.gov/work-usaid/take-action">Get Involved</a></li>
+</ul></li>
+</ul></div>
+    </div>
+  </div>
+</div>
+</div>
+  </div>
+</div>
+  </div>
+</div>  <div id="mobile-menu-trigger"><a href="javascript:;"><span class="offscreen">Open/Close Menu</span></a></div>
+</div>    
+
+      <div id="section-content" class="section section-content">
+  <div id="zone-content-wrapper" class="zone-wrapper zone-content-wrapper clearfix">  
+  <div id="zone-content" class="zone zone-content clearfix container-24">
+
+<!-- Page content starts here -->
+<div id="breadcrumb" class="grid-24">
+<div class="breadcrumb">
+<apex:outputPanel rendered="{!NOT(CONTAINS(Referer,'map')) && NOT(CONTAINS(Referer,'Map')) }">
+<a href="http://www.usaid.gov/">Home</a> » 
+<a href="http://www.usaid.gov/results-and-data">Results &amp; Data</a> » 
+<a href="http://www.usaid.gov/results-and-data/information-resources">Information Resources</a> » 
+<a href="http://portfolio.usaid.gov/">Project Database</a> » {!publicName} 
+</apex:outputPanel>
+<apex:outputPanel rendered="{!CONTAINS(Referer,'map') || CONTAINS(Referer,'Map')}">
+<a href="http://www.usaid.gov/">Home</a> » 
+<a href="http://www.usaid.gov/where-we-work/">Where We Work</a> » 
+<a href="http://map.usaid.gov/">Interactive Map</a> » {!publicName} 
+</apex:outputPanel>
+</div>
+</div>    
+<div class="pageDiv" style="width:960px; margin-left:auto; margin-right:auto; height:auto;">
+  <div class="headerImgDiv" title="{!publicName}">
+   <!--   <apex:image width="100%" value="{!urlfor($Resource.ProjectDetailZip,'Banners/afgpakistan.jpg')}"  rendered="{!IF(region == 'Afghanistan & Pakistan',true,false)}" />
+      <apex:image width="100%" value="{!urlfor($Resource.ProjectDetailZip,'Banners/asia.jpg')}"  rendered="{!IF(region == 'Asia',true,false)}"/>
+      <apex:image width="100%" value="{!urlfor($Resource.ProjectDetailZip,'Banners/europeeurasia.jpg')}"  rendered="{!IF(region == 'Europe & Eurasia',true,false)}" />
+      <apex:image width="100%" value="{!urlfor($Resource.ProjectDetailZip,'Banners/latinamerica.jpg')}"  rendered="{!IF(region == 'Latin America & The Carribean',true,false)}" />
+      <apex:image width="100%" value="{!urlfor($Resource.ProjectDetailZip,'Banners/middleeast.jpg')}"  rendered="{!IF(region == 'MIddle East',true,false)}" />
+      <apex:image width="100%" value="{!urlfor($Resource.ProjectDetailZip,'Banners/subafrica.jpg')}"  rendered="{!IF(region == 'SUB SAHARAN AFRICA',true,false)}" /> -->
+      
+      <apex:image width="100%" value="{!urlfor($Resource.ProjectDetailZip,'Banners/afgpakistan.jpg')}"  rendered="{!IF(project.burCode__c == 'AFPAK',true,false)}" />
+      <apex:image width="100%" value="{!urlfor($Resource.ProjectDetailZip,'Banners/asia.jpg')}"  rendered="{!IF(project.burCode__c == 'ASIA',true,false)}"/>
+      <apex:image width="100%" value="{!urlfor($Resource.ProjectDetailZip,'Banners/europeeurasia.jpg')}"  rendered="{!IF(project.burCode__c == 'EEA',true,false)}" />
+      <apex:image width="100%" value="{!urlfor($Resource.ProjectDetailZip,'Banners/latinamerica.jpg')}"  rendered="{!IF(project.burCode__c == 'LAC',true,false)}" />
+      <apex:image width="100%" value="{!urlfor($Resource.ProjectDetailZip,'Banners/middleeast.jpg')}"  rendered="{!IF(project.burCode__c == 'ME',true,false)}" />
+      <apex:image width="100%" value="{!urlfor($Resource.ProjectDetailZip,'Banners/subafrica.jpg')}"  rendered="{!IF(project.burCode__c == 'AFR',true,false)}" />
+  </div>
+  <a id="main-content"></a>  
+  <div class="titleDiv">
+      <div class="projectTitle"><p>{!publicName}</p></div> 
+  </div>
+  <div class="containerDiv">
+    <div class="leftContainer">
+      <div class="leftContainerDiv1">
+          <ul  id="leftBarList" style="width:100%; padding:0px;">
+              
+          </ul>
+      </div>
+      <div class="leftContainerDiv2"></div>      
+    </div>
+    <div class="rightContainerDiv">
+      <div class="rightContainerDiv1"><p>Project Description</p></div>
+      <div class="rightContainerDiv2">
+        <div class="rightContainerDiv2Img">
+       <!--    <apex:outputtext value="{!project.Public_Photo__c}" escape="false"/> -->
+       <!-- <apex:image value="/servlet/rtaImage?eid={!projectId}&feoid=00Nd00000033lwf&refid={!imgID}"   rendered="{!IF(Photoflag=false,true,false)}"  height="175em" width="100%" />
+        <apex:image value="{!urlfor($Resource.DefaultLogo)}"  rendered="{!IF(Photoflag=true,true,false)}" height="175em" width="100%" /> -->
+         <apex:image value="{!imgID}"   rendered="{!IF(photoflag=false,true,false)}"  height="175em" width="100%" alt="{!publicName}" title="{!publicName}" />        
+<apex:image value="{!urlfor($Resource.DefaultLogoStable)}"  rendered="{!IF(photoflag=true,true,false)}" height="175em" width="100%"  alt="{!publicName}" title="{!publicName}" />          
+          
+        </div>
+        <div class="rightContainerDiv2Text" id="textDiv">
+          <!-- <apex:outputtext value="{!project.Project_Description__c}"  escape="false"  /> -->
+        </div>        
+      </div>
+      <div class="rightcontainerResultDiv">      
+        <!--****[JIRA] (AIDC-157)* (AIDC-162***** -->
+          <div class="rightContainerDiv21"><p><apex:outputText value="RESULTS" rendered="{!IF(projectResults != ' ',true,false)}"></apex:outputText> </p></div>
+          <div class="rightContainerDiv22">
+                <div class="rightContainerDiv22Img1">
+                <apex:image value="{!$Resource.BlankSector}" rendered="{!IF(projectResults != ' ',true,false)}" height="175em" width="100%"/> </div>
+                <div class="rightContainerDiv22Text" id="resultTextDiv"></div>             
+          </div>
+      </div>    
+      <div class="rightContainerDiv3">      
+          <div  id="chart_div1" class="rightContainerDiv3Ch1" title='Project Timeline'></div>
+          <div class="rightContainerDiv3Ch2" id="sectorImg" title="{!project.Sector_Name__c}">
+          <!--  <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/agriculture.jpg')}" rendered="{!IF(sector == 'Agriculture',true,false)}"/>
+            <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/democracy.jpg')}" rendered="{!IF(sector == 'Democracy',true,false)}"/>
+            <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/economic.jpg')}" rendered="{!IF(sector  == 'Economic',true,false)}" />
+            <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/education.jpg')}" rendered="{!IF(sector == 'Education',true,false)}"/>
+            <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/environment.jpg')}" rendered="{!IF(project.Sector_Name__c == 'ENVIRONMENT AND GLOBAL CLIMATE CHANGE',true,false)}"/> -->
+            <!-- <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/environment.jpg')}" rendered="{!IF(sector == 'Environment',true,false)}"/> -->
+          <!--  <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/gender.jpg')}" rendered="{!IF(sector == 'Gender',true,false)}"/>
+            <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/globalhealth.jpg')}" rendered="{!IF(project.Sector_Name__c == 'GLOBAL HEALTH',true,false)}"/> -->
+            <!-- <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/globalhealth.jpg')}" rendered="{!IF(sector == 'Global',true,false)}"/> -->
+         <!--   <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/innovation.jpg')}" rendered="{!IF(sector == 'Science',true,false)}"/>
+            <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/water.jpg')}" rendered="{!IF(sector == 'Water',true,false)}"/>
+            <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/crisis.jpg')}" rendered="{!IF(sector == 'Crises',true,false)}"/>
+            <apex:image value="{!$Resource.BlankSector}" rendered="{!IF(sector='Blank',true,false)}"/> -->
+            
+            <apex:image alt="{!project.Sector_Name__c}" value="{!urlfor($Resource.ProjectDetailZip,'Sectors/agriculture.jpg')}" rendered="{!IF(project.secCode__c == 'AFS',true,false)}"/>
+            <apex:image alt="{!project.Sector_Name__c}" value="{!urlfor($Resource.ProjectDetailZip,'Sectors/democracy.jpg')}" rendered="{!IF(project.secCode__c == 'DHRA',true,false)}"/>
+            <apex:image alt="{!project.Sector_Name__c}" value="{!urlfor($Resource.ProjectDetailZip,'Sectors/economic.jpg')}" rendered="{!IF(project.secCode__c == 'EGT',true,false)}" />
+            <apex:image alt="{!project.Sector_Name__c}" value="{!urlfor($Resource.ProjectDetailZip,'Sectors/education.jpg')}" rendered="{!IF(project.secCode__c == 'EDU',true,false)}"/>
+            <apex:image alt="{!project.Sector_Name__c}" value="{!urlfor($Resource.ProjectDetailZip,'Sectors/environment.jpg')}" rendered="{!IF(project.secCode__c == 'EGCC',true,false)}"/>            
+            <apex:image alt="{!project.Sector_Name__c}" value="{!urlfor($Resource.ProjectDetailZip,'Sectors/gender.jpg')}" rendered="{!IF(project.secCode__c == 'GEWE',true,false)}"/>
+            <apex:image alt="{!project.Sector_Name__c}" value="{!urlfor($Resource.ProjectDetailZip,'Sectors/globalhealth.jpg')}" rendered="{!IF(project.secCode__c == 'GH',true,false)}"/>
+            <apex:image alt="{!project.Sector_Name__c}" value="{!urlfor($Resource.ProjectDetailZip,'Sectors/innovation.jpg')}" rendered="{!IF(project.secCode__c == 'STI',true,false)}"/>
+            <apex:image alt="{!project.Sector_Name__c}" value="{!urlfor($Resource.ProjectDetailZip,'Sectors/water.jpg')}" rendered="{!IF(project.secCode__c == 'WS',true,false)}"/>
+            <apex:image alt="{!project.Sector_Name__c}" value="{!urlfor($Resource.ProjectDetailZip,'Sectors/crisis.jpg')}" rendered="{!IF(project.secCode__c == 'WCC',true,false)}"/>
+            <apex:image value="{!$Resource.BlankSector}" rendered="{!IF(project.secCode__c == null,true,false)}"/>
+              
+                                                
+          </div>
+          <!-- <div id="chart_div3" class="rightContainerDiv3Ch3"></div> -->
+          <div id="detail_map_canvas" style="width: 250px; height: 160px;" class="rightContainerDiv3Ch4" title="Project Locations Map"></div>
+      </div>
+      <div class="rightContainerDiv4">
+          <div class="ldashboard">Project Timeline</div>
+          <div class="rdashboard"><apex:outputText value="{!project.Sector_Name__c}" rendered="{!IF(project.secCode__c != null,true,false)}"></apex:outputText></div>
+          <!-- <div class="rdashboard">AWARD AMOUNT</div>  -->
+          <!-- <div class="rdashboard" style="float:right;"> PROJECTS</div> -->
+          <div class="rdashboard" style="float:right;"> PROJECT LOCATIONS</div>
+      </div>
+    </div>              
+  </div>
+  <div class="dashboardLine"></div>  
+</div>
+
+<!-- Page content ends here -->
+
+ 
+</div></div></div>
+  
+      <div id="section-footer" class="section section-footer">
+  <div id="zone-floating-footer-wrapper" class="zone-wrapper zone-floating-footer-wrapper clearfix closed">  
+  <div id="zone-floating-footer" class="zone zone-floating-footer clearfix container-24">
+    <div class="grid-24 region region-floating-footer-first" id="region-floating-footer-first">
+  <div class="region-inner region-floating-footer-first-inner">
+    
+<div class="wrapper-block">
+<div class="block block-block block-3 block-block-3 odd block-without-title" id="block-block-3">
+  <div class="block-inner clearfix">
+                
+    <div class="content clearfix">
+      <div id="floatfootleft">
+  <div class="floatfootitem join">
+    <a href="http://www.usaid.gov/work-usaid/careers">
+      <h2>Join</h2>
+      <p>Find out about career opportunities at USAID</p>
+    </a>
+  </div>
+  <div class="floatfootitem act">
+    <a href="http://www.usaid.gov/work-usaid/take-action">
+      <h2>Act</h2>
+      <p>Learn how you can get involved and lend a hand.</p>
+    </a>
+  </div>
+  <div class="floatfootitem partner">
+    <a href="http://www.usaid.gov/work-usaid/partnership-opportunities">
+      <h2>Partner</h2>
+      <p>Find business and funding opportunities.</p>
+    </a>
+  </div>
+  <div class="floatfootitem comment">
+    <a href="http://www.usaid.gov/comment">
+      <h2>Comment</h2>
+      <p>Make a general inquiry or suggest an improvement.</p>
+    </a>
+  </div>
+  <div class="floatfootitem connect">
+    <h2 style="display: none;">Connect</h2>
+    <div class="floatfootsocial">
+      <div class="facebook">
+        <a href="http://www.facebook.com/USAID" title="Facebook" class="ext" target="_blank">
+          Facebook
+          <b></b>
+       </a>
+        
+      </div>
+      <div class="twitter">
+        <a href="http://twitter.com/#!/usaid" title="Twitter" class="ext" target="_blank">
+          Twitter
+          <b></b>
+       </a>
+      </div>
+      <div class="rss">
+        <a href="http://www.usaid.gov/stayconnected" title="RSS">
+          RSS
+          <b></b>
+       </a>        
+      </div>
+      <div class="linkedin">
+        <a href="http://www.linkedin.com/groups?gid=118430" title="LinkedIn" class="ext" target="_blank">
+          LinkedIn
+          <b></b>
+        </a>
+      </div>
+      <div class="youtube">
+        <a href="http://www.youtube.com/usaidvideo" title="YouTube" class="ext" target="_blank">
+           YouTube
+          <b></b>
+        </a>
+      </div>
+      <div class="stayconnected">
+        <a href="http://www.usaid.gov/stayconnected" title="Stay Connected">
+           Stay Connected
+          <b></b>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="floatfootitem search">
+    <h2 style="display: none;">Search</h2>
+    <form action="http://www.usaid.gov/" method="post" id="google-appliance-block-form" accept-charset="UTF-8"><div><div class="container-inline">
+      <h2 class="element-invisible" style="display: none;">Search Google Appliance</h2>
+    <div class="form-item form-type-textfield form-item-search-keys">
+  <label class="element-invisible" for="edit-search-keys">Enter the terms you wish to search for. </label>
+ <input type="text" id="edit-search-keys" name="search_keys" value="" size="15" maxlength="128" class="form-text" />
+</div>
+<div class="form-actions form-wrapper" id="edit-actions"><input type="submit" id="edit-submit" name="op" value="Search" class="form-submit" /></div><input type="hidden" name="form_build_id" value="form-F69pbd3Dk_16dlbte-cJXpPqR-m9JT5Yh3I5-MfSbp0" />
+<input type="hidden" name="form_id" value="google_appliance_block_form" />
+  
+</div>
+</div></form>  </div>
+ </div>    </div>
+  </div>
+</div>
+</div>
+  </div>
+</div>  </div>
+</div><div id="zone-footer-wrapper" class="zone-wrapper zone-footer-wrapper clearfix">  
+  <div id="zone-footer" class="zone zone-footer clearfix container-24">
+    <div class="grid-6 region region-footer-first" id="region-footer-first">
+  <div class="region-inner region-footer-first-inner">
+    
+<div class="wrapper-menu-block">
+<div class="block block-menu-block block-9 block-menu-block-9 odd block-without-title" id="block-menu-block-9">
+  <div class="block-inner clearfix">
+                
+    <div class="content clearfix">
+      <div class="menu-block-wrapper menu-block-9 menu-name-menu-utility-menu parent-mlid-0 menu-level-1">
+  <ul class="menu"><li class="first leaf has-children menu-mlid-2918"><a href="http://www.usaid.gov/comment" title="">Contact Us</a></li>
+<li class="leaf has-children menu-mlid-1263"><a href="http://www.usaid.gov/compliance">Compliance</a></li>
+<li class="leaf menu-mlid-1270"><a href="http://www.usaid.gov/forms">Forms</a></li>
+<li class="leaf has-children menu-mlid-1264"><a href="http://www.usaid.gov/privacy-policy">Privacy Policy</a></li>
+<li class="leaf has-children menu-mlid-1265"><a href="http://www.usaid.gov/egov">EGOV</a></li>
+<li class="leaf has-children menu-mlid-1266"><a href="http://www.usaid.gov/foia-requests">FOIA</a></li>
+<li class="leaf menu-mlid-1267"><a href="http://www.usaid.gov/no-fear-act">No Fear Act</a></li>
+<li class="leaf menu-mlid-7431"><a href="http://www.usaid.gov/accessibility" title="">Accessibility</a></li>
+<li class="leaf has-children menu-mlid-1269"><a href="http://www.usaid.gov/open">Open Government</a></li>
+<li class="last leaf menu-mlid-3206"><a href="http://oig.usaid.gov" title="">Inspector General</a></li>
+</ul></div>
+    </div>
+  </div>
+</div>
+</div>
+  </div>
+</div><div class="grid-18 region region-footer-second" id="region-footer-second">
+  <div class="region-inner region-footer-second-inner">
+    
+<div class="wrapper-menu-block">
+<div class="block block-menu-block block-4 block-menu-block-4 odd block-without-title" id="block-menu-block-4">
+  <div class="block-inner clearfix">
+                
+    <div class="content clearfix">
+      <div class="menu-block-wrapper menu-block-4 menu-name-main-menu parent-mlid-0 menu-level-1">
+  <ul class="menu menu-top"><li class="first expanded menu-mlid-1128"><a href="http://www.usaid.gov/who-we-are">Who We Are</a><ul class="menu"><li class="first leaf menu-mlid-1519"><a href="http://www.usaid.gov/who-we-are/usaid-history">USAID History</a></li>
+<li class="leaf has-children menu-mlid-3616"><a href="http://www.usaid.gov/annual-letter">Annual Letter</a></li>
+<li class="leaf has-children menu-mlid-1557"><a href="http://www.usaid.gov/who-we-are/organization">Organization</a></li>
+<li class="leaf has-children menu-mlid-1527"><a href="http://www.usaid.gov/who-we-are/agency-policy">Operational Policy (ADS)</a></li>
+<li class="leaf menu-mlid-6361"><a href="http://www.usaid.gov/results-and-data/progress-data/transparency" title="">Transparency</a></li>
+<li class="last leaf menu-mlid-2448"><a href="http://www.usaid.gov/who-we-are/resource-portal" title="">Resource Portal</a></li>
+</ul></li>
+<li class="expanded menu-mlid-1141"><a href="http://www.usaid.gov/what-we-do">What We Do</a><ul class="menu"><li class="first leaf has-children menu-mlid-1149"><a href="http://www.usaid.gov/what-we-do/agriculture-and-food-security">Agriculture and Food Security</a></li>
+<li class="leaf has-children menu-mlid-1152"><a href="http://www.usaid.gov/what-we-do/democracy-human-rights-and-governance">Democracy, Human Rights and Governance</a></li>
+<li class="leaf has-children menu-mlid-1146"><a href="http://www.usaid.gov/what-we-do/economic-growth-and-trade">Economic Growth and Trade</a></li>
+<li class="leaf has-children menu-mlid-1148"><a href="http://www.usaid.gov/what-we-do/education" title="Education is critical to broad-based economic growth and poverty reduction. Individual earnings increase by 10 percent for each year of school completed.  Education has a multiplier effect, contributing to greater outcomes in other areas such as health and democracy and governance.">Education</a></li>
+<li class="leaf has-children menu-mlid-1147"><a href="http://www.usaid.gov/what-we-do/environment-and-global-climate-change">Environment and Global Climate Change</a></li>
+<li class="leaf has-children menu-mlid-1151"><a href="http://www.usaid.gov/what-we-do/gender-equality-and-womens-empowerment">Gender Equality and Women's Empowerment</a></li>
+<li class="leaf has-children menu-mlid-1155"><a href="http://www.usaid.gov/what-we-do/global-health">Global Health</a></li>
+<li class="leaf has-children menu-mlid-1154"><a href="http://www.usaid.gov/what-we-do/science-technolog-and-innovation">Science, Technology and Innovation</a></li>
+<li class="leaf has-children menu-mlid-1150"><a href="http://www.usaid.gov/what-we-do/water-and-sanitation">Water and Sanitation</a></li>
+<li class="last leaf has-children menu-mlid-1153"><a href="http://www.usaid.gov/what-we-do/working-crises-and-conflict">Working in Crises and Conflict</a></li>
+</ul></li>
+<li class="expanded menu-mlid-1142"><a href="http://www.usaid.gov/where-we-work">Where We Work</a><ul class="menu"><li class="first leaf menu-mlid-2220"><a href="http://map.usaid.gov" title="">Interactive Map</a></li>
+<li class="leaf has-children menu-mlid-5346"><a href="http://www.usaid.gov/where-we-work/afghanistan-and-pakistan">Afghanistan and Pakistan</a></li>
+<li class="leaf has-children menu-mlid-1156"><a href="http://www.usaid.gov/where-we-work/africa" title="USAID in Africa">Africa</a></li>
+<li class="leaf has-children menu-mlid-1157"><a href="http://www.usaid.gov/where-we-work/asia">Asia</a></li>
+<li class="leaf has-children menu-mlid-1159"><a href="http://www.usaid.gov/where-we-work/europe-and-eurasia">Europe and Eurasia</a></li>
+<li class="leaf has-children menu-mlid-1160"><a href="http://www.usaid.gov/where-we-work/latin-american-and-caribbean">Latin America and the Caribbean</a></li>
+<li class="last leaf has-children menu-mlid-1158"><a href="http://www.usaid.gov/where-we-work/middle-east">Middle East</a></li>
+</ul></li>
+<li class="expanded menu-mlid-1143"><a href="http://www.usaid.gov/results-and-data">Results &amp; Data</a><ul class="menu"><li class="first leaf menu-mlid-11066"><a href="http://results.usaid.gov" title="">Dollars to Results</a></li>
+<li class="leaf has-children menu-mlid-1502"><a href="http://www.usaid.gov/results-and-data/planning">Planning</a></li>
+<li class="leaf has-children menu-mlid-2616"><a href="http://www.usaid.gov/results-and-data/progress-data">Progress &amp; Data</a></li>
+<li class="leaf has-children menu-mlid-1501"><a href="http://www.usaid.gov/results-and-data/budget-spending">Budget &amp; Spending</a></li>
+<li class="leaf has-children menu-mlid-3539"><a href="http://www.usaid.gov/results-and-data/information-resources">Information Resources</a></li>
+<li class="leaf menu-mlid-3573"><a href="http://www.usaid.gov/results-and-data/mobile-apps">Mobile Apps</a></li>
+<li class="leaf menu-mlid-2196"><a href="http://www.usaid.gov/results-data/success-stories" title="">Transforming Lives</a></li>
+<li class="leaf has-children menu-mlid-3568"><a href="http://www.usaid.gov/results-and-data/highlights">Key Accomplishments</a></li>
+<li class="last leaf menu-mlid-15051"><a href="http://www.usaid.gov/usaidforward">USAID Forward</a></li>
+</ul></li>
+<li class="expanded menu-mlid-1144"><a href="http://www.usaid.gov/news-information">News &amp; Information</a><ul class="menu"><li class="first leaf menu-mlid-1211"><a href="http://www.usaid.gov/news-information/press-releases" title="">Press Releases</a></li>
+<li class="leaf menu-mlid-1213"><a href="http://www.usaid.gov/news-information/congressional-testimony" title="">Congressional Testimony</a></li>
+<li class="leaf menu-mlid-1212"><a href="http://www.usaid.gov/news-information/speeches-testimony" title="">Speeches</a></li>
+<li class="leaf menu-mlid-1556"><a href="http://blog.usaid.gov" title="">The Impact Blog</a></li>
+<li class="leaf menu-mlid-6261"><a href="http://www.usaid.gov/news-information/newsletter">Newsletter</a></li>
+<li class="last leaf menu-mlid-3610"><a href="http://transition.usaid.gov/press/frontlines" title="">FrontLines Magazine</a></li>
+</ul></li>
+<li class="last expanded menu-mlid-1145"><a href="http://www.usaid.gov/work-usaid">Work with USAID</a><ul class="menu"><li class="first leaf has-children menu-mlid-7941"><a href="http://www.usaid.gov/work-usaid/partnership-opportunities" title="">Partnership Opportunities</a></li>
+<li class="leaf has-children menu-mlid-2226"><a href="http://www.usaid.gov/work-usaid/get-grant-or-contract">Get An Award</a></li>
+<li class="leaf has-children menu-mlid-3509"><a href="http://www.usaid.gov/branding">Branding</a></li>
+<li class="leaf has-children menu-mlid-5651"><a href="http://www.usaid.gov/careers">Careers</a></li>
+<li class="last leaf has-children menu-mlid-4446"><a href="http://www.usaid.gov/work-usaid/take-action">Get Involved</a></li>
+</ul></li>
+</ul></div>
+    </div>
+  </div>
+</div>
+</div>
+  </div>
+</div>  </div>
+</div></div>  </div>  
+<script type="text/javascript" src="{!URLFOR($Resource.WebsiteResources, 'js_J.js')}"></script>
+
+
+<div id="cboxOverlay" style="display: none;"></div><div id="colorbox" style="display: none; padding-bottom: 25px; padding-right: 30px;"><div id="cboxWrapper"><div><div id="cboxTopLeft" style="float: left;"></div><div id="cboxTopCenter" style="float: left;"></div><div id="cboxTopRight" style="float: left;"></div></div><div style="clear: left;"><div id="cboxMiddleLeft" style="float: left;"></div><div id="cboxContent" style="float: left;"><div id="cboxLoadedContent" style="width: 0px; height: 0px; overflow: hidden; float: left;"></div><div id="cboxLoadingOverlay" style="float: left;"></div><div id="cboxLoadingGraphic" style="float: left;"></div><div id="cboxTitle" style="float: left;"></div><div id="cboxCurrent" style="float: left;"></div><div id="cboxNext" style="float: left;"></div><div id="cboxPrevious" style="float: left;"></div><div id="cboxSlideshow" style="float: left;"></div><div id="cboxClose" style="float: left;"></div></div><div id="cboxMiddleRight" style="float: left;"></div></div><div style="clear: left;"><div id="cboxBottomLeft" style="float: left;"></div><div id="cboxBottomCenter" style="float: left;"></div><div id="cboxBottomRight" style="float: left;"></div></div></div><div style="position: absolute; width: 9999px; visibility: hidden; display: none;"></div></div>
+
+</body>
+</html>
+</apex:page>

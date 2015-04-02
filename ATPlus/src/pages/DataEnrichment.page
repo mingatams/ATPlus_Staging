@@ -1,0 +1,187 @@
+<apex:page controller="DataEnrichmentController">
+
+    <apex:stylesheet value="https://serverapi.arcgisonline.com/jsapi/arcgis/2.5/js/dojo/dijit/themes/tundra/tundra.css"/>
+    <apex:includeScript value="https://serverapi.arcgisonline.com/jsapi/arcgis/?v=2.5"/>
+    <apex:includeScript value="{!URLFOR($Resource.USAIDTrackerStatic, 'USAIDTrackerStatic.js')}" />
+
+    <apex:form >
+   
+    <!-- Places Locator and Map -->
+    <script type="text/javascript" charset="utf-8">
+        dojo.require("esri.tasks.locator");
+        dojo.require("dijit.layout.BorderContainer");
+        dojo.require("dijit.layout.ContentPane");
+        dojo.require("esri.map");
+        dojo.require("esri.graphic");
+          
+        function init() {           
+            //create polygons           
+            var newsymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
+             new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
+             new dojo.Color([255,0,0]), 1),new dojo.Color([255,255,0,0.45]));
+            var p; 
+            for(p in USAIDProjectPolygons) {
+                if (dojo.isFunction(p)) {
+                    return;            
+                }
+                var polygon = new esri.geometry.Polygon({"rings":USAIDProjectPolygons[p].paths, 
+                                                         "spatialReference":{"wkid":4326 }});
+                var newgraphic = new esri.Graphic(esri.geometry.geographicToWebMercator(polygon), newsymbol);
+                USAIDProjectPolygons[p].polygon = polygon;
+            }
+        }
+
+        function enrich() {
+            DataEnrichmentController.getLocation(function(result, event) {
+                console.debug(event.status);
+                console.debug(result.length);
+                if (event.status) {   
+                    for(var i = 0; i < result.length; i++) {
+                        console.debug(result[i].Id);
+                        var loc = null;
+                        var latitude = result[i].Activity_Location_Latitude__c;
+                        var longitude = result[i].Activity_Location_Longitude__c;
+                        if (latitude === undefined || longitude === undefined) {
+                            //need to geocode location
+                            result[i].Activity_Location_Province__c = '';
+                        } else {
+                            var lo = longitude.toFixed(5);
+                            var la = latitude.toFixed(5);
+                            var point = new esri.geometry.Point(lo, la, new esri.SpatialReference({ wkid: 4326 }));
+                            var p, c, d;
+                            for (p in USAIDProjectPolygons) {
+                                c = USAIDProjectPolygons[p].polygon;
+                                if (c.contains(point)) {
+                                    loc = p;
+                                    break                       
+                                }
+                                d = p.split(",");
+                                if (d[0] === result[i].Activity_Location_Province__c) {  
+                                    console.debug(d[0]);
+                                    loc = p;
+                                    break;
+                                }
+                            }
+                            if(loc === null) {
+                                var lat_1 = parseFloat(la) + parseFloat("0.005");
+                                var lon_1 = parseFloat(lo) + parseFloat("0.005");;
+                                var lat_2 = parseFloat(la) - parseFloat("0.005");;
+                                var lon_2 = parseFloat(lo) - parseFloat("0.005");;
+                             
+                                var point_1 = new esri.geometry.Point(lo, lat_1, new esri.SpatialReference({ wkid: 4326 }));
+                                var point_2 = new esri.geometry.Point(lon_1, la, new esri.SpatialReference({ wkid: 4326 }));
+                                var point_3 = new esri.geometry.Point(lo, lat_2, new esri.SpatialReference({ wkid: 4326 }));
+                                var point_4 = new esri.geometry.Point(lon_2, la, new esri.SpatialReference({ wkid: 4326 }));
+        
+                                var pol, a;
+                                for (pol in USAIDProjectPolygons) {
+                                    a = USAIDProjectPolygons[pol].polygon;
+                                    if (a.contains(point_1)) {
+                                        loc = pol;
+                                        break;
+                                    } else if (a.contains(point_2)) {
+                                        loc = pol;
+                                        break;
+                                    } else if (a.contains(point_3)) {
+                                        loc = pol;
+                                        break;
+                                    } else if (a.contains(point_4)) {
+                                        loc = pol;
+                                        break;
+                                    }
+                                }
+                                if(result[i].Activity_Location_Country__c === null) {console.debug('COUNTRY = ' + result[i].Activity_Location_Country__c);}
+                                else if(result[i].Activity_Location_Country__c == "AF" || result[i].Activity_Location_Country__c == "AFG") { result[i].Activity_Location_Country__c = "Afghanistan"; }    
+                                else if(result[i].Activity_Location_Country__c == "BD" || result[i].Activity_Location_Country__c == "BGD") { result[i].Activity_Location_Country__c = "Bangladesh"; }
+                                else if(result[i].Activity_Location_Country__c == "CD" || result[i].Activity_Location_Country__c == "COD") { result[i].Activity_Location_Country__c = "Democratic Republic of the Congo"; }
+                                else if(result[i].Activity_Location_Country__c == "DO" || result[i].Activity_Location_Country__c == "DOM") { result[i].Activity_Location_Country__c = "Dominican Republic"; }
+                                else if(result[i].Activity_Location_Country__c == "EG" || result[i].Activity_Location_Country__c == "EGY") { result[i].Activity_Location_Country__c = "Egypt"; }
+                                else if(result[i].Activity_Location_Country__c == "SV" || result[i].Activity_Location_Country__c == "SLV") { result[i].Activity_Location_Country__c = "El Salvador"; }
+                                else if(result[i].Activity_Location_Country__c == "ET" || result[i].Activity_Location_Country__c == "ETH") { result[i].Activity_Location_Country__c = "Ethiopia"; }
+                                else if(result[i].Activity_Location_Country__c == "GH" || result[i].Activity_Location_Country__c == "GHA") { result[i].Activity_Location_Country__c = "Ghana"; }
+                                else if(result[i].Activity_Location_Country__c == "GT" || result[i].Activity_Location_Country__c == "GTM") { result[i].Activity_Location_Country__c = "Guatemala";}
+                                else if(result[i].Activity_Location_Country__c == "HT" || result[i].Activity_Location_Country__c == "HTI") { result[i].Activity_Location_Country__c = "Haiti"; }    
+                                else if(result[i].Activity_Location_Country__c == "IN" || result[i].Activity_Location_Country__c == "IND") { result[i].Activity_Location_Country__c = "India"; }
+                                else if(result[i].Activity_Location_Country__c == "ID" || result[i].Activity_Location_Country__c == "IDN") { result[i].Activity_Location_Country__c = "Indonesia"; }
+                                else if(result[i].Activity_Location_Country__c == "IQ" || result[i].Activity_Location_Country__c == "IRQ") { result[i].Activity_Location_Country__c = "Iraq"; }
+                                else if(result[i].Activity_Location_Country__c == "KE" || result[i].Activity_Location_Country__c == "KEN") { result[i].Activity_Location_Country__c = "Kenya"; }
+                                else if(result[i].Activity_Location_Country__c == "LB" || result[i].Activity_Location_Country__c == "LBN") { result[i].Activity_Location_Country__c = "Lebanon"; }
+                                else if(result[i].Activity_Location_Country__c == "LR" || result[i].Activity_Location_Country__c == "LBR") { result[i].Activity_Location_Country__c = "Liberia"; }
+                                else if(result[i].Activity_Location_Country__c == "MZ" || result[i].Activity_Location_Country__c == "MOZ") { result[i].Activity_Location_Country__c = "Mozambique"; }
+                                else if(result[i].Activity_Location_Country__c == "NG" || result[i].Activity_Location_Country__c == "NGA") { result[i].Activity_Location_Country__c = "Nigeria";}
+                                else if(result[i].Activity_Location_Country__c == "PK" || result[i].Activity_Location_Country__c == "PAK") { result[i].Activity_Location_Country__c = "Pakistan"; }
+                                else if(result[i].Activity_Location_Country__c == "PH" || result[i].Activity_Location_Country__c == "PHL") { result[i].Activity_Location_Country__c = "Philippines"; }
+                                else if(result[i].Activity_Location_Country__c == "RW" || result[i].Activity_Location_Country__c == "RWA") { result[i].Activity_Location_Country__c = "Rwanda";}
+                                else if(result[i].Activity_Location_Country__c == "SN" || result[i].Activity_Location_Country__c == "SEN") { result[i].Activity_Location_Country__c = "Senegal"; }    
+                                else if(result[i].Activity_Location_Country__c == "SD" || result[i].Activity_Location_Country__c == "SDN") { result[i].Activity_Location_Country__c = "South Sudan"; } //SUDAN CODES
+                                else if(result[i].Activity_Location_Country__c == "TZ" || result[i].Activity_Location_Country__c == "TZA") { result[i].Activity_Location_Country__c = "Tanzania"; }
+                                else if(result[i].Activity_Location_Country__c == "TL" || result[i].Activity_Location_Country__c == "TP" || result[i].Activity_Location_Country__c == "TMP") { result[i].Activity_Location_Country__c = "Timor-Leste"; }
+                                else if(result[i].Activity_Location_Country__c == "UG" || result[i].Activity_Location_Country__c == "UGA") { result[i].Activity_Location_Country__c = "Uganda"; }
+                                else if(result[i].Activity_Location_Country__c == "IL" || result[i].Activity_Location_Country__c == "ISR" || result[i].Activity_Location_Country__c == "PL") { result[i].Activity_Location_Country__c = "WB Gaza"; }
+                                else if(result[i].Activity_Location_Country__c == "MA" || result[i].Activity_Location_Country__c == "MAR") { result[i].Activity_Location_Country__c = "Morocco"; }
+                                else if(result[i].Activity_Location_Country__c == "AO" || result[i].Activity_Location_Country__c == "AGO") { result[i].Activity_Location_Country__c = "Angola"; }
+                                else if(result[i].Activity_Location_Country__c == "NP" || result[i].Activity_Location_Country__c == "NPL") { result[i].Activity_Location_Country__c = "Nepal"; }
+                                else if(result[i].Activity_Location_Country__c == "RU" || result[i].Activity_Location_Country__c == "RUS") { result[i].Activity_Location_Country__c = "Russia"; }
+                                else if(result[i].Activity_Location_Country__c == "RR" || result[i].Activity_Location_Country__c == "SRB") { result[i].Activity_Location_Country__c = "Serbia"; }
+                                else if(result[i].Activity_Location_Country__c == "EC" || result[i].Activity_Location_Country__c == "ECU") { result[i].Activity_Location_Country__c = "Ecuador"; }
+                                else if(result[i].Activity_Location_Country__c == "GE" || result[i].Activity_Location_Country__c == "GEO") { result[i].Activity_Location_Country__c = "Georgia"; }
+                                else if(result[i].Activity_Location_Country__c == "PE" || result[i].Activity_Location_Country__c == "PER") { result[i].Activity_Location_Country__c = "Peru"; }
+                                else if(result[i].Activity_Location_Country__c == "MX" || result[i].Activity_Location_Country__c == "MEX") { result[i].Activity_Location_Country__c = "Mexico"; }
+                                else if(result[i].Activity_Location_Country__c == "ZA" || result[i].Activity_Location_Country__c == "ZAF") { result[i].Activity_Location_Country__c = "South Africa"; }
+                                else if(result[i].Activity_Location_Country__c == "ME" || result[i].Activity_Location_Country__c == "MNE") { result[i].Activity_Location_Country__c = "Montenegro"; }
+                                else if(result[i].Activity_Location_Country__c == "ZW" || result[i].Activity_Location_Country__c == "ZWE") { result[i].Activity_Location_Country__c = "Zimbabwe"; }
+                                console.debug(result[i].Activity_Location_Country__c);
+                            }
+                            if(loc != null) {
+                                var provinceCountry = loc.split(",");
+                                //console.debug(provinceCountry);
+                                if (provinceCountry.length === 2) {
+                                    var state = dojo.trim(provinceCountry[0]);
+                                    var country = dojo.trim(provinceCountry[1]);
+                                    result[i].Activity_Location_Province__c = state;
+                                    result[i].Activity_Location_Country__c = country;
+                                }
+                            } else if(loc === undefined || loc === null) {
+                                result[i].Activity_Location_Province__c = '';
+                            }
+                            //console.debug(result[i].isEnrich__c);
+                            //result[i].isEnrich__c = true;
+                        }
+                        console.debug(loc);
+                        result[i].isEnrich__c = true;
+                    } 
+                    updateLocations(result);
+                } else {
+                    //no more records to query
+                    return;
+                }
+            }, {escape:true}); 
+        }
+
+        function updateLocations(results) {
+            //console.debug('in update function');
+            //console.debug(results);
+            DataEnrichmentController.updateLocations(results, function(result, event) { 
+                console.debug(event.status);
+                if (event.status) { } 
+                    else { return; }
+                }, {escape:true}); 
+        }
+
+        function updateLocation(id, state, country) {
+            //console.debug(state);
+            //console.debug(country);
+            DataEnrichmentController.updateLocation(id, state, country, function(result, event) {  
+                if (event.status) { } 
+                else { return; }
+            }, {escape:true}); 
+        }
+        
+        dojo.addOnLoad(init);
+        
+    </script>
+    
+    <input type="button" onclick="enrich()" value="Enrich Data"/>
+    
+    </apex:form>
+</apex:page>

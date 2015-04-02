@@ -1,0 +1,682 @@
+<apex:page controller="ClsUserProfileFinder" >
+<head>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+    
+    <script type="text/javascript">
+    function slideonlyone(thechosenone) {
+     $('.content').each(function(index) {
+          if ($(this).attr("id") == thechosenone) {
+               $(this).fadeIn(400);
+          }
+          else {
+               $(this).fadeOut(0);
+          }
+     });
+}    </script>
+
+    <script type="text/javascript">
+    function toggleDiv(divId) {
+       $("#"+divId).toggle();
+    }
+    </script>
+    
+    <!-- SCROOOLLLLLLLLLLL UPPPPPPPP!!!!!!!!!!!! -->
+    <script type="text/javascript">
+    $(window).scroll(function(){
+        if ($(this).scrollTop() > 100) {
+            $('.up').fadeIn();
+        } else {
+            $('.up').fadeOut();
+        }
+    });
+    
+    $('.up').click(function(){
+    $("html, body").animate({ scrollTop: 0 }, 600);
+    return false;
+    });
+    </script>
+    
+    <style type="text/css">
+    /* template */
+    
+    body { 
+        font-family: helvetica, arial, sans-serif;
+        font-size: 12px;
+    }
+    
+    .content img {
+        background-color: #eee;
+        padding: 2px;
+        border: 1px solid #777;
+    }
+    
+    #sidebarCell {
+        display: none;
+    }
+    
+    strong {
+        font-weight: 600;
+        color: #111;
+    }
+    
+    h1 { 
+        font-family: "arial black";
+        font-size: 36px;
+        text-transform: uppercase;
+        letter-spacing: -3px;
+        font-weight: 900;
+        margin:  0 12px 0 0;
+        position: relative;
+        top: -14px;
+    }
+    
+    h2 {
+        font-family: "arial black";
+        font-size: 21px;
+        letter-spacing: -1px;
+        font-weight: 900;
+        margin: 0 0 12px 0;
+        line-height:20px;
+    }
+    
+    h3 {
+        font-size: 17px;
+        font-family: arial;
+        font-weight: 100;
+        letter-spacing: 1px;
+        margin: 0 0 12px 0;
+        line-height: 18px;
+        text-transform: uppercase;
+    }
+    
+    ul li {
+        margin-bottom: 12px;
+    }
+    
+    ul {
+        margin-top: 20px;
+    }
+    
+    .content a {
+        color: #1954B5;
+        text-decoration: none;
+    }
+    
+
+    .content a:hover {
+        color: #039;
+        text-decoration: none;
+    }
+    
+    .clear {
+        clear: both;
+    }
+    
+    .content b {
+        color: #000;
+        font-size: 14px;
+        font-family: Helvetica, Arial, sans-serif;
+        font-weight: 900;
+        
+    }
+    
+    .content p {
+        line-height: 20px;
+    }
+    
+    tabs a {
+        text-decoration: none;
+        color: #fff;
+    }
+    
+    /* tabs */
+    
+    .tabs {
+        width: 145px;
+        height: 120px   ;
+        margin: 15px;
+        padding: 15px;
+        float: left;
+        color: #222;
+        font-size: 12px;
+        line-height: 17px !important;
+        border: 5px solid #EDEDED;
+        background-color: #d9d9d9;
+    }
+    
+    .tabs:hover {
+        background-image: url(images/square_bg.png);
+        background-repeat: repeat;
+        color: #f4f4f4;
+    }
+    
+    .data:hover {
+        background-color: #2b6b2b;
+        border: 5px solid #3f9f3f;
+    }
+    
+    .access:hover {
+        background-color: #57295c;
+        border: 5px solid #87408f;
+    }
+    
+    .reporting:hover {
+        background-color: #b06b0b;
+        border: 5px solid #e48b0d;
+    }
+    
+    .collaboration:hover {
+        background-color: #123d82;
+        border: 5px solid #1954b5;
+    }
+    
+    .definitions:hover {
+        background-color: #7c0909;
+        border: 5px solid #b92626;
+    }
+    
+    .release:hover {
+        background-color: #709900;
+        border: 5px solid #96cc00;
+    }
+    
+    .tabs:first-child {
+        margin-left: 0px !important;
+    }
+    
+    #release img {
+        background: transparent !important;
+        border: 0 !important;
+    }
+    
+    /* content area */
+    
+    .content {
+        display: none;
+        color: #333;
+        padding: 0 0 15px 15px;
+        width: 750px;
+        margin: 20px 0 0 5px;
+    }
+    
+    .content h1 {
+        left: -3px;
+    }
+    
+    #data {
+        border-left: 10px solid #3f9f3f;
+    }
+    
+    #data h1 {
+        color: #3f9f3f !important;
+    }
+    
+    #access {
+        border-left: 10px solid #87408f;
+    }
+    
+    #access h1 {
+        color: #87408f !important;
+    }
+    
+    #reporting {
+        border-left: 10px solid #e48b0d;
+    }
+    
+    #reporting h1 {
+        color: #e48b0d !important;
+    }
+    
+    #collaboration {
+        border-left: 10px solid #1954b5;
+    }
+    
+    #collaboration h1 {
+        color: #1954b5 !important;
+    }
+    
+    #definitions {
+        border-left: 10px solid #b92626;
+    }
+    
+    #definitions h1 {
+        color: #b92626 !important;
+    }
+    
+    #release {
+        border-left: 10px solid #709900;
+    }
+    
+    #release h1 {
+        color: #709900 !important;
+    }
+    
+    .close {
+        padding: 7px 9px;
+        font-family: Impact, Arial "Arial Black", Gadget, sans-serif;
+        font-size: 13px;
+        color: #fff;
+        background-color: #222;
+        font-weight: 900;
+        float: right;
+    }
+    
+    .close:hover {
+        text-decoration: none;
+        color: #222;
+        background-color: #777;
+    }
+    
+    #up {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        margin:15px;
+        padding:11px 13px 8px 13px;
+        font-family: Impact, Arial "Arial Black", Gadget, sans-serif;
+        font-size: 13px;
+        color: #fff;
+        background-color: #222;
+        font-weight: 900;
+        display: none;
+    }
+    
+    #up:hover {
+        text-decoration: none;
+        color: #222;
+        background-color: #777;
+    }
+    </style>
+    
+</head>
+
+<body>
+<div id="wrapper">
+    <a name="top" id="top">&nbsp;</a>
+
+    <a href="javascript:slideonlyone('data');">
+        <div class="tabs data">
+            <h2>Videos</h2>
+            <p>Watch instructional videos on using AIDtracker.</p>
+        </div>
+    </a>
+    
+   <!-- <a href="javascript:slideonlyone('access');">
+        <div class="tabs access">
+            <h2>Access &amp; Security</h2>
+            <p>Find out more information    about user access and security</p>
+        </div>
+    </a>
+
+    <a href="javascript:slideonlyone('reporting');">
+        <div class="tabs reporting">
+            <h2>Reporting</h2>
+            <p>Find information on generating and customizing your reports</p>
+        </div>
+    </a>
+
+    <a href="javascript:slideonlyone('collaboration');">
+        <div class="tabs collaboration">
+            <h2>Collaboration</h2>
+            <p>Learn how to form groups and share information with others.</p>
+        </div>
+    </a>
+    
+    <a href="javascript:slideonlyone('definitions');">
+        <div class="tabs definitions">
+            <h2>Definitions</h2>
+            <p>Learn definitions and descriptions of key AIDtracker components.</p>
+        </div>
+    </a> -->
+    
+    <a href="javascript:slideonlyone('release');">
+        <div class="tabs release">
+            <h2>Release Notes</h2>
+            <p>AIDtracker release version information.</p>
+        </div>
+    </a>
+
+    
+    <div class="clear"></div>
+    
+    <div id="data" class="content">
+        <a href="javascript:toggleDiv('data');"><div class="close">X</div></a>
+        <h1>Videos</h1>
+        <p>These videos provide a detailed walk
+of using AIDtracker's major functions. Some large video files may not
+stream from your computer. If you encounter a video which says "No preview
+available," please use the "Download" button to download the video to your
+computer and view using your computer's video player </p>
+      <!--  <apex:outputLink rendered="{!($Profile.Name=='PLT - Mission Profile'|| $Profile.Name=='System Administrator(c)')}"> -->
+        <apex:outputLink rendered="{!(IsPLTUser || IsADMINUser)}">
+        <p><b>AIDtracker Overview</b></p>
+        <!-- copy and paste. Modify height and width if desired. -->
+        <iframe class="tscplayer_inline embeddedObject" name="tsc_player" scrolling="no" frameborder="0" type="text/html" style="overflow:hidden;" src="https://docs.google.com/file/d/0B3mXBnWXsTpXV2xFNVZXMklINVU/preview" height="350" width="624" ></iframe> 
+<br></br>
+        <p><b>Data Admin</b></p>
+         <!-- Modify height and width if desired. -->
+         <iframe class="tscplayer_inline embeddedObject" name="tsc_player" scrolling="no" frameborder="0" type="text/html" style="overflow:hidden;" src="https://docs.google.com/file/d/0B3mXBnWXsTpXSUR5SVlIX21uYms/preview" height="350" width="624" ></iframe> <br></br>
+
+    <p><b>Implementing Mechanism Part 1: Creating Implementing Mechanisms</b></p>
+        <!-- Modify height and width if desired. -->
+        <iframe class="tscplayer_inline embeddedObject" name="tsc_player" scrolling="no" frameborder="0" type="text/html" style="overflow:hidden;" src="https://docs.google.com/file/d/0B3mXBnWXsTpXTFVSMjVnY3dWU0U/preview" height="350" width="624"></iframe> 
+ </apex:outputLink>   
+ 
+    <p><b>Implementing Mechanism Part 2: Adding Tasks and Locations</b></p>
+    <!-- Modify height and width if desired. -->
+    <iframe class="tscplayer_inline embeddedObject" name="tsc_player" scrolling="no" frameborder="0" type="text/html" style="overflow:hidden;" src="https://docs.google.com/file/d/0B3mXBnWXsTpXcmRzeFBiSmV3VEE/preview" height="350" width="624"></iframe> 
+    
+    <!-- <apex:outputLink rendered="{!($Profile.Name=='PLT - Mission Profile'|| $Profile.Name=='System Administrator(c)')}"> -->
+    <apex:outputLink rendered="{!(IsPltUser || IsAdminUser )}">
+    <p><b>Implementing Mechanism Part 3: Financial Snapshot</b></p>
+    <!-- Modify height and width if desired. -->
+    <iframe class="tscplayer_inline embeddedObject" name="tsc_player" scrolling="no" frameborder="0" type="text/html" style="overflow:hidden;" src="https://docs.google.com/file/d/0B3mXBnWXsTpXaWJ0eDc2ZUNvREE/preview" height="350" width="624"></iframe> 
+    
+    <p><b>Implementing Mechanism Part 4: IM Indicators</b></p>
+    <!-- Modify height and width if desired. -->
+    <iframe class="tscplayer_inline embeddedObject" name="tsc_player" scrolling="no" frameborder="0" type="text/html" style="overflow:hidden;" src="https://docs.google.com/file/d/0B3mXBnWXsTpXVjRkUFlfVUFsY28/preview" height="350" width="624"></iframe> 
+    
+
+<p><b>Results Framework</b></p>
+<!-- Modify height and width if desired. -->
+<iframe class="tscplayer_inline embeddedObject" name="tsc_player" scrolling="no" frameborder="0" type="text/html" style="overflow:hidden;" src="https://docs.google.com/file/d/0B3mXBnWXsTpXbi1uR0szM3FZQ1U/preview" height="350" width="624" ></iframe>  <br></br> 
+
+<p><b>Indicator Tab</b></p>
+<!-- Modify height and width if desired. -->
+<iframe class="tscplayer_inline embeddedObject" name="tsc_player" scrolling="no" frameborder="0" type="text/html" style="overflow:hidden;" src="https://docs.google.com/file/d/0B3mXBnWXsTpXMXBWbkZKa2R5UGc/preview" height="350" width="624"></iframe> 
+  </apex:outputLink>
+<p><b>Fact Sheets</b></p>
+<!-- Modify height and width if desired. -->
+<iframe class="tscplayer_inline embeddedObject" name="tsc_player" scrolling="no" frameborder="0" type="text/html" style="overflow:hidden;" src="https://docs.google.com/file/d/0B3mXBnWXsTpXbXZyR3pxdzJSQlk/preview" height="350" width="624"></iframe> 
+
+<p><b>Reports</b></p> 
+<!-- Modify height and width if desired. -->
+<iframe class="tscplayer_inline embeddedObject" name="tsc_player" scrolling="no" frameborder="0" type="text/html" style="overflow:hidden;" src="https://docs.google.com/file/d/0B3mXBnWXsTpXWTU1UTcxR01LOW8/preview" height="350" width="624"></iframe> 
+
+<p><b>Partner Portal part 1</b></p> 
+<iframe class="tscplayer_inline embeddedObject" name="tsc_player" scrolling="no" frameborder="0" type="text/html" style="overflow:hidden;" src="https://docs.google.com/file/d/0B3mXBnWXsTpXNmRMWUpWd2V3S28/preview" height="350" width="624"></iframe> 
+
+<p><b>Partner Portal part 2</b></p> 
+<iframe class="tscplayer_inline embeddedObject" name="tsc_player" scrolling="no" frameborder="0" type="text/html" style="overflow:hidden;" src="https://docs.google.com/file/d/0B3mXBnWXsTpXS0tPVlJfSEdHWnc/preview" height="350" width="624"></iframe> 
+
+<p><b>Partner Portal part 3</b></p> 
+<iframe class="tscplayer_inline embeddedObject" name="tsc_player" scrolling="no" frameborder="0" type="text/html" style="overflow:hidden;" src="https://docs.google.com/file/d/0B3mXBnWXsTpXNkpyRDdjMnBSSWM/preview" height="350" width="624"></iframe> 
+
+ <br></br>
+
+
+
+
+</div><br></br>
+ 
+ 
+ 
+ 
+ 
+ 
+  <!--************************************ -->
+  
+ 
+    
+    <div id="access" class="content">
+        <a href="javascript:toggleDiv('access');"><div class="close">X</div></a>
+        <h1>Access &amp; Security</h1>
+        <p><b>Is AIDtracker a secure system?</b></p>
+        <p>Yes. AIDtracker is a could-based application hosted within salesforce. The system has been classified at the FISMA Moderate and SBU Moderate level. AIDtracker has also been Certified and Accredited by USAID M/CISO. The C&amp;A documentation is available upon request from <a href="mailto:AIDtracker-Help@USAID.gov">AIDtracker-Help@USAID.gov</a> </p>
+        <br></br>
+        <p><b>Which information is pulled from AIDtracker and used on <a href="http://map.USAID.gov" target="_blank">map.USAID.gov</a>?</b></p>
+        <p>The information displayed is as follows: Country, Project Name, Sector, Initiative, Primary Partner, Timeline, Award Amount, Project Description and Results. All other information is not displayed (e.g. Award Number, Project Manager, etc)</p>
+        
+        <br></br>
+        
+        <p><b>Can I specify which projects should be displayed on the public map and which should remain hidden?</b></p>
+        <p>Yes. In the Project Record, select "Yes" under "Verified" to approve the project to be published. Select "No" if you want your project to be visible within AIDtracker only.</p>
+        
+        <br></br>
+        
+        <p><b>Whom do I contact to add a new user?</b></p>
+        <p>You need to send an email to the AIDtracker administrators at either <a href="mailto:dsantiago@usaid.gov">dsantiago@usaid.gov</a> or Ryan Jacobs at <a href="mailto:rjacobs@usaid.gov">rjacobs@usaid.gov</a>. You should also contact the Administrators at the earliest for any changes needed to a user’s access/profile including deactivation.</p>
+        
+        <br></br>
+        
+        <p><b>What should I include in my request for access?</b></p>
+        <p>You will need to specify your mission name, the name and email address of the mission personnel on whose behalf you are requesting access and the nature of access i.e. whether you need access to enter/change/delete data or whether you need read-only access.</p>
+
+    
+    </div>
+    
+    <div id="reporting" class="content">
+        <a href="javascript:toggleDiv('reporting');"><div class="close">X</div></a>
+        <h1>reporting</h1>
+        <p><b>What is the data collect by AIDtracker being used for?</b></p>
+        <p>The data collected by AIDtracker is used to create a public view of the data via an interactive map. The map is central to the redesigned usaid.gov website, and can be viewed at <a href="http://map.usaid.gov">http://map.usaid.gov</a>. </p>
+        
+        <br></br>
+        
+        <p><b>How can I generate a standard report?</b></p>
+        <p>Click on the "Standard Reports" link. If you do not see it on your user menu, make sure you add it to your user menu so that it shows up as a link on your user menu.<br></br>
+        <!--<img src="images/standardreports.png"><br></br> -->
+        <img src="{!URLFOR($Resource.Help_Tab, 'images/standardreports.png')}"/><br></br>
+        You can execute a standard report by clicking on the icon for a given report. It will then display the report output. The following are the standard reports that you can currently run:
+        <ul>
+            <li>Projects by Location</li>
+            <li>Projects by Sector</li>
+            <li>Projects by Implementing Partner</li>
+            <li>Projects by Initiative</li>
+       </ul>
+       </p>
+       <br></br>
+       
+        <p><b>How can I create a Custom Report?</b></p>
+        <p>You can customize each of these standard reports to suit your reporting and analytical needs. This includes the ability to format the report, adding, removing and changing the position of fields all by dragging-and-dropping, sorting and filtering. It is highly recommended that you save your custom report as a separate report with an appropriate name and in your personal folder in the AIDtracker application. </p>
+        
+ <p>You can also create a custom report by clicking on the “Reports” link. If this link is not available on your user menu, make sure you add it to your user menu. Here you will have access to a lot more reports that you will be able to customize to meet your requirements. It is highly recommended that you save your custom report as a separate report with an appropriate name and in your personal folder in the AIDtracker application. </p>
+
+ <p>The starting point for customizing an existing report is by clicking on the “Customize” button once you have executed the report you will be customizing.</p>
+ <!--<img src="images/customreports.png">-->
+ <img src="{!URLFOR($Resource.Help_Tab, 'images/customreports.png')}" />
+
+ 
+    </div>
+    
+    <div id="collaboration" class="content">
+        <a href="javascript:toggleDiv('collaboration');"><div class="close">X</div></a>
+        <h1>collaboration</h1>
+        <p><b>What is the data collected by AIDtracker being used for?</b></p>
+        <p>The data collected by AIDtracker is used to generate an interactive public map, showing a limited view of projects on the redesigned usaid.gov website.  This can be directly accessed at <a href="http://map.usaid.gov" target="_blank">http://map.usaid.gov</a>. </p>
+        
+        <br></br>
+        
+        <p><b>How can I collaborate with other AIDtracker users?</b></p>
+        <p>The Chatter Tab is a space that allows you to communicate and connect through the posting of notes, files and links.  You can also create groups of users that share the same interests or characteristics such as all mission users for a particular mission.  Users can “follow” and instant-message each other using the chat feature. The usage of Chatter is encouraged as a means to reducing email traffic, quicker access to information and more effective community outreach.</p>
+        
+        <br></br>
+        
+        <p><b>Whom should I contact for any questions and/or comments on AIDtracker?</b></p>
+        <p>You can contact David Santiago at <a href="mailto:dsantiago@usaid.gov">dsantiago@usaid.gov</a> or Ryan Jacobs at <a href="mailto:rjacobs@usaid.gov">rjacobs@usaid.gov</a>.</p>
+    
+    </div>
+    
+    <div id="definitions" class="content">
+        <a href="javascript:toggleDiv('definitions');"><div class="close">X</div></a>
+        <h1>DEFINITIONS</h1>
+<p><strong>Project:</strong> A project can be defined as a structured undertaking of limited duration and broad scope. A project utilizes various inputs such as technical assistance, training etc. resource to produce specific outputs or results. As a user, a project will be your primary interface with the AIDtracker application. A project consists of activities.<br></br>
+  In order to create a new project in AIDtracker, you must populate the following (mandatory) fields that can be easily identified with the vertical red bars:</p>
+<ul>
+  <li>Project Name</li>
+  <li>Project Start Date</li>
+  <li>Project End Date</li>
+  <li>Organizational Unit (OrgUnit)</li>
+</ul>
+<p>The rest of the fields do not require you to enter data but it is recommended that you enter as much information on a project as is practicable. This will help in easy identification, reporting, and analysis.<br></br></p>
+  <p>Projects were referred to as &ldquo;Public View&rdquo; in earlier releases of AIDtracker.<br></br></p>
+  <p><strong>Activity: </strong>An activity is a structured undertaking of limited duration and narrow scope. A project comprises of one or more activities and activities help in breaking down large and/or complex projects into discrete, manageable and measurable chunks.<br></br></p>
+  <p>In order to create a project you must provide two key pieces of information: Activity Name and Project Code. In AIDtracker, an activity cannot exist without a project. So, when you create an activity through an existing project, the project code defaults in. If you create an activity separately, you will need to provide a project code utilizing the project lookup capability. Note that you must have at least 1 activity for each project for your project to appear on the map (provided you have at least one location for that activity).<br></br></p>
+  <p><strong>Location: </strong>A location is a geographical entity that is shows on the map where a particular activity is being carried out. An activity can take place in one or more locations. Locations are bound to activities and displayed on the public map.<br></br></p>
+  <p>In AIDtracker, when you create a location you must provide an Activity ID and a location name. The Activity ID is automatically populated if you create a location from the activity maintenance screen. The location name is the criterion that the Geocoding Wizard uses to search the GIS databases for matches. Locations that are created can be seen in the Map view once you save this location and check the &ldquo;Publicly Disclosable&rdquo; box on the corresponding Activity screen. Clicking on &ldquo;Map&rdquo; on your user menu displays the public map in GoogleMaps.<br></br></p>
+  <p><strong>Implementing Mechanism: </strong>An Implementing Mechanism is the vehicle through which funding for a project is obligated. It is therefore closely associated to the contract/award. In AIDtracker, projects and implementing mechanisms are closely related and the link between the two is established using the &ldquo;Public IM Link&rdquo;. When you create an Implementing Mechanism, the Implementing Mechanism Name field must be filled in.<br></br></p>
+  <p>Although there are several optional fields such as the OrgUnit, Primary Partner, Award Number, Award Amount, Start and End Dates, it is recommended that you enter as much information as is available and practicable.<br></br></p>
+  <p>It is envisioned that in future releases, additional components and fields closely related to Implementing Mechanisms will be incorporated (such as financial information from Phoenix and award information from GLAAS) and important financial and award data from these systems will automatically fill the corresponding AIDtracker fields. Additionally, Implementing Partners will be able to interact with AIDtracker to enter information related to their performance on the Implementing Mechanisms they are responsible for.<br></br></p>
+  <p><strong>Organizational Unit: </strong>Abbreviated as OrgUnit, this component replaces the “mission” concept in prior releases and can be considered as any entity that has a portfolio. You can maintain the attributes of your organizational unit such as the bureau to which it belongs (Bureau Id), the name as it should be displayed, the type of organizational unit (field mission, regional office, regional bureau, pillar bureau, or independent office), and other descriptive information.<br></br></p>
+  <p><strong>Goal: </strong>It is the highest-level impact to be advanced or achieved by USAID, the host country, civil society actors and other development partners within the CDCS timeframe. In AIDtracker, a goal is uniquely identified by an Goal ID. A goal is automatically created upon creation of an Organizational Unit and each organizational unit has one and only one goal. A mission user is neither able to create or delete a goal but is able to modify it. You will be able to maintain/modify attributes of a goal including the start and end years, status, goal statement, strategy, key opportunities and challenges, alignment with various strategic initiatives, and additional information that will better describe the goal. A goal can have one or more development objectives but not more than four.<br></br></p>
+<p><strong>Development Objectives: </strong>A D.O. is the most ambitious result that a Mission, together with its development partners, can materially affect, and for which USAID will be held accountable to demonstrate impact. As an AIDtracker mission user, you can create one or more D.O.s (but not more than four) for a goal. Each D.O. is uniquely identified by an D.O. ID that you need to assign when you create your D.O. You can create and edit/maintain attributes of D.O. including the title (mandatory), and other optional information including overview, hypothesis, assumptions, and primary initiatives and cross-cutting realtionships that this D.O. supports.<br></br></p>
+<p><strong>Intermediate Results: </strong>The IRs are the set of results that together are sufficient to achieve the D.O.s. As an AIDtracker mission user, you can create one or more I.R.s for a D.O. Each I.R. is uniquely identified by a I.R. ID that you need to assign when you create your I.R. You can create and edit/maintain attributes of I.R. including the title (mandatory) and other optional information such as overview, illustrative activities, purpose/outcome, and primary activities and cross-cutting relationships that this I.R. supports. An I.R. should be the starting point for designing a project.<br></br></p>
+<p><strong>Sub-Intermediate Results: </strong>An S.I.R splits an I.R. into smaller and manageable parts. As an AIDtracker mission user, you can create one or more S.I.R.s for an I.R. Each S.I.R. is uniquely identified by an S.I.R. ID that you need to assign when you create your S.I.R. You can create and edit/maintain attributes of an  S.I.R. including the title (mandatory) and overview (optional).<br></br></p>
+<p><strong>Results Framework: </strong>The Results Framework (RF) is a graphical representation of the development hypothesis and includes the CDCS Goal, DOs, IRs, and sub-IRs. As a mission user, you are able to access the RF for a particular organizational unit’s CDCS from each of the CDCS components. After the RF is rendered in graphical manner, you can click on any of these components to go to the detailed information on it. For example if you click on IR 1.1 of your organizational unit’s CDCS, you are taken to the display screen of IR 1.1<br></br>
+</p>
+</div>
+    <a href="#"><div id="up" class="up">^</div></a>
+</div>
+
+    <div id="release" class="content">
+        <a href="javascript:toggleDiv('release');"><div class="close">X</div></a>
+        <h1>RELEASE NOTES</h1>
+<!--<p align="center"><img src="images/aidtracker-logo-v1.1_rev.C.png"></img></p> -->
+<p align="center"><img src="{!URLFOR($Resource.AIDtracker_Version_Logo)}"></img></p>
+
+<p>We are very excited to let you know that the M/CIO team has been working on a new release of AIDtracker that will improve usability of the tool.</p>
+<ul style="list-style-type:none;">
+  <li><strong>Release components</strong></li>
+  <ul>
+      <b>Version 2.6 </b>
+      <li>Reports - Fixed bug with UDT field displaying missing values in "Implementing Mechanism Indicators" and "Implementing Mechanism Indicator Results" report</li>
+      <li>Reports - Created new "Partner Users" report to display a list of partner users grouped by Partner.  The report is only available to Data Admin users. </li>
+      <li>Reports - Created a new "Mission Users" report to display a list of mission users. The report is only available to Data Admin users. </li>
+      <li>Reports - New "Mission Users Admin" report to see a summary of all users for active missions and date of most recent activity. </li>
+      <li>Reports - Modified "Reporting Period Status" report to always show all reporting periods for a an IM, regardless of whether any results exist for the period. </li>
+      <li>Created a cross-tabulated "Reporting Period Status" matrix report for use by advanced users and available in the Standard Reports folder. </li>
+      <li>Reports that were not working correctly have been removed from the Reports dashboard page</li>
+      <li>Manage Org Indicators now displays archived F/Standard indicators that are in active use.  Archived indicators that are not in active use will still not display. </li>
+      <li>Cross-cutting F/Standard indicators can now be selected/deselected as IM, RF, and LF indicators.  However, only Cross-cutting indicators that were imported from the DMT are available, new ones still cannot be accessed or selected for use in Manage Org Indicators. </li>
+      <li>RF and LF indicators associated with each RF and LF component now display properly  on the RF and LF home pages.  Previously, indicators were not sorting correctly and the name of the parent was displaying for disaggregate indicators</li>
+      <li>Fixed bug related to unselecting IM, RF, and LF indicators that prevented some indicator/disaggregate combinations from being unselected.  Disaggregates were showing as selected and the parent as unselected. </li>
+      <li>Indicator Results Difference now displays percentage difference rather than the sum of the difference.  The percentage difference is rounded to a whole number, preceded by a +/-.  A positive difference will show in green, and a negative in red, except in reports.  No difference value will display if the target or actual value is NULL. </li>
+      <li>Hovering the mouse over an indicator ID throughout AT+ will now show the full Indicator ID in a popup.  This makes it easier to see the full indicator ID that sometimes gets truncated when displayed. </li>
+      <li>Fixed multiple issues with the formatting and display of indicator results on the Indicator Results page for a select indicator.  Zero values were previously displaying as NULL, results were not displaying in chronological order, RF and LF component labels were showing incomplete info, and only FY and not full reporting period label was displaying for IM results. </li>
+      <li>Added "Record Type" column back to IM list on IM home page to easily tell Basic and Advanced IM's apart. </li>
+      <li>Project Detail page now displays an unlimited number of IM's that are associated with a project.  Previously, a popup window was required to view more than five IM's and the total number of IM's displayed was limited to fifteen. </li>
+      <li>Alternate A/COR's can now see the available actions to Approve/Reject an IM reporting period.  Previously, only the primary A/COR had these rights. </li>
+      <li>The width of the following PIRS fields was expanded: PPR Reporting Years (50 characters), Data Source (500 characters), Method of Data Collection (1000 characters), Known data limitations (2000 characters), Reporting Frequency (50 characters) </li>
+
+      
+    </ul> 
+  <ul>
+      <b>Version 2.5 </b>
+      <li>Corrected numerous data issues related to initial DMT import and incorrect setup of organization and IM indicators</li>
+      <li>Fixed data issue with some parent indicators for disaggregate indicators missing or not selected as active</li>
+      <li>Fixed data issue with some organization indicators incorrectly displaying a source of "Custom" instead of "F/Standard"</li>
+      <li>Fixed missing SPS code and SPS name missing from some indicators</li>
+      <li>Fixed bug causing IM's from other missions to sometimes incorrectly appear for a mission</li>
+      <li>Fixed CPU timeout error when attempting to edit Organization, IM, RF, and LF indicators</li>
+      <li>Added new columns on Indicators home page to show if organization indicator has been configured for use as RF, LF, and IM indicator</li>
+      <li>Support now provided for SO's and SO related IR's under Results Framework</li>
+      <li>Allow IM reporting period to now be opened without any indicators baselines or targets existing for period</li>
+      <li>IM Detail page now displays all related notes and attachments for IM instead of being limited to 5 items</li>
+      <li>Fixed bug on IM Indicator Data page for mission and partner users with zero values incorrectly displaying a blank</li>
+      <li>Fixed bug on IM Indicator Data page for mission and partner users with zero values being incorrectly saved as blank values</li>
+      <li>New "Implementing Mechanism Reporting Period Status" report now available on reports dashboard</li>
+      <li>Fixed issue with PPR field displaying incorrect status on "Implementing Mechanism Indicators" report</li>
+      <li>New PPR report templates now available in Standard reports folder for mission use</li>
+      <li>Fixed bug with Fact Sheet Detail page showing HTML code for user entered content instead of formatted content</li>
+
+      
+      
+    </ul>  
+  
+  <ul>
+      <b>Version 2.4 </b>
+      <li>Fixed issue with Reporting Period Actions grid not refreshing after publishing a period</li>
+      <li>Fixed issues with IM Indicator data in both AT+ and Partner Portal not saving changes or refreshing properly</li>
+      <li>Force unsaved change to be saved when publishing a reporting period</li>
+      <li>Allow AOR and alternate A/COR to approve and reject a reporting period</li>
+      <li>Fixed issue in partner portal that would not save a reporting period with a blank target value</li>
+      <li>Fixed issue in partner portal with Reporting Period Actions not properly refreshing after submitting</li>
+      <li>Fixed issue with IM's appearing from other mission</li>
+      <li>Fixed issue in reporting period when trying to make changes to multiple indicator results</li>
+      
+      
+    </ul>  
+  
+    <ul>
+      <b>Version 2.3 </b>
+      <li>Reporting Period Actions – Fixed issue with screen not properly refreshing when publishing a period</li>
+      <li>Partner Portal Reporting Period Submission - Any unsaved data is now automatically saved when submitting a reporting period</li>
+      <li>Partner Portal Reporting Period Submission – Fixed issue with screen not properly refreshing after submission</li>
+      <li>Manage Organization Indicators - Fixed bug that caused page to refresh and jump to first Program Objective in the F/Standard tab after clicking "Save" from anywhere in the section</li>
+      <li>Manage Organization Indicators – Fixed serious bug that caused changes to not save after the first save</li>
+      <li>Indicator Results - Display RF, LF, and IM associations on Indicator Results page, even if there are no results</li>
+      <li>Results Framework Summary - Show related indicators even if there are no results</li>
+      <li>Logical Framework Summary - Show related indicators even if there are no results</li>
+      <li>IM Reporting Period Notifications: Enabled notification when period is opened</li>
+      <li>Task Locations: Removed "New Location" button from edit task locations page</li>
+      <li>Map Project Details: Fixed missing "Public Results" section on map Project Details page</li>
+      <li>Organization Indicators Report: (1) Renamed to "All Mission Indicator Inventory", (2) changed default sorting and grouping</li>
+      <li>Indicator Data by Implementing Mechanism Report: (1) Renamed to "Implementing Mechanism Indicator Results", (2) Now displays disaggregate indicator name, (3) changed default sorting and grouping, (4) Fixed missing values for PPR flag and PPR Years fields (5) Fixed missing values for User-defined tags field</li>
+      <li>New "Implementing Mechanism Indicators" report to view all indicators associated with an IM</li>
+      <li>Implementing Mechanism's by Partner Report: Fixed minor bug causing IM's to display multiple times if associated with multiple projects</li>
+      <li>Implementing Mechanism's by Project Report: Fixed minor bug cuasing IM's to display multiple times if associated with multiple projects</li>
+      <li>New "implementing Mechanisms by Project Report" to show IM's associated with each project</li>
+      <li>DO-Indicator-IM Report - Fixed issue with users being unable to access report</li>
+      <li>IM Financial Snapshot: Fixed issue causing page to immediately close when trying to print page from browser</li>
+      <li>Results Framework - Fixed serious bug that caused selected indicators to be lost when saving with an active filter</li>
+      <li>Logical Framework - Fixed serious bug that caused selected indicators to be lost when saving with an active filter</li>
+      <li>Geocoding – Fixed issue with geocoder not auto-populating the Admin 1 boundaries</li>
+      <li>Fact Sheets - Cleaned up formatting of Fact Sheet text to display in plain text on public site</li>
+      <li>Indicator ID's: Fixed sequencing of custom Indicator ID's to ensure a leading zero for single digits ID’s to ensure proper sorting</li>
+      <li>Removed access to ArcGIS and Google Earth export functions previous available from Standard Reports page</li>
+      
+    </ul>  
+    <ul>
+      <b>Version 2.2 </b>
+      
+       <li> Project - Fixed error that occurred when adding Program Element to Project</li> 
+       <li> IM Detail - Show AOR name in addition to COR name in IM sidebar</li> 
+       <li> IM Detail - Change navigation menu label from "Reassign GLAAS Award" to "Reassign Award"</li> 
+       <li> Manage IM Indicators - Fixed error that caused selected IM indicators to be lost when clicking "Save" with an active filter</li> 
+       <li> IM Indicator Results - Fixed error when adding multiple IM indicator results and saving</li> 
+       <li> Financial – Fixed incorrect accruals calculation</li> 
+       <li> Financial – Added support for G2G awards</li> 
+       <li> Financial Summary - Removed all fields related to expenditures</li> 
+       <li> Financial Summary - Changed line chart name from "Burn Rate" to "Expenditure Rate"</li> 
+       <li> Partner Portal - Temporarily removed help tab until help content can be updated</li> 
+       <li> Public Map - Changed label from "Project Locations" to "Projects"</li> 
+       <li> AT+ Help - Posted updated videos</li> 
+       <li> Maps - Fixed error with flags and country names for regional missions</li> 
+        <li> Maps - Fixed error with flags and country names for regional missions</li> 
+
+   </ul>
+  <ul>
+      <b>Version 2.1 </b>
+      <li> Design change to capture Indicator Data Collection Frequency from Implementing Mechanism to each Indicator Level. </li> 
+  </ul>
+  
+  <ul style="list-style-type:none;">
+  <b>Version 2.0 </b>
+
+  <p><b>Terminology Changes: </b></p>
+     <li> Two major terminology changes will occur in the system that will affect all users. The reason for these changes is that AIDtracker is standardizing terminology in the system to conform to USAID standard definitions.</li>
+    
+   <p><b>1.</b>  Project to Fact Sheet. The tab and related components in AIDtracker formerly known as “Project” or “Projects” will now be known as “Fact Sheets”. No other data or function of the tab has changed, only the name. AIDtracker’s former definition of “Project” did not match the true USAID definition of “Project”, however, users will see this term reappear with a different definition in future versions of AIDtracker.</p>
+   <p><b>2.</b>  Activity to Task. The Implementing Mechanism subcomponent formerly known as “Activity” will now be changed to “Task”. No functionality or data in this area has changed.</p>
+     
+  <b>Layout Changes </b> 
+    <li> AIDtracker will now feature new and improved user dashboards on both the Fact Sheet and Implementing Mechanism records. Although the look and feel of the pages has changed, the functionality and data remain the same. Users will now use the “edit” pencil icon in the upper right corner of the dashboard to edit Fact Sheet and IM details. Additionally, instead of using buttons to add data to a record, i.e. the “New Sub-Awardee” button, users will now click on the “+” sign in the upper right corner of the sub-awardee box to add data.</li> 
+    <li></li>
+    <li></li>
+    <li>Thank you for your continued support of AIDtracker.  We believe these modifications will provide better functionality that's consistent with the overall needs of the Missions. If you have any questions about the changes, please feel free to contact our team at  <a href="mailto:aidtracker-help@usaid.gov">aidtracker-help@usaid.gov</a></li>
+    <!--<li><font color="red">*</font> Mission users have the capability to view Implementing Partner information and manage contacts.  Admin users will have the ability to grant partner users access to the Implementing Partner Portal.</li>  -->
+    
+  </ul>
+
+  
+</ul>
+       
+        
+        
+</div>
+
+
+
+</body>
+</apex:page>

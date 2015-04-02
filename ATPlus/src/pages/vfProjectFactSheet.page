@@ -1,0 +1,244 @@
+<apex:page standardController="Project__c" extensions="ClsProjectFactSheetControllerExt,ClsDeleteControllerExt" standardStylesheets="false" tabStyle="Project_Design__tab" sidebar="false">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      
+        
+         <title>AIDtracker | Project Details</title>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+         <apex:includeScript value="{!$Resource.JQuery172_js}" />
+        <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'project-style.css')}"/>
+    
+        <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/modernizr.custom.79639.js')}"/>        
+        <noscript><apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'css/noJS.css')}"/></noscript>        
+        <apex:stylesheet value="{!URLFOR($Resource.AidTrackerMapFrontEnd, 'resources/USAIDTracker.css')}"/>  
+    
+       
+        
+        <script type="text/javascript">
+            
+            function DropDown(el) {
+                this.dd = el;
+                this.placeholder = this.dd.children('span');
+                this.opts = this.dd.find('ul.dropdown > li');
+                this.val = '';
+                this.index = -1;
+                this.initEvents();
+            }
+            DropDown.prototype = {
+                initEvents : function() {
+                    var obj = this;
+
+                    obj.dd.on('click', function(event){                        
+                        $(this).toggleClass('active');
+                        //alert('Alet From the onclick');
+                        return false;
+                    });
+
+                    obj.opts.on('click',function(){
+                        var opt = $(this);                        
+                        obj.val = opt.text();
+                        obj.index = opt.index();
+                       // alert('Display Option::' +opt.index());
+                        obj.placeholder.text(obj.val);                   
+                               });
+                },
+                getValue : function() {
+                    return this.val;
+                },
+                getIndex : function() {
+                    return this.index;
+                }
+            }
+
+            $(function() {
+
+                var dd = new DropDown( $('#dd') );
+
+                $(document).click(function() {
+                    // all dropdowns
+                   // alert('Alet From the onclick1');
+                    $('.wrapper-dropdown').removeClass('active');
+                });
+
+            });
+
+    </script>
+    </head>
+    <body>
+        <apex:form >
+         <apex:outputPanel rendered="{!HasErrorMessages}">
+         <apex:pagemessages />        
+        </apex:outputPanel>
+        <div id="container">
+            <!------ HEADER SECTION (ABOVE MAP) ------>
+            <header>
+                <div id="left">
+                    <h2><apex:outputText value="{!Project__c.Public_Name__c}"></apex:outputText></h2>
+                    <p><apex:outputText value="{!Project__c.Project_Code__c}"></apex:outputText></p>
+                </div>        
+                <div id="right">
+                    <div class="dropmenu">
+                        <div id="dd" class="wrapper-dropdown" tabindex="1">
+                            <span>NAVIGATION</span>
+                            <ul class="dropdown">
+                               <!-- <li class="dropList"><apex:outputLink value="/apex/vfProjectIRSIRLink?Lid={!Project__c.Id}" onclick="location.href=this.href; return false;"><i class="rflink"></i>RF Link</apex:outputLink></li> Radha asked us to disabled this button and add to LFPurposeDetailPage 08/12/2013 -->
+                                
+                                <li class="dropList"><apex:outputLink value="/apex/vfLogFrameOverview?id={!Project__c.Id}" onclick="location.href=this.href; return false;"><i class="logframe"></i>LogFrame</apex:outputLink></li>                        
+                                <li class="dropList" rendered="{!$ObjectType['Project__c'].updateable}"><apex:outputLink value="/apex/vfProjectFrameworkLink?Lid={!Project__c.Id}" rendered="{!$ObjectType['Project__c'].updateable}" onclick="location.href=this.href; return false;"><i class="p-element"></i>Program Element</apex:outputLink></li>    
+                            </ul>                                        
+                        </div>                                      
+                    </div> <!-- end dropmenu -->
+                   
+               <apex:outputLink rendered="{!$ObjectType['Project__c'].updateable}" title="Project Edit" value="{!URLFOR($Action.Project__c.Edit, Project__c.id,[retURL='/apex/vfProjectFactSheet?id='+Project__c.id])}" ><div class="topmenu edit"></div></apex:outputLink>  
+          <!--     <apex:outputLink rendered="{!$ObjectType['Project__c'].deletable}" title="Project Delete" value="{!URLFOR($Action.Project__c.Delete, Project__c.id,[retURL='/apex/vfProjectTab'])}" onclick="return window.confirm('Are you sure?');" ><div class="topmenu delete"></div></apex:outputLink>                   
+               -->
+               <apex:commandLink rendered="{!$ObjectType['Project__c'].deletable}" action="{!customDelete}" title="Project Delete"  onclick="return window.confirm('Are you sure?');"><div class="topmenu delete"></div></apex:commandLink> 
+                                                    
+               
+                </div>
+            </header>
+    
+            <div class="clear"></div>    
+            <!------ RF/LF LINK ------>
+   
+            <div id="linkages">
+                 <div class="dash">
+                    <div class="linkTitle">
+                        <h5>Results Framework Link</h5>
+                    </div>       
+                    <c:ResultsFrameworkLinkage inputRecIdn="{project__c.Id}"  />               
+                 </div>                
+                 <div class="dash">   
+                    <div class="linkTitle">
+                        <h5>LogFrame Link</h5>
+                    </div>    
+                    <c:LogFrameLinkage ></c:LogFrameLinkage>          
+                </div>                
+            </div><!-- end linkages -->
+   
+            <div class="clear"></div>
+    
+    
+            <!------ SIDEBAR ------>
+            <div id="sidebar">
+                <ul>
+                    <li class="sidebarItem" >                  
+                        <span>ORGANIZATION</span>
+                        <p><apex:outputText value="{!Project__c.ouName__c}"></apex:outputText></p>
+                    </li>          
+                    <li class="sidebarItem" >                  
+                        <span>PROJECT MANAGER</span>
+                        <p>
+                            <apex:outputText value="{!Project__c.Project_Manager__c}" rendered="{!IF(Project__c.Project_Manager__c <> null,true,false)}"></apex:outputText>
+                            <apex:outputText value="N/A" rendered="{!IF(Project__c.Project_Manager__c == null,true,false)}"></apex:outputText>
+                        </p>
+                    </li>
+                    <li class="sidebarItem">   
+                        <span>TIMELINE</span>
+                        <p>
+                            <apex:outputText value="{0,date,MM/dd/yyyy}"><apex:param value="{!Project__c.Start_Date__c}" /></apex:outputText>&nbsp; to &nbsp;  
+                            <apex:outputText value="{0,date,MM/dd/yyyy}"><apex:param value="{!Project__c.End_Date__c}" /></apex:outputText>
+                        </p> 
+                    </li>
+                    <li class="sidebarItem" >                  
+                        <span>PROJECT STATUS</span>
+                        <p>
+                            <apex:outputText value="{!Project__c.Status__c}" rendered="{!IF(Project__c.Status__c <> null,true,false)}"></apex:outputText>
+                            <apex:outputText value="N/A" rendered="{!IF(Project__c.Status__c == null,true,false)}"></apex:outputText>
+                        </p>
+                    </li>
+                    <li class="sidebarItem" >
+                        <h4>PROGRAM Elements</h4><br></br>                
+                        <apex:outputpanel >       
+                            <script type="text/javascript">        
+                              var programelement= [];
+                              <apex:repeat value="{!Project__c.Framework_Linkages__r}" var="c">
+                                  programelement.push({
+                                                  Name : "{!c.Name}",
+                                                  FactName:"{!c.Facts_Name__c}"})
+                              </apex:repeat>      
+                              function dynamicSort(property) {
+                                    var sortOrder = 1;
+                                    if(property[0] === "-") {
+                                        sortOrder = -1;
+                                        property = property.substr(1, property.length - 1);
+                                    }
+                                    return function (a,b) {
+                                        var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+                                        return result * sortOrder;
+                                    }
+                                }
+              
+                                 programelement.sort(dynamicSort("Name"));
+                                 for (var i in programelement) {    
+                                   document.write("<br>");
+                                   document.write("<p>");
+                                   document.write("<span style='color: rgb(75, 75, 75);font-weight: bold;  font-size: 12px; line-height: 12px;margin-top: 0px;' title='"+programelement[i].FactName+"'>" + programelement[i].Name + "</span>");
+                                   document.write("</p>");
+                                 }
+              
+                            </script>        
+                        </apex:outputpanel>            
+                    </li> 
+                </ul>        
+            </div><!-- end sidebar -->    
+    
+            <!------ CONTENT AREA ------>
+            <div id="content">    
+                <!------ TABLE HTML ------>   
+                
+      <c:RelatedListComponent bTitle="IMPLEMENTING MECHANISMS" pId="{!Project__c.Id}" parentObj="{!Project__c}" rowValue=""   parentWhereColName="Project_Code__c" relatedListName="{!Project__c.ImpMechs_Projects__r}"   childName="Public_IM_Link__c" fSetName="ProjectIMLinkFieldSet"  newActionUrl="{!URLFOR('/apex/vfProjectLinkNew',null,[CF00Nd0000003319n=Project__c.Name,CF00Nd0000003319n_lkid=Project__c.id,pType='LF',saveURL='/apex/vfProjectFactSheet?id='+Project__c.id,scontrolCaching=1,retURL='/apex/vfProjectFactSheet?id='+Project__c.id,sfdc.override=1])}" editActionUrl="apex/vfIMBasicDetailFactSheet?id=" parentUrl="apex/vfProjectFactSheet?id="/>  
+               
+        
+                <!------ BODY CONTENT ------>
+     
+                <h4>Project Description</h4>
+                <p>
+                        <apex:outputText escape="false" value="{!projectDesc}" rendered="{!IF(projectDesc <> '', true, false)}" ></apex:outputText>
+                    <!--  <apex:outputField value="{!Project__c.Project_Description__c}"  rendered="{!IF(projectDesc <> '', true, false)}"/>  
+                 
+                 <span style="color: rgb(68, 68, 68);font-size: 12px;font-family: Arial,Helvetica,sans-serif;">
+                   <apex:outputField value="{!Project__c.Project_Description__c}"  rendered="{!IF(projectDesc <> '', true, false)}"/>                 
+                   </span> -->
+                    <apex:outputText escape="true" value="N/A" rendered="{!IF(projectDesc == '', true, false)}"></apex:outputText>
+                </p>
+                
+            <div class="clear"></div>
+        
+            <c:HistoryRelatedListComponent recLimit="50" ObjName="{!Project__c}" title="Project" /> 
+        
+            <c:RelatedListComponent bTitle="NOTES AND ATTACHMENTS" pId="{!Project__c.Id}" parentObj="{!Project__c}" parentName="Project__c" rowValue="5"   parentWhereColName="Project__c" relatedListName="{!Project__c.NotesAndAttachments}"   childName="" fSetName=""  newActionUrl="" editActionUrl="/" parentUrl="apex/vfProjectFactSheet?id="/>  
+          
+                  
+                   
+                    <apex:repeat value="{!Project__c.NotesAndAttachments}" var="noteAtt" rendered="false"> 
+                    <div class="clear"></div>         
+                    <div class="row">
+                        <div class="data" style="width:5%">  
+                           <apex:outputLink title="Edit" value="{!URLFOR('/'+noteAtt.id+'/e',null ,[retURL='/apex/vfProjectFactSheet?id='+Project__c.id])}"><div class="tedit"></div></apex:outputLink>                    
+                           <apex:outputLink title="Delete" value="{!URLFOR($Action.Activity__c.Delete, noteAtt.id,[retURL='/apex/vfProjectFactSheet?id='+Project__c.id])}" onclick="return window.confirm('Are you sure?');"><div class="tdelete"></div> </apex:outputLink>              
+                           
+                        </div>
+                        <div class="data" style="width:7%">
+                            <p>
+                                <apex:outputText value="Note" rendered="{!noteAtt.IsNote}"></apex:outputText>
+                                <apex:outputText value="Attachment" rendered="{!NOT(noteAtt.IsNote)}"></apex:outputText>                        
+                            </p>
+                        </div>
+                        <div class="data" style="width:29%"><p><apex:outputLink value="/{!noteAtt.Id}"><apex:outputField value="{!noteAtt.Title}"></apex:outputField></apex:outputLink></p></div>
+                        <div class="data" style="width:9%"><p><apex:outputText value="{0,date,MM/dd/yyyy}"><apex:param value="{!noteAtt.LastModifiedDate}" /></apex:outputText></p></div>
+                        <div class="data" style="width:15%"><p><apex:outputField value="{!noteAtt.LastModifiedById}"></apex:outputField></p></div>
+                        <div class="data" style="width:15%"><p><apex:outputField value="{!noteAtt.createdbyid}"></apex:outputField></p></div>
+                        
+                    </div><!-- end row -->
+                    </apex:repeat>   
+                  
+        </div><!-- end content -->
+    </div><!-- end container  -->
+  </apex:form>   
+</body>
+</html>
+
+  
+</apex:page>

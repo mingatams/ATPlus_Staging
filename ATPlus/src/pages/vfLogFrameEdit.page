@@ -1,0 +1,33 @@
+<apex:page standardController="Project__c" sidebar="false">
+<apex:sectionHeader title="{!$ObjectType.Project__c.label} Edit" subtitle="New LogFrame"/>
+    <apex:form >
+    <apex:pageBlock title="{!$ObjectType.Project__c.label} Edit" mode="edit">
+        <apex:pageBlockButtons >
+            <apex:commandButton action="{!save}" value="Save"/>
+            <apex:commandButton action="{!cancel}" value="Cancel"/>
+        </apex:pageBlockButtons>
+        <apex:pageBlockSection showHeader="true" title="Basic Information" columns="2">
+         <apex:facet name="header">        
+                <span class="pbSubExtra"><span class="requiredLegend">
+                <span class="requiredExampleOuter">
+                <span class="requiredExample">&nbsp;</span></span>
+                <span class="requiredText"> = Required Information</span>
+                </span></span>
+                <h3>Basic Information</h3>
+         </apex:facet>           
+            <apex:outputField value="{!Project__c.ouCode__c}" />
+            <apex:outputField value="{!Project__c.ouName__c}" />
+            <apex:outputField value="{!Project__c.Project_Code__c}" />
+            <apex:outputField value="{!Project__c.Public_Name__c}" />            
+            
+        </apex:pageBlockSection> 
+        
+        <apex:pageBlockSection showHeader="true" title="Detail Information" columns="2">       
+            <apex:inputTextarea cols="150" rows="8" required="true"  value="{!Project__c.Goal__c}"/>
+            <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+         <!--   <apex:inputTextarea cols="150" rows="8" required="true" value="{!Project__c.Purpose__c}"/> -->
+        </apex:pageBlockSection>         
+          
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

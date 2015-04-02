@@ -1,0 +1,419 @@
+<apex:page controller="ReportsController" sidebar="false" >
+	
+	<link rel="stylesheet" href="{!URLFOR($Resource.AAPlanStandardReportsV2, 'style.css')}" type="text/css" media="screen" />
+	<link rel="stylesheet" href="{!URLFOR($Resource.AAPlanStandardReportsV2, 'css/rounded.css')}" type="text/css" media="screen" />
+	<apex:styleSheet value="{!URLFOR($Resource.jquery, 'css/plain-theme/jquery-ui-1.10.4.custom.min.css')}" />
+	<apex:styleSheet value="{!URLFOR($Resource.multiselect, 'jquery.multiselect.css')}" />
+	<c:styles />
+	
+	<style>
+		#container a {
+			font-size:130%;
+			text-decoration:none;
+		}
+		
+		#container a.btn {
+			height: auto;
+		}
+		
+		#container table th {
+			text-align: center;
+		}
+		
+		.tile {
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			display: inline-block;
+			float: left;
+			margin-top: 25px;
+			margin-right: 25px;
+		}
+		
+		.tile:hover > .titlecontainer {
+			background-color: #343c44;
+		}
+		
+		.tile .redtriangle {
+			width: 0;
+			height: 0;
+			border-style: solid;
+			border-width: 0 45px 45px 0;
+			border-color: transparent #e41c40 transparent transparent;
+			display: inline-block;
+			position: absolute;
+			right: 0px;
+			top: 0px;
+		}
+		
+		.tile .titlecontainer {
+			background-color: #3d7ab3;
+			display: table;
+		}
+		
+		.tile .titlecontainer .titletext{
+			height: 50px;  /*accounts for padding*/
+			width: 202px;  /*accounts for padding*/
+			padding: 15px;
+			font-size: 17px;
+			font-weight: bold;
+			color: #ffffff;
+			text-align: left;
+			vertical-align: middle;
+			display: table-cell;
+		}
+		
+		.tile .seperator {
+			background-color: #e41c40;
+			width: 232px;
+			height: 3px;
+			margin-top: 3px;
+			margin-bottom: 3px;
+			display: inline-block;
+			float: left;
+		}
+		
+		.tile .bodycontainer {
+			height: 128px; /*accounts for border and padding*/
+			width: 200px; /*accounts for border and padding*/
+			background-color: #ffffff;
+			padding: 15px;
+			border-style: solid;
+			border-width: 1px;
+			border-color: #e2e2e1;
+			display: inline-block;
+			float: left;
+			clear: left;
+		}
+		
+		.tile .bodycontainer .bodytext {
+			font-size: 14px;
+			font-weight: normal;
+			color: #343c44;
+			text-align: left;
+			display: block;
+		}
+		
+	</style>
+	
+	<div id="container">
+		<apex:pageMessages id="messages" />
+		<div style="width:25%; float:left;">
+			<apex:form style="overflow:hidden;" >
+				<apex:pageBlock title="Search" >
+				    <apex:pageBlockSection collapsible="false" columns="1">
+						
+				        <apex:pageBlockSectionItem >
+				            <apex:outputLabel value="{!$ObjectType.OperatingUnit__c.label}" for="OperatingUnit"/>
+				            <apex:selectList id="OperatingUnit" value="{!SearchOperatingUnitId}" size="3" multiselect="true" styleClass="multiselect-operatingunit">
+				                <apex:selectOptions value="{!OperatingUnitOptions}" />
+				            </apex:selectList>
+				        </apex:pageBlockSectionItem>
+
+				        <apex:pageBlockSectionItem >
+				            <apex:outputLabel value="{!$ObjectType.AAPlan__c.fields.FiscalYear__c.label}" for="fiscalYear"/>
+				            <apex:selectList id="fiscalYear" value="{!SearchFiscalYearId}" size="3" multiselect="true" styleClass="multiselect-fiscalyear">
+				                <apex:selectOptions value="{!FiscalYearOptions}"/>
+				            </apex:selectList>
+				        </apex:pageBlockSectionItem>
+
+				    </apex:pageBlockSection>
+			        <div>
+			            <apex:commandButton action="{!searchx}" value="Search" rerender="results, messages" />
+			            <apex:commandButton action="{!searchx}" value="Clear" onClick="multiselect.multiselectClearAll();" onComplete="rehack();" rerender="results, messages" />
+					</div>
+				</apex:pageBlock>
+			</apex:form>
+			
+			<apex:pageBlock Title="Disclaimer">
+                <apex:pageBlockSection columns="1">
+                	<apex:outputPanel styleClass="notice">
+                    	If data is exported from the system, it cannot be used for official reporting purposes.
+                   	</apex:outputPanel>
+            	</apex:pageBlockSection>
+           	</apex:pageBlock>
+            
+            <apex:pageBlock Title="Phoenix ETL" rendered="{!reportCheck && lastRun != null}">
+                <apex:pageBlockSection columns="1">
+                	<apex:outputPanel styleClass="notice">
+                    	Phoenix data last updated: <br/>
+                    	<apex:outputText value="{!lastRun}"/>
+                   	</apex:outputPanel>
+            	</apex:pageBlockSection>
+           	</apex:pageBlock>
+            
+            <apex:pageBlock Title="Phoenix ETL" rendered="{!reportCheck && lastRun == null}">
+                <apex:pageBlockSection columns="1">
+                	<apex:outputPanel styleClass="notice">
+                    	Phoenix data last updated: <br/>
+                        <apex:outputText value="N/A"/>
+                   	</apex:outputPanel>
+            	</apex:pageBlockSection>
+           	</apex:pageBlock>
+            
+		</div>
+		<div style="width:74%; float:right;">
+			<apex:outputPanel id="results">
+				<apex:pageBlock rendered="{!resultCount > 0}" >
+					<div style="width:100%; text-align:center;">
+						<div style="margin:10px;">
+							<h1>Reports</h1>
+							<div>Found {!resultCount} Record{!IF(resultCount!=1,'s','')}</div>
+						</div>
+						<div>
+						
+							<a class="tile" href="{!fullAAPlanReportUrl}">
+								<span class="titlecontainer">
+									<span class="titletext">
+										Full A&amp;A Plan Report
+									</span>
+								</span>
+								<span class="seperator"></span>
+								<span class="bodycontainer">
+									<span class="bodytext">
+										This standard report contains every data element for the selected operating unit(s).
+									</span>
+								</span>
+							</a>
+							
+							<a class="tile" href="{!programPlanReportUrl}">
+								<span class="titlecontainer">
+									<span class="titletext">
+										Planned Activity Report
+									</span>
+								</span>
+								<span class="seperator"></span>
+								<span class="bodycontainer">
+									<span class="bodytext">
+										This standard report contains the most commonly referenced data elements in the program?s day-to-day management of their planned A&amp;A actions for the selected operating unit(s).
+									</span>
+								</span>
+							</a>
+							
+							<a class="tile" href="{!businessForecastReportUrl}">
+								<span class="titlecontainer">
+									<span class="titletext">
+										Business Forecast
+									</span>
+								</span>
+								<span class="seperator"></span>
+								<span class="bodycontainer">
+									<span class="bodytext">
+										This standard report contains data elements for publishing the public Agency A&amp;A Business Forecast updates. Only actions that indicate ?Yes? for the Business Forecast data element will be displayed.
+									</span>
+								</span>
+							</a>
+							
+							<a class="tile" href="{!aaAccountabilityUrl}">
+								<span class="titlecontainer">
+									<span class="titletext">
+										A&amp;A Accountability
+									</span>
+								</span>
+								<span class="seperator"></span>
+								<span class="bodycontainer">
+									<span class="bodytext">
+										This standard report contains information on large complex A&amp;A actions valued at $25M or greater that require senior management review and approval for the selected operating unit(s).
+									</span>
+								</span>
+							</a>
+							
+							<a class="tile" href="{!aaBureauReportUrl}">
+								<span class="titlecontainer">
+									<span class="titletext">
+										A&amp;A Bureau Report
+									</span>
+								</span>
+								<span class="seperator"></span>
+								<span class="bodycontainer">
+									<span class="bodytext">
+										This standard report contains common data elements for tracking A&amp;A actions at the Bureau or Independent Office (B/IO) level for the selected operating unit(s).  This report is used during AA level Agency A&amp;A Plan meetings.
+									</span>
+								</span>
+							</a>
+							<apex:outputPanel rendered="{!reportCheck}">
+                                <!-- Commented out to add new complex report URL -->
+                                <!--<a class="tile" href="{!aaBureauSummaryUrl}">-->
+                                <a class="tile" href="{!URLFOR($Page.AAPlanDoubleReport)}" >
+                                    <span class="titlecontainer">
+                                        <span class="titletext">
+                                            Complex Award Report
+                                        </span>
+                                    </span>
+                                    <span class="seperator"></span>
+                                    <span class="bodycontainer">
+                                        <span class="bodytext">
+                                            This standard report contains common data elements for tracking A&amp;A actions at 
+                                            the M/B/IO level for the selected operating unit(s) and includes financial 
+                                            information on the status of expiring and program funds from Phoenixviewer. 
+                                        </span>
+                                    </span>
+                                </a>
+							</apex:outputPanel>
+                            <apex:outputPanel rendered="{!reportCheck}">
+                                <a class="tile" href="{!aaBureauTotalsUrl}">
+                                    <span class="titlecontainer">
+                                        <span class="titletext">
+                                            A&amp;A Bureau Totals Report
+                                        </span>
+                                    </span>
+                                    <span class="seperator"></span>
+                                    <span class="bodycontainer">
+                                        <span class="bodytext">
+                                            This report contains all required A&amp;A actions for a B/IO but contains a 
+                                            smaller subset of the fields.  This report typically is presented along 
+                                            with the A&amp;A Bureau Report during high level agency meetings.
+                                        </span>
+                                    </span>
+                                </a>
+							</apex:outputPanel>
+						</div>
+					</div>
+				</apex:pageBlock>
+					<apex:pageBlock rendered="{!resultCount == 0}" >
+					<div style="width:100%; text-align:center;">
+						<div style="margin:10px;">
+							<h1>Reports</h1>
+							<div>Found {!resultCount} Record{!IF(resultCount!=1,'s','')}</div>
+						</div>
+						<div>
+							<a class="tile">
+								<span class="titlecontainer">
+									<span class="titletext">
+										Full A&amp;A Plan Report
+									</span>
+								</span>
+								<span class="seperator"></span>
+								<span class="bodycontainer">
+									<span class="bodytext">
+										This standard report contains every data element for the selected operating unit(s).
+									</span>
+								</span>
+							</a>
+							
+							<a class="tile">
+								<span class="titlecontainer">
+									<span class="titletext">
+										Planned Activity Report
+									</span>
+								</span>
+								<span class="seperator"></span>
+								<span class="bodycontainer">
+									<span class="bodytext">
+										This standard report contains the most commonly referenced data elements in the program?s day-to-day management of their planned A&amp;A actions for the selected operating unit(s).
+									</span>
+								</span>
+							</a>
+							
+							<a class="tile">
+								<span class="titlecontainer">
+									<span class="titletext">
+										Business Forecast
+									</span>
+								</span>
+								<span class="seperator"></span>
+								<span class="bodycontainer">
+									<span class="bodytext">
+										This standard report contains data elements for publishing the public Agency A&amp;A Business Forecast updates. Only actions that indicate ?Yes? for the Business Forecast data element will be displayed.
+									</span>
+								</span>
+							</a>
+							
+							<a class="tile">
+								<span class="titlecontainer">
+									<span class="titletext">
+										A&amp;A Accountability
+									</span>
+								</span>
+								<span class="seperator"></span>
+								<span class="bodycontainer">
+									<span class="bodytext">
+										This standard report contains information on large complex A&amp;A actions valued at $25M or greater that require senior management review and approval for the selected operating unit(s).
+									</span>
+								</span>
+							</a>
+							
+							<a class="tile">
+								<span class="titlecontainer">
+									<span class="titletext">
+										A&amp;A Bureau Report
+									</span>
+								</span>
+								<span class="seperator"></span>
+								<span class="bodycontainer">
+									<span class="bodytext">
+										This standard report contains common data elements for tracking A&amp;A actions at the Bureau or Independent Office (B/IO) level for the selected operating unit(s).  This report is used during AA level Agency A&amp;A Plan meetings.
+									</span>
+								</span>
+							</a>
+							<apex:outputPanel rendered="{!reportCheck}">
+                                <a class="tile">
+                                    <span class="titlecontainer">
+                                        <span class="titletext">
+                                            Complex Award Report
+                                        </span>
+                                    </span>
+                                    <span class="seperator"></span>
+                                    <span class="bodycontainer">
+                                        <span class="bodytext">
+                                            This standard report contains common data elements for tracking A&amp;A actions at 
+                                            the M/B/IO level for the selected operating unit(s) and includes financial 
+                                            information on the status of expiring and program funds from Phoenixviewer.
+                                        </span>
+                                    </span>
+                                </a>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!reportCheck}">
+                                <a class="tile">
+                                    <span class="titlecontainer">
+                                        <span class="titletext">
+                                            A&amp;A Bureau Totals Report
+                                        </span>
+                                    </span>
+                                    <span class="seperator"></span>
+                                    <span class="bodycontainer">
+                                        <span class="bodytext">
+                                            This report contains all required A&amp;A actions for a B/IO but contains a 
+                                            smaller subset of the fields.  This report typically is presented along 
+                                            with the A&amp;A Bureau Report during high level agency meetings.
+                                        </span>
+                                    </span>
+                                </a>
+                            </apex:outputPanel>
+						</div>
+					</div>
+				</apex:pageBlock>
+				
+			</apex:outputPanel>
+		</div>
+	</div>
+	
+	<script src="{!URLFOR($Resource.jquery, 'js/jquery-1.10.2.js')}"></script>
+	<script src="{!URLFOR($Resource.jquery, 'js/jquery-ui-1.10.4.custom.min.js')}"></script>
+	<c:MultiSelectJS />
+	
+	<script type='text/javascript'>
+    	var j$ = jQuery.noConflict();
+    	
+    	j$(function() {
+    		//drop all the newly minted dom elements from the controller into the page
+    		j$('.multiselect-operatingunit').append( '{!optGroupDOM}' );
+    		
+    		rehack();
+    	});
+    	
+    	//fire after clear to redo all my cool rejiggers
+    	function rehack(){
+    		//refresh the multiselect widget to pick up the dom changes
+    		j$('.multiselect-operatingunit').multiselect('refresh');
+    		//apex componenent adds all the M/B/IOs at the base level for the view state
+    		//we need to hide them all
+    		j$('.ui-multiselect-checkboxes').children('li').slice( 0, {!NumOpUnits} ).css('display','none');
+    		//fix the width on the button to show the list
+    		j$('.multiselect-operatingunit').next().css('width','');
+    		//align all the optgroup headers to the left
+    		j$('.ui-multiselect-optgroup-label').css('text-align','left');
+    		//bump all the options to the right
+    		j$('.ui-corner-all').css('margin-left','15px');
+    	}
+    </script>
+	
+</apex:page>

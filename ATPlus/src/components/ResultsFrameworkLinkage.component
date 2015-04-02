@@ -1,0 +1,148 @@
+<apex:component controller="ClsResultsFrameworkLinkage">
+ <apex:attribute name="inputRecIdn" description="Record Id to find ResultsFramework for." 
+                          type="String" required="true" assignTo="{!inputRecId}"/>
+    <!--    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta charset="utf-8" />
+        <title>AIDtracker | Results Framework</title> -->
+        <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'RF-Linkage-Style.css')}"/>
+       <!-- <apex:stylesheet value="https://fonts.googleapis.com/css?family=Lato:300,400,700" />
+        <apex:includeScript value="{!URLFOR($Resource.ResultsFramework, 'scripts/jquery.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.ResultsFramework, 'scripts/dropdown.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.ResultsFramework, 'scripts/modernizr.custom.79639.js')}"/>            
+        <noscript><apex:stylesheet value="{!URLFOR($Resource.ResultsFramework, 'css/noJS.css')}"/></noscript>    -->    
+        
+        <script>
+            $(document).ready(function() {
+               // $(".content").hide();                
+                
+                $(".row").click(function() {
+                    getResults($(this).attr('id'));
+                    if($(".row").hasClass('active')) {
+                        $(".row").removeClass('active');
+                        $(this).addClass('active');
+                    } else($(this).addClass('active'));
+                            
+                    });
+                    
+                 //   $(".parentR").click(function() {  
+                 //       var myPos = $(this).css("background-position");
+                 //       myPos = myPos.split(" ");           
+                 //       if (myPos[1] == "0%"){
+                 //           $(this).css('background-position', 'center bottom');
+                 //       } else {
+                 //           $(this).css('background-position', 'center top');
+                 //       }    
+                     //   alert('Message form r');          
+                     //   $(this).toggleClass('parentRToggle');
+                  //      $($(this).parents("div")[2]).children('.content').toggle();
+                        
+                        
+                  //  });
+                  //  $(".parentRToggle").click(function() { 
+                  //      alert('Message form t');         
+                  //      $(this).toggleClass('parentR');
+                  //      $($(this).parents("div")[2]).children('.content').toggle();
+                        
+                        
+                  //  });
+                    
+                    
+                    $(".active").click(function() {
+                        $(this).removeClass('active');
+                    });
+                
+                  //  $(".row").hover(function() {
+                  //      $(this).find('.toggles').stop(true, true).fadeIn();
+                 //   }, function(){
+                 //       $(this).find('.toggles').stop(true, true).fadeOut();
+                 //   });
+                    
+                 //   $(".goal-wrapper .content:first").show();
+                 //   $(".goal-wrapper .parentR:first").css('background-position', 'center bottom');
+                 //   $(".do-wrapper .content:first").show();
+                 //   $(".do-wrapper .parentR:first").css('background-position', 'center bottom');
+                 //   $(".ir-wrapper .content:first").show();
+                 //   $(".ir-wrapper .parentR:first").css('background-position', 'center bottom');
+            });
+        </script>
+      
+    <apex:outputPanel rendered="{!NOT(recMap[proj.Id].hasChildren)}">
+        <div id="linkageContainer">  
+            <div id="accordion-menus">
+                <apex:image url="{!URLFOR($Resource.FactSheets, 'images/norf.png')}" />
+            </div>
+        </div>   
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!recMap[proj.Id].hasChildren}">
+    <div id="linkageContainer">        
+        <div id="accordion-menus">
+            <apex:repeat value="{!projectGoalMap[proj.Id]}" var="gd" rendered="{!recMap[proj.Id].hasChildren}" >            
+            <div class="goal-wrapper" >    
+                <div class="row goal" id="{!gd.Id}"> 
+                    <div class="title"><p>GOAL</p></div>
+                    <div class="details"><p>{!gd.Goal_Statement__c}</p></div>                
+                 <!--   <div class="toggles blue">
+                        <apex:outputLink title="Create DO" value="/a0L/e?CF00Nd0000005cgbA={!gd.Name}&CF00Nd0000005cgbA_lkid={!gd.Id}&retURL={!$CurrentPage.URL}"><div class="new"></div></apex:outputLink>                        
+                        <apex:outputLink title="Edit Goal" value="/a0D/e?id={!gd.Id}&retURL={!$CurrentPage.URL}"><div class="edit"></div></apex:outputLink>
+                        <apex:outputLink title="View Goal" value="/apex/vfRFGoalDetail?id={!gd.Id}"><div class="mag"></div></apex:outputLink>
+                        <div class="parentR"></div>  
+                    </div> -->
+                </div><!-- end row goal -->
+                <div class="contentRF">              
+              <apex:repeat value="{!goalDoMap[gd.Id]}" var="dm1" rendered="{!recMap[gd.Id].hasChildren}" >
+              
+                <div class="do-wrapper">                
+                    <div class="row do" id="{!dm1.Id}">                        
+                        <div class="title"><p>{!dm1.DO_Code__c}</p></div>
+                        <div class="details"><p>{!dm1.DO_Title__c}</p></div>
+                    <!--    <div class="toggles teal">
+                            <apex:outputLink title="Create IR" value="/a0M/e?CF00Nd0000005cgbV={!dm1.Name}&CF00Nd0000005cgbV_lkid={!dm1.Id}&retURL={!$CurrentPage.URL}"><div class="new"></div></apex:outputLink>                        
+                            <apex:outputLink title="Edit DO" value="/a0L/e?id={!dm1.Id}&retURL={!$CurrentPage.URL}"><div class="edit"></div></apex:outputLink>
+                            <apex:outputLink title="View DO" value="/apex/vfRFDODetail?id={!dm1.Id}"><div class="mag"></div></apex:outputLink>
+                            <div class="parentR"></div> 
+                        </div> -->
+                    </div> <!--end row do -->
+                    <div class="contentRF">                                          
+                        <apex:repeat value="{!doIrMap[dm1.Id]}" var="dm2" rendered="{!recMap[dm1.Id].hasChildren}">  
+                        
+                        <div class="ir-wrapper">                            
+                            <div class="row ir" id="{!dm2.Id}">                                
+                                <div class="title"><p>{!dm2.IR_Code__c}</p></div>
+                                <div class="details"><p>{!dm2.IR_Title__c}</p></div>
+                           <!--     <div class="toggles green">
+                                    <apex:outputLink title="Create Sub-IR" value="/a0P/e?CF00Nd0000005cgcL={!dm2.Name}&CF00Nd0000005cgcL_lkid={!dm2.Id}&retURL={!$CurrentPage.URL}"><div class="new"></div></apex:outputLink>
+                                    <apex:outputLink title="Edit IR" value="/a0M/e?id={!dm2.Id}&retURL={!$CurrentPage.URL}"><div class="edit"></div></apex:outputLink>
+                                    <apex:outputLink title="View IR" value="/apex/vfRFDOIRDetail?id={!dm2.Id}"><div class="mag"></div></apex:outputLink>
+                                    <div class="parentR"></div>
+                                </div> -->
+                            </div> <!--end row ir -->
+                            <div class="contentRF">                              
+                                <apex:repeat value="{!irSirMap[dm2.Id]}" var="dm3" rendered="{!recMap[dm2.Id].hasChildren}"> 
+                                
+                                <div class="sir-wrapper">                            
+                                    <div class="row sir" id="{!dm3.Id}">                                        
+                                        <div class="title"><p>{!dm3.SIR_Code__c}</p></div>
+                                        <div class="details"><p>{!dm3.SIR_Title__c}</p></div>
+                                 <!--       <div class="toggles yellow">
+                                            <apex:outputLink title="Edit Sub-IR" value="/a0P/e?id={!dm3.Id}&retURL={!$CurrentPage.URL}"><div class="edit"></div></apex:outputLink>
+                                            <apex:outputLink title="View Sub-IR" value="/apex/vfRFSubIRDetail?id={!dm3.Id}"><div class="mag"></div></apex:outputLink>
+                                        </div>   -->
+                                    </div> <!--end row sir -->                          
+                                </div><!--end sir-wrapper-->
+                                </apex:repeat>                                                         
+                            </div><!--end IR Content -->                                
+                        </div><!-- end ir-wrapper -->
+                        </apex:repeat>                          
+                    </div> <!-- end do content -->
+                </div> <!-- end do wrapper -->                
+                 </apex:repeat>
+              </div> <!-- end goal content -->                   
+            </div><!-- end goal-wrapper-->
+            </apex:repeat>          
+        </div> <!-- end accordion menus -->         
+        
+    </div><!-- end container -->     
+   </apex:outputPanel>
+    
+    
+</apex:component>

@@ -1,0 +1,72 @@
+<apex:page standardController="Award__c" tabStyle="Project_Implementation__tab" extensions="ClsTabController" id="IMAwardPage" action="{!doAction}" sidebar="false">
+ <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+        
+     <apex:sectionHeader title="{!$ObjectType.Award__c.label}" subtitle="{!Award__c.name}"/>
+    
+   <apex:tabPanel switchType="client"  id="IMAwardPanel"  value="{!selectedTab}" onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+      <apex:tab label="Overview" name="IMAwardDetails"  id="tabIMAwarddetails" style="margin-left: -1px;" styleClass="activeTabBackground">
+     
+      <apex:pageBlock mode="maindetail">      
+         <apex:pageBlockButtons >
+                <apex:form >
+                        <apex:commandButton action="{!edit}" value="Edit"/>
+                        <apex:commandButton action="{!delete}" value="Delete"/>                        
+                </apex:form>
+                </apex:pageBlockButtons>
+               
+                <apex:pageBlockSection showHeader="true" title="Basic Information" columns="2">
+                        <apex:outputField value="{!Award__c.Name}"/>
+                        <apex:pageBlockSectionItem >
+                                <apex:outputLabel value="Award Owner"/>
+                                <apex:outputPanel >
+                                        <apex:outputField value="{!Award__c.OwnerId}"/>&nbsp;
+                                        <apex:outputLink value="{!URLFOR($Action.Award__c.ChangeOwner,Award__c.id)}">[Change]</apex:outputLink>
+                                </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                        <apex:outputField value="{!Award__c.OrgUnit_Code__c}"/>
+                        <apex:outputField value="{!Award__c.OrgUnit_Name__c}"/>
+                        <apex:outputField value="{!Award__c.PROJECTTITLE__c}"/>
+                        <apex:outputField value="{!Award__c.Mission_Name__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="System Information" columns="2">
+                        <apex:outputField value="{!Award__c.CreatedById}"/>
+                        <apex:outputField value="{!Award__c.LastModifiedById}"/>
+                </apex:pageBlockSection>
+                                    
+         </apex:pageBlock>
+         
+      </apex:tab>
+        
+         
+         <apex:tab label="Implementing Mechanism (Award Id)" name="IMAward" 
+                id="tabIMAward" styleClass="activeTabBackground">
+         <apex:relatedList title="" pageSize="20" list="Implementing_Mechanism1__r"  />         
+       
+      </apex:tab>
+        
+   </apex:tabPanel>
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['IMAwardPage:IMAwardPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+</script>
+</apex:page>

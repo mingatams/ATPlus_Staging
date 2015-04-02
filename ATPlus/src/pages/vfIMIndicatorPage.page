@@ -1,0 +1,8 @@
+<apex:page standardController="Implementing_Mechanism__c" extensions="clsIMEditController,ClsTabController" tabStyle="Project_Implementation__tab" sidebar="false">
+<apex:sectionHeader title="Manage IM Indicators " subtitle="{!Implementing_Mechanism__c.name}"/> 
+<div style="height:5px; background:#1797C0;"></div> <br></br>
+<apex:outputText style="font-size:12px;font-weight:bold;" value="{!navigationLink}" escape="false"> </apex:outputText>
+ <apex:pageBlock mode="maindetail">
+   <c:Manage_IndicatorsIM />
+ </apex:pageBlock>
+</apex:page>

@@ -1,0 +1,129 @@
+<apex:page standardController="CDCSLINK__c" extensions="ClsSIRCrossLink" id="mypage"  sidebar="false"> 
+    <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head> 
+  
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxcommon.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgridcell.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/dhtmlxtreegrid.js')}" /> 
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/excells/dhtmlxgrid_excell_link.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_lines.js')}" /> 
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid_skins.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/skins/dhtmlxgrid_dhx_skyblue.css')}"/>
+
+<style>
+   .activeTab {background-color: #236FBD; color:white; background-image:none; height:25px;font-size:15px;  }
+   .inactiveTab {background-color: lightgrey; color:black; background-image:none; height:25px;font-size:15px;  }  
+</style>
+
+<script type="text/javascript">
+   var mygrids;
+   var selectedStr = new Array();
+   
+   window.onload = function dispProvienceGrid()
+   {
+       var xmlStrLocal = '{!xmlStr}';
+       document.getElementById("gridboxS").innerHTML = "";
+       mygrids = new dhtmlXGridObject("gridboxS","100%", "100%");     
+       mygrids.selMultiRows = true;
+       mygrids.enableMultiline(true);      
+       mygrids.setImagePath("{!URLFOR($Resource.dhtmlxGrid, '/dhtmlxGrid/codebase/imgs/')}"); 
+       mygrids.setHeader("IR Code,IR Title,Select",null,["","","text-align:center;vertical-align:middle"]);
+       mygrids.attachHeader("#text_filter,#text_filter,#rspan");
+       mygrids.setInitWidths("145,445,143");
+       mygrids.setColAlign("left,left,center");
+       mygrids.setColTypes("tree,rotxt,ch");
+       mygrids.setColSorting("str,str,str");
+       mygrids.enableAutoHeight(false);
+       mygrids.enableResizing("false,false,false");
+       mygrids.attachEvent("onCheck",selectIr);
+       mygrids.attachEvent("onXLE",PreSelectedIrs);
+       mygrids.setSkin("dhx_skyblue");   
+       mygrids.init();
+       mygrids.loadXMLString(xmlStrLocal);
+        
+    }
+    
+     function PreSelectedIrs(g, count ){
+       // alert("I am doing the Count Here::"+count);
+        var chked = g.getCheckedRows(2).split(",");
+        for(var i=0; i<chked.length; i++){
+            selectedStr.push(chked[i]);    
+        }
+        
+        //alert("I am doing the Checked Row Ids::"+chked );
+    } 
+      
+    function selectIr(rId, cId, state){
+       if(state){
+                selectedStr.push(rId);
+                }
+                else {
+                    for(var i in selectedStr){                  
+                        if( selectedStr[i] == rId ) {
+                            selectedStr.splice(i,1);
+                            break;
+                        }
+                    }
+                }
+             //alert('Selected Row Ids::' +selectedStr);
+                }
+   function call02(hiddenId)
+   {
+       var selectedIrs = selectedStr.toString();  
+       document.getElementById(hiddenId).value = selectedIrs;
+       //alert('Selected Row Ids::' +selectedIrs);
+   }   
+
+   function checkAll(cb)
+   {
+      var inputElem = document.getElementsByTagName("input");
+      for(var i=0; i<inputElem.length; i++)
+      {
+         if(inputElem[i].id.indexOf("checkedone")!=-1)
+         {
+          inputElem[i].checked = cb.checked;
+         }
+      }
+   }
+</script>
+ 
+</head>
+<body>
+
+<apex:form id="theform">
+ 
+ <div class="bPageTitle">
+     <div class="ptBody">
+         <div class="content">
+             <img src="/s.gif" alt="Location" class="pageTitleIcon" title="Location"/>             
+             <h1 class="pageType">Cross Linkage<span class="titleSeparatingColon">:</span></h1>
+             <h2 class="pageDescription">
+                 <apex:outputText value="Manage Cross Linkage for : {!subIntRes.Name}" />
+             </h2>
+         </div>
+     </div> 
+ </div>    
+ 
+ <apex:pageBlock >
+     <div id="gridbixsParent" style="height:450px;margin:15px auto auto auto;">
+     <div id="gridboxS" style="width:750px;height:400px;margin: auto;background-color:#FCFBFC;"></div>
+     <div id="cbBouutons"  style="width:750px;height:50px;margin: 15px auto 0px auto; text-align: center; " >
+     
+     <apex:inputHidden id="selectedIrs" value="{!selectedIrs}"/> 
+     <apex:commandButton style="align:center" value="  Save  " action="{!insertSirs}"  onclick="call02('{!$Component.selectedIrs}')" />
+     <apex:commandButton style="align:center" value=" Cancel " action="{!Cancel}" rendered="true" />
+     <!-- <apex:commandButton style="align:center" value="CDCS Tree View" action="{!displayTree}"/> -->
+    
+     </div>
+     </div>
+ </apex:PageBlock>
+
+</apex:form>  
+</body>
+  
+</html>
+</apex:page>

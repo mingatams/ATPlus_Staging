@@ -1,0 +1,68 @@
+<apex:page id="relatedListPage" controller="ClsRelatedObjectListController" showHeader="false" sidebar="false" >
+<head>       
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Related List Details</title>
+ 
+   <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'project-style.css')}"/>
+   <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'IM-style.css')}"/>  
+   <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/modernizr.custom.79639.js')}" />  
+   <noscript><link rel="stylesheet" type="text/css" href="css/noJS.css" /></noscript> 
+   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+   <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/modernizr.custom.79639.js')}"/>  
+
+   <noscript><apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'css/noJS.css')}"/></noscript>        
+      <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/checkboxes.js')}" />      
+<apex:includeScript value="{!URLFOR($Resource.dhtmlPopup, 'codebase/dhtmlxpopup.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlPopup, 'codebase/dhtmlxcommon.js')}" />
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlPopup, 'codebase/skins/dhtmlxpopup_dhx_skyblue.css')}"/>
+
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxForm, 'codebase/skins/dhtmlxform_dhx_skyblue.css')}"/> 
+
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxForm, 'codebase/dhtmlxform.js')}" />  
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxForm, 'codebase/dhtmlxcommon.js')}" />  
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxForm, 'codebase/ext/dhtmlxform_item_combo.js')}" />  
+
+<apex:includeScript value="{!URLFOR($Resource.dhtmlCombo, 'codebase/dhtmlxcombo.js')}" />  
+<apex:includeScript value="{!URLFOR($Resource.dhtmlCombo, 'codebase/dhtmlxcommon.js')}" />  
+<apex:includeScript value="{!URLFOR($Resource.dhtmlCombo, 'codebase/ext/dhtmlxcombo_extra.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxForm, 'codebase/ext/dhtmlxform_item_editor.js')}" />
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlCombo, 'codebase/dhtmlxcombo.css')}"/> 
+  </head>
+  
+  <script>
+$(document).ready(function(){
+  $("a").click(function(){    
+   //alert( $.browser.version );
+  //alert($(this).attr('href'));
+  if($(this).attr('href') != "#"){
+  //alert('Hai world');
+  //alert(top.window.close());
+    window.opener.location.href=$(this).attr('href');
+   
+   window.top.close();
+
+ }
+  });
+});
+
+
+</script>
+
+  <header>
+   <div id="left">       
+           <p>Relatedlist</p>
+            <h2>{!parentObject['name']}</h2>            
+        </div>
+        </header>
+       
+<apex:form id="theform" >
+ 
+  <c:RelatedListComponent id="testcomp" bTitle="{!blockHeader}" rowValue="{!rowNumbers}" parentObj="{!parentObject}" relatedListName="{!parentObjectArray}"   childName="{!childObjectName}" fSetName="{!objFieldSetName}"  newActionUrl="{!newPageURL}" editActionUrl="{!editPageURL}" parentUrl="{!parentPageURL}"  />  
+
+<div align="center">
+ <apex:commandButton action="{!null}" onclick="window.top.close();" value="Cancel"></apex:commandButton> 
+</div>
+
+ </apex:form>   
+ 
+</apex:page>

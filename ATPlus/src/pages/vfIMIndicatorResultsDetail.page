@@ -1,0 +1,377 @@
+<apex:page standardController="Reporting_Period__c" sidebar="false" tabStyle="Project_Implementation__tab" extensions="ClsManageIndicatorTargets,ClsReportingPeriodExtension,ClsTabController,ClsUserProfileFinder" id="IMReportingPeriodPage" action="{!doAction}" >
+ 
+ <!-- <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head> -->  
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxtabbar.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxcommon.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxtabbar.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxtabbar_start.js')}" />
+
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgridcell.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/dhtmlxtreegrid.js')}" /> 
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_group.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_splt.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/excells/dhtmlxgrid_excell_link.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_selection.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_lines.js')}" />
+
+
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid_skins.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/skins/dhtmlxgrid_dhx_skyblue.css')}"/>
+
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxcontainer.js')}" />
+
+<style>
+    div.gridbox_dhx_skyblue table.obj tr td{font-family:Tahoma; font-size:11px; border-width: 1px 1px 1px 1px; border-color : #FDFDFD #A4BED4 #A4BED4 #FDFDFD;}
+    div.gridbox_dhx_skyblue table.hdr td { Font-size:12px; font-family:Trebuchet MS;}
+    div.gridbox_dhx_skyblue table.obj tr td{ font-size:12px; font-family:Trebuchet MS;}
+    .dhx_combo_select, .gridbox_dhx_skyblue .dhx_combo_edit, .gridbox_dhx_skyblue .dhx_textarea{ font-size:12px;}
+    .bPageBlock .detailList .labelCol { width:9%; }
+    .bPageBlock .detailList .dataCol { width:25%; }
+    div.gridbox_dhx_skyblue table.obj tr td { font-family: Arial, Verdana, sans-serif; font-size:11px; }
+    div.gridbox_dhx_skyblue table.hdr td { font-family:Arial, Verdana, sans-serif; font-size:12px; }
+    body .bPageTitle { padding:0 0 0;}
+    a {color:#1797C0; font-size:11px; font-weight:bold;}
+    span ul li {   list-style: none; color: #b52828; }
+    element.style {  text-align:left;}
+    div.gridbox table.obj td.group_row { background-color: #4B627F; border-color:#FDFDFD #A4BED4 #A4BED4 #FDFDFD; border-width:1px; color: #FFFFFF}
+</style>
+  
+  <script>
+   
+   
+   var mygrids;
+   
+   window.onload = function dispIndicatorsTargetGrid(){
+       // alert('Onload Cond::'); 
+       var xmlStrLocal = '{!xmlStr}';
+       loadInitialReportPeriod();
+       dispIndicatorsTargetGrid1(xmlStrLocal);
+           
+      
+   }
+   
+ function dispIndicatorsTargetGrid1(xmlStrLocal){   
+        //alert('Rerender Cond::::'+xmlStrLocal);    
+        
+        document.getElementById("gridboxS").innerHTML = "";
+        mygrids = new dhtmlXGridObject("gridboxS","100%","100%");
+        mygrids.selMultiRows = true;
+        mygrids.setImagePath("{!URLFOR($Resource.dhtmlxGrid, '/dhtmlxGrid/codebase/imgs/')}");  
+        mygrids.setHeader("Indicator Code,Indicator Name,Baseline, Target, Actuals,Difference,Rating,Notes/ Comments, ,");
+        mygrids.attachHeader("#text_filter,#text_filter,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan");
+        //mygrids.setInitWidths("150,540,75,75,75,80,75,150,55,");
+       //mygrids.setInitWidthsP("11,49,6,6,6,6,0,12,4,0");
+         mygrids.setInitWidthsP("11,47,6,6,6,8,0,12,4,0");
+        mygrids.setColAlign("left,left,right,right,right,right,right,left,center,center");
+        mygrids.setColTypes("tree,rotxt,ed,ed,ed,rotxt,ro,txttxt,rotxt,rotxt");
+        //mygrids.setColSorting("str,str,str,str,str,str,str");
+        mygrids.enableAutoHeigth(false);
+        mygrids.enableResizing("false,false,false,false,false,false,false,false,false,false");
+        mygrids.enableTooltips("true,true,true,true,true,true,true,true,true,true,false");
+        mygrids.attachEvent("onMouseOver",doonMouseOver);
+        mygrids.enableTreeCellEdit(false);
+        mygrids.init();
+        mygrids.setSkin("dhx_skyblue");
+        mygrids.loadXMLString(xmlStrLocal);
+        mygrids.attachEvent("onEditCell",doOnEditCell);
+        mygrids.attachEvent("onMouseOver",doonMouseOver);
+        mygrids.customGroupFormat=function(name,count){
+          if (name == 'STANDARD') {  
+              name = 'F / Standard';
+          } 
+          return name;
+        }
+       
+        mygrids.sortRows(9,"str", "des");
+        mygrids.sortRows(0,"str", "asc");
+        mygrids.groupBy(9);
+        mygrids.attachEvent("onOpenEnd", doonexpand);
+        mygrids.setColumnHidden(6,true);
+        mygrids.setColumnHidden(9,true);
+        mygrids.setFiltrationLevel(-2);
+        
+    }
+   
+   function doonexpand(id,state){
+        mygrids.sortRows(9,"str", "des");
+        mygrids.sortRows(0,"str", "asc");
+        mygrids.groupBy(9);
+    }
+   
+   function doonMouseOver(id,index){
+       var val = mygrids.getItemImage(id);
+       if (val == "indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Indicator");
+       }
+       if (val == "sub-indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Disaggregation");
+       }
+       if (val == "custom-indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Custom Indicator");
+       }
+       if (val == "custom-sub-indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Custom Disaggregation");
+       }
+       var val = mygrids.cells(id,index).getValue();
+       if (val == "") return false; 
+       return true;
+   }
+   
+   function doOnEditCell(stage,rId,cInd,nValue,oValue){
+      if(stage == 2 && cInd == 7 && nValue.length > 255){
+            var val = mygrids.cells(rId,7).getValue();
+            mygrids.cells(rId,7).setValue(val.substring(0,255));
+        }
+      if (stage == 2 && (cInd == 3 || cInd == 4)){
+          var tar = mygrids.cells(rId,3).getValue();
+          var act = mygrids.cells(rId,4).getValue();
+          var variance = act - tar;
+          var rating = act/tar;
+          if (tar != '' && tar != null && act != null && act != ''){
+              if(variance == 0){
+                  mygrids.cells(rId,5).setValue('0.00');
+              } else {
+                  mygrids.cells(rId,5).setValue(variance);
+              }
+              if (rating > 0.99){
+                  mygrids.cells(rId,6).setCValue('<img src="/resource/varianceImages/arrow-up.png">');
+                  return true;
+              } else if(rating < 0.90){
+                  mygrids.cells(rId,6).setCValue('<img src="/resource/varianceImages/arrow-down.png">');
+                  return true;
+              } else {
+                  mygrids.cells(rId,6).setCValue('<img src="/resource/varianceImages/isomorphic.png">');
+                  return true;
+              }
+          } else if (tar == '' && act != '') {
+            mygrids.cells(rId,5).setValue(null);
+            mygrids.cells(rId,6).setValue('NR');
+          } else if (tar == '' && act == '') {
+            mygrids.cells(rId,5).setValue(null);
+            mygrids.cells(rId,6).setValue(null);
+          } else if (tar != '' && act == '') {
+            mygrids.cells(rId,5).setValue(null);
+            mygrids.cells(rId,6).setValue(null);
+          }
+      }
+      return true;
+   }  
+   
+   function callTargets(hidd1,hidd2){  
+       mygrids.editStop();
+       document.getElementById(hidd1).value = mygrids.getChangedRows(true);
+       mygrids.setSerializableColumns("true,false,true,true,true,true,false,true,true,true");
+       mygrids.xml.cell_attrs.push("Id");
+       document.getElementById(hidd2).value = mygrids.serialize();
+   }
+   
+     function test(){
+       mygrids.editStop();    
+      if( mygrids.getChangedRows(true) != '') { 
+           var conVal=  confirm('Do you want to save changes?');     
+       
+           if(conVal == true){  
+             callTargets('RFDOIRPage:j_id70:j_id71:theform:changedRows','RFDOIRPage:j_id70:j_id71:theform:savedXML')   
+             callSaveAction();             
+           }else {
+             callGoAction();
+           }
+         }     
+   }
+  
+     
+            
+  </script> 
+  
+  <apex:outputPanel id="theBlock">
+
+
+ <p style="color: rgb(1,91,167); font-weight:bold; font-size:12px; font-family:Arial, Helvetica, Sans-Serif; margin:13px;">Select Reporting Period to input Indicator Data</p> 
+ 
+<apex:form id="theform" target="DO_IR_Reporting_Periods" >
+
+  <apex:actionFunction name="loadInitialReportPeriod" action="{!prepResultsTree}" oncomplete="dispIndicatorsTargetGrid1('{!xmlStr}')" rerender="theBlock" />
+  <apex:actionFunction name="callSaveAction"  reRender="theform" action="{!doSaveTargets}" />  
+  <apex:actionFunction name="callGoAction" action="{!prepResultsTreeChange}"  oncomplete="dispIndicatorsTargetGrid1('{!xmlStr}')" reRender="theBlock" />
+
+  <apex:actionRegion >
+     <apex:outputLabel style="margin:13px; font-weight:bold;font-size:12px;" value="Reporting Period: ">    
+     <apex:selectList style="font-family: Arial, Verdana, sans-serif; font-size:11px;" id="periods"  multiselect="false" value="{!selectedPeriod}" size="1"  >
+         <apex:selectOptions value="{!Periods}" ></apex:selectOptions>
+     <apex:actionSupport event="onchange" oncomplete="test()"  reRender="theBlock"  immediate="false" />
+
+     </apex:selectList>    
+     
+     <apex:commandButton value=" Go" action="{!prepResultsTreeChange}"  oncomplete="dispIndicatorsTargetGrid1('{!xmlStr}')" reRender="theBlock" > 
+         
+     </apex:commandButton>   
+      </apex:outputLabel>      
+  </apex:actionRegion>   
+   
+   /****************************************/
+   
+ 
+      <apex:pageBlock mode="maindetail" id="IMReportingPeriodPageBlock">      
+        <!--  <apex:pageBlockButtons rendered="{!$Profile.Name == 'Mission Partner'}"> -->
+        <apex:pageBlockButtons rendered="{!IsPartnerUser}"> 
+           <apex:commandButton action="{!changeToSubmit}" value="Submit" title="Submit" rendered="{!Reporting_Period__c.Status__c == 'Open' || Reporting_Period__c.Status__c == 'Rejected' }"/>
+        </apex:pageBlockButtons>
+       <!-- <apex:pageBlockButtons rendered="{!$Profile.Name == 'PLT - Mission Profile'}"  > -->
+        <apex:pageBlockButtons rendered="{!isPLTMissionUser || IsPLTUserOnly}"  >  
+            <apex:commandButton action="{!edit}" value="Edit" title="Edit"/>
+            <apex:commandButton action="{!delete}" value="Delete" title="delete"/>            
+            <apex:commandButton action="{!changeToPublish}" value="Publish" title="Publish"   rendered="{!Reporting_Period__c.Status__c == 'Draft'}"/>
+            <apex:commandButton action="{!changeToClose}" value="Close" title="Close" rendered="{!Reporting_Period__c.Status__c == 'Draft' || Reporting_Period__c.Status__c == 'Submitted' }"/>
+            <apex:commandButton action="{!changeToDraft}" value="Draft" title="Draft" rendered="{!Reporting_Period__c.Status__c == 'Publish'}"/>
+            <apex:commandButton action="{!changeToOpen}" value="Open" title="Open" rendered="{!Reporting_Period__c.Status__c == 'Publish'}"/>            
+            <apex:commandButton action="{!changeToExtend}" value="Extend" title="Extend" rendered="{!Reporting_Period__c.Status__c == 'Open'}"/> 
+            <apex:commandButton action="{!changeToApproved}" value="Approve" title="Approve" rendered="{!Reporting_Period__c.Status__c == 'Submitted'}"/>
+            <apex:commandButton action="{!changeToReject}" value="Reject" title="Reject" rendered="{!Reporting_Period__c.Status__c == 'Submitted'}"/> 
+        </apex:pageBlockButtons>       
+        
+        <apex:pageBlockSection showHeader="true" title="Implementing Mechanism" columns="2" rendered="false">                               
+                                                               
+            <apex:outputField value="{!Reporting_Period__c.ouName__c}" /> 
+            <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>  
+            <apex:outputField value="{!Reporting_Period__c.Implementing_Mechanism_Id__c}"  
+                                rendered="{!showLevel >= 1}"/> 
+            <apex:outputField value="{!Reporting_Period__c.Implementing_Mechanism_Name__c }" 
+                                rendered="{!showLevel >= 1}"/>         
+            
+            <apex:outputField value="{!Reporting_Period__c.Activity_Id__c}" 
+                                rendered="{!showLevel == 2}" />            
+            <apex:outputField value="{!Reporting_Period__c.Activity_Name__c}" 
+                                rendered="{!showLevel == 2}"/>                                                  
+        </apex:pageBlockSection>
+        
+        <apex:pageBlockSection showHeader="true" title="Basic Information" columns="2">       
+            
+            <apex:outputField value="{!Reporting_Period__c.Start_Date__c}"/>
+            <apex:outputField value="{!Reporting_Period__c.Fiscal_Period__c}"/>           
+            <apex:outputField value="{!Reporting_Period__c.End_Date__c}"/>
+            <apex:outputField value="{!Reporting_Period__c.Fiscal_Year__c}"/>
+            <apex:outputField value="{!Reporting_Period__c.Close_Date__c}"/>
+            <apex:outputField value="{!Reporting_Period__c.Status__c}"/>
+            <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+            <apex:outputField value="{!Reporting_Period__c.Targets_Established__c}"/>
+          
+        </apex:pageBlockSection>
+        <apex:pageBlockSection showHeader="true" title="Descriptive Information" columns="2" rendered="false">            
+            <apex:outputText value="{!Reporting_Period__c.Narrative__c}" />            
+        </apex:pageBlockSection> 
+               
+        <apex:pageBlockSection showHeader="true" title="System Information" columns="2"  id="SysHeadSection" rendered="false">
+        
+            <apex:outputField value="{!Reporting_Period__c.CreatedById}"/>
+            <apex:outputField value="{!Reporting_Period__c.LastModifiedById}"/>
+      
+            <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Owner"/>
+                    <apex:outputPanel >
+                            <apex:outputField value="{!Reporting_Period__c.OwnerId}"/>&nbsp;
+                            <apex:outputLink value="{!URLFOR($Action.Reporting_Period__c.ChangeOwner,Reporting_Period__c.id)}">[Change]</apex:outputLink>
+                    </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem />
+        </apex:pageBlockSection>
+        <apex:pageBlockSection showHeader="false" columns="2">
+        </apex:pageBlockSection>                               
+         </apex:pageBlock>
+        
+   
+   
+   /***************************************/
+   
+   
+   
+   
+   
+   
+   
+   
+ <apex:pageBlock rendered="{!IF(ShowErrors == 'true',true,false)}" >
+     <span><b><apex:messages style="width:97%;margin: 10px auto 0px auto; text-align: center;color:#b52828"/></b></span> 
+     <div id="cbBouutons"  style="width:97%;margin: 10px auto 0px auto; text-align: center; " >
+        <apex:commandButton value="OK" action="{!Cancel}" rendered="true" />
+    </div>
+ </apex:pageBlock>      
+  
+ <apex:outputPanel rendered="{!IF(ShowErrors= 'false',true,false)}" id="panel2">
+   <div id="gridbixsParent" style="height:400px;margin:15px auto 0px auto;"> 
+      <div id="gridboxS" style="width:97%;height:350px;margin: 15px auto 0px auto;"></div>
+      <div id="cbBouutons"  style="width:97%;height:50px;margin: 15px auto 0px auto; text-align: center;">
+          <apex:inputHidden value="{!enteredTargets}" id="enteredTargets"/>
+          <apex:inputHidden value="{!changedRowIds}" id="changedRows"/>
+          <apex:inputHidden value="{!xmlStr}" id="savedXML"/>
+           <apex:inputHidden value="{!selectedPeriod}" id="selectedPeriod"/>
+        
+          <apex:commandButton style="align:center" value="  Save  "  reRender="theform" action="{!doSaveTargets}" onclick="callTargets('{!$Component.changedRows}','{!$Component.savedXML}')">
+              <apex:Param name="buttonId" value="save" assignTo="{!buttonId}"/>
+          </apex:commandButton>
+       
+          <apex:commandButton value=" Cancel " action="{!Cancel}"  reRender="theform"  />
+      </div>
+   </div>   
+ </apex:outputPanel>  
+</apex:form>
+</apex:outputPanel>
+
+
+      
+         <apex:relatedList pageSize="20" list="NotesAndAttachments"/>
+       <!--  <apex:relatedList pageSize="20" list="ProcessSteps" rendered="{!$Profile.Name <> 'Mission Partner'}" ></apex:relatedList> -->
+         <apex:relatedList pageSize="20" list="ProcessSteps" rendered="{!IF(IsPartnerUser,false,true)}" ></apex:relatedList>
+   
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['IMReportingPeriodPage:IMReportingPeriodPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+    
+    
+function addLoadEvent(func) {   
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+
+function hideHeadSesction() {
+ twistSection(document.getElementById('IMReportingPeriodPage:IMReportingPeriodForm:IMReportingPeriodPageBlock:SysHeadSection').childNodes[0].childNodes[0]);
+}
+
+addLoadEvent(hideHeadSesction);               
+    
+    
+</script>
+</apex:page>

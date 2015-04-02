@@ -1,0 +1,67 @@
+<apex:page sideBar="false" showchat="false" standardStylesheets="false" controller="ClsUserProfileFinder" >
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<!-- <div style="z-index:2;position:relative;font-size:Medium;font-weight:bolder;text-align:left">Standard Reports</div> <hr /> -->
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Standard Reports</title>
+    
+    <link rel="stylesheet" href="{!URLFOR($Resource.StandardReportsV2AT, 'style.css')}" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{!URLFOR($Resource.StandardReportsV2AT, 'css/rounded.css')}" type="text/css" media="screen" />
+    
+</head>
+
+<body>
+
+    <div id="container">
+    
+        <!-- <apex:outputLink rendered="{!($Profile.Name=='PLT - Mission Profile'|| $Profile.Name=='System Administrator(c)')}"> -->
+        <apex:outputLink rendered="{!(IsPLTUser || IsADMINUser)}">
+        <!--<a href="/00Od00000030LLe"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/ind-rf.png')}" /><p>Results Framework</p></div></a> -->
+       <!-- <a href="/00Od00000030LLb"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/ind-lf.png')}" /><p>Project Log Frame</p></div></a> -->
+       <!-- <a href="/00Od00000030LLd"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/p-element.png')}" /><p>Projects by Program Element</p></div></a> -->
+        <a href="/00Od0000003TCxW"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/f-im.png')}" /><p>Implementing Mechanisms By Project</p></div></a>
+        </apex:outputLink>       
+       <!-- <a href="/00OJ0000000OiMF"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/p-initiative.png')}" /><p>Project LogFrame</p></div></a> -->
+        <a href="/00Od0000003TeiU"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/p-ip.png')}" /><p>Implementing Mechanisms by Partners</p></div></a>
+        <a href="/00Od0000003TCxV"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/p-tech.png')}" /><p>Implementing Mechanisms by Office</p></div></a>
+        <a href="/00Od0000002yOJn"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/p-location.png')}" /><p>Implementing Mechanisms by Location</p></div></a>
+        <!-- <a href="/00Od0000002xf1k"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/p-sector.png')}" /><p>Activities by Sector</p></div></a> -->
+        <!-- <a href="/00OJ0000000Ocal"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/f-im.png')}" /><p>Implementing Mechanisms by Financials</p></div></a> -->
+        <a href="/apex/partnerusersreport"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/p-sector.png')}" /><p>Partner Users Report</p></div></a>
+        <a href="/apex/MissionUsersreport"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/f-im.png')}" /><p>Mission Users Report</p></div></a>
+        <!--<a href="/00Od00000030LLR"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/p-finsum.png')}" /><p>Implementing Mechanism Financials</p></div></a> -->
+        <a href="/00Od0000003Td5q"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/p-fisperiod.png')}" /><p>Implementing Mechanism Reporting Period Status</p></div></a>
+        <!-- <a href="/00OJ0000000OiMK"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/p-fisperiod.png')}" /><p>Implementing Mechanism Financials by Fiscal Period</p></div></a> -->
+       <!-- <apex:outputLink rendered="{!($Profile.Name=='PLT - Mission Profile'|| $Profile.Name=='System Administrator(c)')}"> -->
+        <apex:outputLink rendered="{!(IsPLTUser || IsADMINUser)}">
+        <a href="/00Od0000003TCxS"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/p-sector.png')}" /><p>All Mission Indicator Inventory</p></div></a>
+       <!-- <a href="/00Od00000030LLa"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/ind-rf.png')}" /><p>Indicator Data by Results Framework</p></div></a> -->
+       <!-- <a href="/00Od00000030LLZ"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/ind-lf.png')}" /><p>Indicator Data by Logical Framework</p></div></a> -->
+        <a href="/00Od0000003TCxU"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/ind-im.png')}" /><p>Implementing Mechanism Indicators</p></div></a>
+        
+        <a href="/00Od0000003TCxT"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/imi.png')}" /><p>Implementing Mechanism Indicator Results</p></div></a> 
+        </apex:outputLink>
+        <!-- <apex:outputLink value="/00Od0000002xf3W" rendered="{!($Profile.Name=='System Administrator(c)')}"> -->
+        <apex:outputLink value="/00Od0000002xf3W" rendered="{!(IsADMINUser)}">
+        <a href="/00Od0000002xf3W"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/p-admin.png')}" /><p>AIDtracker Admin Report</p></div></a>
+        </apex:outputLink>
+        
+         <apex:outputLink value="/00Od0000002xf3W" rendered="{!(IsPLTUser || IsADMINUser)}">
+       <!-- <a href="/apex/vfIMIndicatorsResultsReport"><div class="btn"><img src="{!URLFOR($Resource.StandardReportsV2AT, 'images/icon/p-tech.png')}" /><p>DO-Indicator-IM Report</p></div></a> -->
+        </apex:outputLink>
+        <div class="clear"></div>
+        <hr />
+        
+       <!-- <a href="{!URLFOR($Resource.UsaidProjectsLocationskmz)}"><div id="gearth" class="gis-data"></div></a> -->
+        
+     
+       <!-- <a href="http://geoweb.usaidallnet.gov/ArcGIS/rest/services/Usaid_projects_locations/MapServer?f=lyr&v=9.3"><div id="arcmap" class="gis-data"></div></a> -->
+    
+    </div> <!-- END CONTAINER -->
+
+
+</body>
+</html>
+  
+</apex:page>

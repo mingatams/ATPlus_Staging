@@ -1,0 +1,698 @@
+<apex:page standardController="Implementing_Mechanism__c"   extensions="ClsIMFinancialSnapShotController,clsIMEditController,ClsDeleteControllerExt,ClsUserProfileFinder" standardStylesheets="false" tabStyle="Project_Implementation__tab" sidebar="false">
+  
+  <html>
+
+<head>
+
+       
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>AIDtracker | Project Details</title>
+ 
+   <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'project-style.css')}"/>
+     <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'IM-style.css')}"/>
+   <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/modernizr.custom.79639.js')}" />
+   <!-- <script type="text/javascript" src="js/modernizr.custom.79639.js"></script> -->
+    <noscript><link rel="stylesheet" type="text/css" href="css/noJS.css" /></noscript> 
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+   
+  
+       <!--  <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'RF-Linkage-Style.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'LF-Linkage-Style.css')}"/>        
+        <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'css/style.css')}"/> -->
+       
+        
+        <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/modernizr.custom.79639.js')}"/>        
+        <noscript><apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'css/noJS.css')}"/></noscript>        
+        
+       <apex:includeScript value="{!$Resource.JQuery172_js}" />
+        <apex:includeScript value="{!$Resource.Highcharts_js}" />
+        <apex:includeScript value="{!$Resource.Highcharts_export_js}" />
+    <script type="text/javascript">
+            
+            function DropDown(el) {
+                this.dd = el;
+                this.placeholder = this.dd.children('span');
+                this.opts = this.dd.find('ul.dropdown > li');
+                this.val = '';
+                this.index = -1;
+                this.initEvents();
+            }
+            DropDown.prototype = {
+                initEvents : function() {
+                    var obj = this;
+
+                    obj.dd.on('click', function(event){
+                        $(this).toggleClass('active');
+                        return false;
+                    });
+
+                    obj.opts.on('click',function(){
+                        var opt = $(this);
+                        obj.val = opt.text();
+                        obj.index = opt.index();
+                        obj.placeholder.text(obj.val);
+                    });
+                },
+                getValue : function() {
+                    return this.val;
+                },
+                getIndex : function() {
+                    return this.index;
+                }
+            }
+
+            $(function() {
+
+                var dd = new DropDown( $('#dd') );
+
+                $(document).click(function() {
+                    // all dropdowns
+                    $('.wrapper-dropdown-3').removeClass('active');
+                });
+
+            });
+
+
+
+
+    </script>
+    
+    <script language="javascript">
+        function confirmDelete(){
+        
+            if(confirm('Are you sure you want to delete?'))
+                return true;
+            return false;
+        }
+        
+        
+       $(function () {  
+     
+   
+     var iArrayAct ;
+        var iArrayProj;
+        var iArrayCat ;
+        
+        
+           iArrayAct = {!ActualValues};
+           iArrayProj = {!ProjectedValues};
+           iArrayCat = {!Xcategories};
+       
+          var currentDate = new Date();
+          var day = currentDate.getDate();
+          var month = currentDate.getMonth() + 1;
+          var year = currentDate.getFullYear();        
+      
+           
+          var totob=parseFloat("{!Implementing_Mechanism__c.totObl__c}");
+          var totDis=parseFloat("{!Implementing_Mechanism__c.totDisb__c}");
+          var totAccr=parseFloat("{!Implementing_Mechanism__c.totAccr__c}");
+          var totExp=parseFloat("{!Implementing_Mechanism__c.totExp__c}");
+          var unLiBal=parseFloat("{!Implementing_Mechanism__c.totPline__c}");
+        
+        
+       
+        if (isNaN(totob )) {
+            totob = 0;
+        }
+        
+        if (isNaN(totDis)) {
+            totDis = 0;
+        }
+        
+        if (isNaN(totAccr)) {
+            totAccr = 0;
+        }
+        
+        if (isNaN(totExp)) {
+            totExp = 0;
+        }
+        
+        if (isNaN(unLiBal)) {
+            unLiBal = 0;
+        }
+           
+    
+        var charWidth = Math.round($("#financialChart").width() * 0.97 );         
+        var chart1 = new Highcharts.Chart({
+            chart: { 
+            renderTo: 'financialChart',              
+                type: 'column',
+                 width: charWidth,               
+                height:325,
+                backgroundColor:'#f5f5f5',
+                borderWidth: '1',
+                marginBottom: 20,
+                marginTop: 100
+            },
+            title: {                
+                text: 'FINANCIAL CHART',
+                align: 'left',
+            style: {        
+                font: 'bold 15px "Trebuchet MS", Verdana, sans-serif'
+               }
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                categories: [
+                   
+                ]
+            },
+            yAxis: {
+               
+               labels: {
+                    formatter: function() {
+                        return '$'+this.value/1000000 +'M'; 
+                    }
+                },
+                title: {
+                    text: ''
+                }
+            }, 
+            legend: {
+                enabled: true,
+                width: 300,
+                floating: true,
+                border:0,
+                y:20, 
+                borderRadius: 0, 
+                borderWidth: 0,   
+                align: 'right',
+                verticalAlign: 'top',
+                symbolPadding: 5,
+                symbolWidth: 10,                
+                itemWidth: 150,
+                itemMarginBottom: 5,
+                itemStyle: {
+                    color: '#000000',
+                    fontSize:'09',
+                    fontFamily: 'Arial, Helvetica, sans-serif'                    
+                },
+                labelFormatter: function() {
+                    return this.name
+                }                              
+            },
+           
+            tooltip: {
+                headerFormat: '<table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> ${point.y}</b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0
+                }
+            },
+            series: [{
+                name: 'Total Obligation',
+                data: [totob]
+    
+            }, {
+                name: 'Total Disbursements',
+                data: [totDis]
+    
+            }, {
+                name: 'Accruals Current Quarter',
+                data: [totAccr]
+    
+            }, {
+              //  name: 'Total Expenditures',
+             //   data: [totExp]
+    
+           // },{
+                name: 'Unliquidated Balance',
+                data: [unLiBal]
+    
+            }],  
+            
+            credits: {
+                enabled:false
+            },
+            exporting: {
+                enabled:false
+            }
+        }, function(chart) { // on complete
+     
+            chart.renderer.text('As Of ' + day + "/" + month + "/" + year, charWidth-10, 300)
+            .attr({
+                rotation: -90
+            })
+            .css({
+                color: '#625D5D',
+                fontSize: '16px'
+            })
+            .add();
+        
+        }); 
+        
+        var char2Width = Math.round($("#burnRateChart").width() * 0.97 );
+         var chart2 = new Highcharts.Chart({
+        chart: {
+            renderTo: 'burnRateChart',
+            //ignoreHiddenSeries: true,
+            type: 'line',
+            zoomType: 'x',
+             width: char2Width,
+                height: 325,
+              backgroundColor:'#f5f5f5',
+              borderWidth: '1',
+                marginBottom: 20,
+                marginTop: 40
+        },
+        title: {
+           text:'EXPENDITURE RATE',
+           align: 'left',
+            style: {        
+                font: 'bold 15px "Trebuchet MS", Verdana, sans-serif'
+               }
+              
+        },
+        subtitle: {
+           text: ''
+        },
+        xAxis: {
+           categories: iArrayCat,
+           tickmarkPlacement: 'on',
+           showLastLabel: true,
+           labels:{               
+               step: 4,
+               rotation: 0,
+               style: {                   
+                    font: 'normal 09px Arial, Helvetica, sans-serif'
+                }
+           }
+        },
+        yAxis: {
+            min: 0,
+            labels: {
+                formatter: function() {
+                    return '$'+this.value/1000000 +'M'; 
+                }
+            },
+            title: {
+                text: ''
+            }   
+        },
+        legend: {
+            enabled:true,
+            floating: true,
+            width: 200,            
+            border:0, 
+            borderRadius: 0, 
+            borderWidth: 0,
+            align: 'right',
+            verticalAlign: 'top',
+            symbolPadding: 5,
+            symbolWidth: 10,                
+            itemWidth: 100,
+            itemMarginBottom: 5,
+            itemStyle: {
+               color: '#000000',
+               fontSize:'09',
+               fontFamily: 'Arial, Helvetica, sans-serif'                    
+            },
+            labelFormatter: function() {
+               return this.name
+            }                          
+        },
+        plotOptions: {
+        },
+        series: [{
+            name: 'Actuals:',
+            marker:{
+                symbol: 'square'
+            },
+            data: iArrayAct        
+        },{
+            name: 'Projected:',
+            marker:{
+                symbol: 'diamond'
+            },
+            data: iArrayProj        
+        }
+
+        ],
+        credits: {
+           enabled:false
+        },
+        exporting: {
+            enabled:false
+        }
+    }, function(chart2) { // on complete
+     
+            chart2.renderer.text('As Of ' + day + "/" + month + "/" + year, charWidth-10, 300)
+            .attr({
+                rotation: -90
+            })
+            .css({
+                color: '#625D5D',
+                fontSize: '16px'
+            })
+            .add();
+    });
+        
+        
+        
+    });   
+        
+    </script>
+
+ 
+</head>
+
+
+
+<body>
+<apex:form >
+<apex:outputPanel rendered="{!HasErrorMessages}">
+         <apex:pageMessages />      
+        </apex:outputPanel>
+<div id="container">
+
+    <!------ HEADER SECTION (ABOVE MAP) ------>
+    <header>
+        <div id="left">
+            <h2>{!Implementing_Mechanism__c.Implementing_Mechanism_Name__c} </h2>
+            <p>{!Implementing_Mechanism__c.Name} </p>
+        </div>
+      
+        <div id="right"> 
+          
+        <!-- <apex:outputPanel rendered="{!$Profile.Name != 'STD - Mission Profile'}">  -->
+            <apex:outputPanel rendered="{! isPLTMissionUser || isPLTUser || IsADMINUser || IsPartnerUser}">  
+          
+            <div class="dropmenu">
+                    <div id="dd" class="wrapper-dropdown" tabindex="1">
+                        <span>NAVIGATION</span>
+                        <ul class="dropdown"> 
+                        
+                   <!--     <li class="dropList"><apex:outputLink rendered="{!$Profile.Name != 'Mission Partner' && Implementing_Mechanism__c.RecordType.Name == 'Advanced'}" value="/apex/vfIMIndicatorPage?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="indicators"></i>IM Indicators</apex:outputLink></li>
+                        <li class="dropList"><apex:outputLink rendered="{!$Profile.Name != 'Mission Partner' && Implementing_Mechanism__c.RecordType.Name == 'Advanced'}" value="/apex/vfIMIndicatorReportingDetails?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="results"></i>IM Indicator Data</apex:outputLink></li>                        
+                        <li class="dropList"><apex:outputLink rendered="{!$Profile.Name == 'Mission Partner' && Implementing_Mechanism__c.RecordType.Name == 'Advanced'}" value="/Partners/vfIMIndicatorResultsPage?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="results"></i>IM Indicator Data</apex:outputLink></li>                        
+                        <li class="dropList"><apex:outputLink rendered="{!$Profile.Name =='PLT - Mission Profile'}" value="/apex/vfIMTaskLogFrameLinkage?Lid={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="logframe"></i>LF Linkage</apex:outputLink></li>                            
+                       
+                       <li class="dropList"><apex:outputLink rendered="{!$Profile.Name =='PLT - Mission Profile' && Implementing_Mechanism__c.Award_Id__c != null}" value="/apex/vfIMFromAward?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="glaas"></i>Reassign GLAAS Award</apex:outputLink></li>                            
+                       <li class="dropList"><apex:outputLink rendered="{!$Profile.Name =='PLT - Mission Profile' && Implementing_Mechanism__c.Award_Id__c == null}" value="/apex/vfIMFromAward?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="glaas"></i>Assign GLAAS Award</apex:outputLink></li> 
+                       <li class="dropList"><apex:outputLink rendered="{!$Profile.Name == 'Mission Partner' && Implementing_Mechanism__c.Award_Id__c != null}" value="/Partners/vfIMFinancialSnapShot?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="financial"></i>View Financial Info</apex:outputLink></li>                           
+                       <li class="dropList"><apex:outputLink rendered="{!$Profile.Name != 'Mission Partner' && Implementing_Mechanism__c.Award_Id__c != null}" value="/apex/vfIMFinancialSnapShot?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="financial"></i>View Financial Info</apex:outputLink></li>                            
+                 
+                        <li class="dropList"><apex:outputLink rendered="{! IsPartnerUser != true && Implementing_Mechanism__c.RecordType.Name == 'Advanced'}" value="/apex/vfIMIndicatorPage?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="indicators"></i>IM Indicators</apex:outputLink></li>
+                        <li class="dropList"><apex:outputLink rendered="{! IsPartnerUser != true && Implementing_Mechanism__c.RecordType.Name == 'Advanced'}" value="/apex/vfIMIndicatorReportingDetails?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="results"></i>IM Indicator Data</apex:outputLink></li>                        
+                        <li class="dropList"><apex:outputLink rendered="{! IsPartnerUser == true&& Implementing_Mechanism__c.RecordType.Name == 'Advanced'}" value="/Partners/vfIMIndicatorReportingDetails?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="results"></i>IM Indicator Data</apex:outputLink></li>                        
+                        <li class="dropList"><apex:outputLink rendered="{! isPLTMissionUser == true || isPLTUser == true}" value="/apex/vfIMTaskLogFrameLinkage?Lid={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="logframe"></i>LF Linkage</apex:outputLink></li>                            
+                       
+                       <li class="dropList"><apex:outputLink rendered="{! (isPLTMissionUser == true || isPLTUser == true) && Implementing_Mechanism__c.Award_Id__c != null}" value="/apex/vfIMFromAward?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="glaas"></i>Reassign GLAAS Award</apex:outputLink></li>                            
+                       <li class="dropList"><apex:outputLink rendered="{! (isPLTMissionUser == true || isPLTUser == true) && Implementing_Mechanism__c.Award_Id__c == null}" value="/apex/vfIMFromAward?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="glaas"></i>Assign GLAAS Award</apex:outputLink></li> 
+                       <li class="dropList"><apex:outputLink rendered="{! IsPartnerUser == true && Implementing_Mechanism__c.Award_Id__c != null}" value="/Partners/vfIMFinancialSnapShot?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="financial"></i>View Financial Info</apex:outputLink></li>                           
+                       <li class="dropList"><apex:outputLink rendered="{! IsPartnerUser != true && Implementing_Mechanism__c.Award_Id__c != null}" value="/apex/vfIMFinancialSnapShot?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="financial"></i>View Financial Info</apex:outputLink></li>                            
+                       -->  
+                       <li class="dropList"><apex:outputLink rendered="{! IsPartnerUser != true && Implementing_Mechanism__c.RecordType.Name == 'Advanced'}" value="/apex/vfIMIndicatorPage?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="indicators"></i>IM Indicators</apex:outputLink></li>
+                       <li class="dropList"><apex:outputLink rendered="{! IsPartnerUser != true && Implementing_Mechanism__c.RecordType.Name == 'Advanced'}" value="/apex/IMIndicatorData?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="results"></i>IM Indicator Data</apex:outputLink></li>                        
+                       <li class="dropList"><apex:outputLink rendered="{! IsPartnerUser == true&& Implementing_Mechanism__c.RecordType.Name == 'Advanced'}" value="/Partners/IMIndicatorData?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="results"></i>IM Indicator Data</apex:outputLink></li>                        
+                       <li class="dropList"><apex:outputLink rendered="{! (isPLTMissionUser == true || isPLTUser == true) && IsPLTReadOnlyUser == false && IsSTDAidtrackSupReadOnlyUser == false}" value="/apex/vfIMTaskLogFrameLinkage?Lid={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="logframe"></i>LF Linkage</apex:outputLink></li>                            
+                       
+                       <li class="dropList"><apex:outputLink rendered="{! (isPLTMissionUser == true || isPLTUser == true) && Implementing_Mechanism__c.Award_Id__c != null && IsPLTReadOnlyUser==false && IsSTDAidtrackSupReadOnlyUser==false}" value="/apex/vfIMFromAward?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="glaas"></i>Reassign Award</apex:outputLink></li>                            
+                       <li class="dropList"><apex:outputLink rendered="{! (isPLTMissionUser == true || isPLTUser == true) && Implementing_Mechanism__c.Award_Id__c == null && IsPLTReadOnlyUser==false && IsSTDAidtrackSupReadOnlyUser==false}" value="/apex/vfIMFromAward?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="glaas"></i>Assign Award</apex:outputLink></li> 
+                       <li class="dropList"><apex:outputLink rendered="{! IsPartnerUser == true && Implementing_Mechanism__c.Award_Id__c != null}" value="/Partners/vfIMFinancialSnapShot?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="financial"></i>View Financial Info</apex:outputLink></li>                           
+                       <li class="dropList"><apex:outputLink rendered="{! IsPartnerUser != true && Implementing_Mechanism__c.Award_Id__c != null}" value="/apex/vfIMFinancialSnapShot?id={!Implementing_Mechanism__c.id}" onclick="location.href=this.href; return false;"><i class="financial"></i>View Financial Info</apex:outputLink></li>                            
+                   
+                        </ul>
+                    </div>
+                ​</div> <!-- end dropmenu -->                
+               </apex:outputPanel> 
+                
+              <!-- <apex:outputLink title="IM Edit" value="{!URLFOR($Action.Implementing_Mechanism__c.Edit, Implementing_Mechanism__c.id,[retURL='/apex/vfIMBasicDetailFactSheet?id='+Implementing_Mechanism__c.id])}" rendered="{!IF($Profile.Name <> 'Mission Partner' , true , false)&& $ObjectType['Implementing_Mechanism__c'].updateable}"><div class="topmenu edit"></div></apex:outputLink>  -->
+               <apex:outputLink title="IM Edit" value="{!URLFOR($Action.Implementing_Mechanism__c.Edit, Implementing_Mechanism__c.id,[retURL='/apex/vfIMBasicDetailFactSheet?id='+Implementing_Mechanism__c.id])}" rendered="{!IF(IsPartnerUser , false , true)&& $ObjectType['Implementing_Mechanism__c'].updateable}"><div class="topmenu edit"></div></apex:outputLink>
+          <!-- <apex:commandLink rendered="{!IF($Profile.Name <> 'Mission Partner' , true , false)&& $ObjectType['Implementing_Mechanism__c'].deletable}" action="{!customDelete}" title="IM Delete"  onclick="return window.confirm('Are you sure?');"><div class="topmenu delete"></div></apex:commandLink> -->
+               <apex:commandLink rendered="{!IF(IsPartnerUser, false , true)&& $ObjectType['Implementing_Mechanism__c'].deletable}" action="{!customDelete}" title="IM Delete"  onclick="return window.confirm('Are you sure?');"><div class="topmenu delete"></div></apex:commandLink>
+                
+        </div>
+        
+    </header>
+    
+    <div class="clear"></div>
+    
+    
+    <!------ SIDEBAR ------>
+    <div id="sidebarIM">
+    <ul>
+       <li class="sidebarItem" style="list-style-type: none;">
+         <span>{!$ObjectType.Implementing_Mechanism__c.fields.ouName__c.label}</span>        
+           <p>{!Implementing_Mechanism__c.ouCode__c} | {!Implementing_Mechanism__c.ouName__c}</p>        
+       </li>  
+       
+       <li class="sidebarItem" style="list-style-type: none;">
+         <span>{!$ObjectType.Implementing_Mechanism__c.fields.offName__c.label}</span>        
+           <p>
+               <apex:outputText value="{!Implementing_Mechanism__c.offCode__c} | {!Implementing_Mechanism__c.offName__c}" rendered="{!IF(ISBLANK(Implementing_Mechanism__c.offName__c),false,true)}" />
+               <apex:outputText value="N/A" rendered="{!IF(ISBLANK(Implementing_Mechanism__c.offName__c),true,false)}" />
+           </p>
+                    
+       </li>
+       
+       <apex:outputPanel rendered="{!Implementing_Mechanism__c.RecordType.Name != 'Basic'}"> 
+       <li class="sidebarItem" style="list-style-type: none;">
+         <span>{!$ObjectType.Implementing_Mechanism__c.fields.COR__c.label}</span>        
+          <!-- <p>{!IF(Implementing_Mechanism__c.COR__r.Name != null,Implementing_Mechanism__c.COR__r.Name,'N/A')}</p> -->
+          <p>{!IF(Implementing_Mechanism__c.COR_Name__c != null,Implementing_Mechanism__c.COR_Name__c,'N/A')}</p>
+       </li>
+       <li class="sidebarItem" style="list-style-type: none;">
+         <span>{!$ObjectType.Implementing_Mechanism__c.fields.AOR__c.label}</span>        
+          <!-- <p>{!IF(Implementing_Mechanism__c.COR__r.Name != null,Implementing_Mechanism__c.COR__r.Name,'N/A')}</p> -->
+          <p>{!IF(Implementing_Mechanism__c.AOR__c != null,Implementing_Mechanism__c.AOR__r.FirstName+ ' '+Implementing_Mechanism__c.AOR__r.LastName,'N/A')}</p>
+       </li>
+       </apex:outputPanel>
+       <!--<li class="sidebarItem" style="list-style-type: none;">
+         <span>{!$ObjectType.Implementing_Mechanism__c.fields.Award_Amount__c.label}</span>        
+           <p>
+           <apex:outputText value="{0,number,$###,###}"><apex:param value="{!IF(Implementing_Mechanism__c.Award_Amount__c != null,Implementing_Mechanism__c.Award_Amount__c,0)}" /></apex:outputText> 
+           </p>
+       </li> -->
+       
+       
+       <li class="sidebarItem" style="list-style-type: none;">
+         <span>Period of Performance</span>
+           <p>
+            <apex:outputText value="{0,date,MM/dd/yyyy}"><apex:param value="{!Implementing_Mechanism__c.Start_Date__c}" /></apex:outputText>&nbsp; to &nbsp;  
+            <apex:outputText value="{0,date,MM/dd/yyyy}"><apex:param value="{!Implementing_Mechanism__c.End_Date__c}" /></apex:outputText>
+          </p>
+         </li>
+         
+         <li class="sidebarItem" style="list-style-type: none;">
+         <span>{!$ObjectType.Implementing_Mechanism__c.fields.Partner_Name__c.label}</span>          
+         <p>{!IF(Implementing_Mechanism__c.Partner_Name__c != null,Implementing_Mechanism__c.Partner_Name__c,'N/A')}</p>  
+        </li>
+         <apex:outputPanel rendered="{!Implementing_Mechanism__c.RecordType.Name != 'Basic'}"> 
+         <li class="sidebarItem" style="list-style-type: none;">
+         <span>{!$ObjectType.Implementing_Mechanism__c.fields.Partner_User_1__c.label}</span>         
+         <p>{!IF(Implementing_Mechanism__c.Partner_User_1__r.Name != null,Implementing_Mechanism__c.Partner_User_1__r.Name,'N/A')}</p>
+         </li>
+         
+         <!--<li class="sidebarItem" style="list-style-type: none;">
+         <span>{!$ObjectType.Implementing_Mechanism__c.fields.Reporting_Frequency__c.label}</span>         
+         <p>{!IF(Implementing_Mechanism__c.Reporting_Frequency__c != null,Implementing_Mechanism__c.Reporting_Frequency__c,'N/A')}</p>   
+         </li>-->
+         
+         <li class="sidebarItem" style="list-style-type: none;">
+         <span>{!$ObjectType.Implementing_Mechanism__c.fields.Reporting_Level__c.label}</span>        
+         <p>{!IF(Implementing_Mechanism__c.Reporting_Level__c != null,Implementing_Mechanism__c.Reporting_Level__c,'N/A')}</p>                                                                                    
+        </li>
+        </apex:outputPanel>
+    </ul>
+    </div><!-- end sidebar -->
+    
+    
+    <!------ CONTENT AREA ------>
+    <div id="contentIM">
+    
+    
+        <!------ DASHBOARD HTML ------>
+        <apex:outputpanel rendered="{!IF(Implementing_Mechanism__c.Recordtype.Name == 'Advanced' , true , false)}">
+        <div class="dashboard" >
+        
+            <div class="column">
+                <div class="award-t awarded">{!$ObjectType.Implementing_Mechanism__c.fields.Award_Title__c.label}</div>               
+                 <div class="award-d awarded">{!IF(Implementing_Mechanism__c.Award_Title__c != null,Implementing_Mechanism__c.Award_Title__c,'N/A')}</div>   
+                 <div class="clear"></div>       
+              <!--  <div class="award-t awarded">{!$ObjectType.Implementing_Mechanism__c.fields.Award_Key__c.label}</div>                
+                <div class="award-d awarded">{!IF(Implementing_Mechanism__c.Award_Key__c != null,Implementing_Mechanism__c.Award_Key__c,'N/A')}</div>    
+                 <div class="clear"></div>   -->     
+                <div class="award-t awarded">{!$ObjectType.Implementing_Mechanism__c.fields.Document__c.label}</div>               
+                 <div class="award-d awarded">{!IF(Implementing_Mechanism__c.Document__c != null,Implementing_Mechanism__c.Document__c,'N/A')}</div>   
+                 <div class="clear"></div>
+                 <div class="award-t awarded">{!$ObjectType.Implementing_Mechanism__c.fields.Contract_Grant__c.label}</div>               
+                 <div class="award-d awarded">{!IF(Implementing_Mechanism__c.Contract_Grant__c != null,Implementing_Mechanism__c.Contract_Grant__c,'N/A')}</div>   
+                 <div class="clear"></div>        
+                <div class="award-t awarded">{!$ObjectType.Implementing_Mechanism__c.fields.Last_Modification__c.label}</div>               
+                 <div class="award-d awarded">{!IF(Implementing_Mechanism__c.Last_Modification__c != null,Implementing_Mechanism__c.Last_Modification__c,'N/A')}</div>   
+                 <div class="clear"></div>         
+                
+            
+            </div><!-- end first column -->
+            
+            <div class="column">
+                <div class="award-t awarded">{!$ObjectType.Implementing_Mechanism__c.fields.Source__c.label}</div>                
+                <div class="award-d awarded">{!IF(Implementing_Mechanism__c.Source__c != null,Implementing_Mechanism__c.Source__c,'N/A')}</div>    
+                 <div class="clear"></div>       
+                <div class="award-t awarded">{!$ObjectType.Implementing_Mechanism__c.fields.totAward__c.label}</div>                
+                <div class="award-d awarded" align="right"><apex:outputText value="{0,number,$###,###}"><apex:param value="{!IF(Implementing_Mechanism__c.totAward__c != null,Implementing_Mechanism__c.totAward__c,0)}" /></apex:outputText>                              
+                </div>   
+                 <div class="clear"></div>        
+                <div class="award-t awarded">{!$ObjectType.Implementing_Mechanism__c.fields.TotObl__c.label}</div>               
+                <div class="award-d awarded"  align="right">
+               <apex:outputText value="{0,number,$###,###}"><apex:param value="{!IF(Implementing_Mechanism__c.totObl__c != null,Implementing_Mechanism__c.totObl__c,0)}" /></apex:outputText>               
+                </div>   
+                 <div class="clear"></div>        
+                <div class="award-t awarded">{!$ObjectType.Implementing_Mechanism__c.fields.totDisb__c.label}</div>                
+                <div class="award-d awarded"  align="right">
+                <apex:outputText value="{0,number,$###,###}"><apex:param value="{!IF(Implementing_Mechanism__c.totDisb__c != null,Implementing_Mechanism__c.totDisb__c,0)}" /></apex:outputText>
+                 </div>   
+                 <div class="clear"></div>         
+            
+            </div><!-- end second column -->
+
+
+            <div class="column">
+                <div class="award-t awarded">{!$ObjectType.Implementing_Mechanism__c.fields.totAccr__c.label}</div>                
+                <div class="award-d awarded"  align="right">
+               <apex:outputText value="{0,number,$###,###}"><apex:param value="{!IF(Implementing_Mechanism__c.totAccr__c != null,Implementing_Mechanism__c.totAccr__c,0)}" /></apex:outputText>
+                </div>   
+              <!--  <div class="clear"></div> 
+                <div class="award-t awarded">{!$ObjectType.Implementing_Mechanism__c.fields.totExp__c.label}</div>               
+                <div class="award-d awarded"  align="right"><apex:outputText value="{0,number,$###,###}"><apex:param value="{!IF(Implementing_Mechanism__c.totExp__c != null,Implementing_Mechanism__c.totExp__c,0)}" /></apex:outputText></div>   -->
+                 <div class="clear"></div>   
+                <div class="award-t awarded">{!$ObjectType.Implementing_Mechanism__c.fields.TotAdv__c.label}</div>                
+                <div class="award-d awarded"  align="right"><apex:outputText value="{0,number,$###,###}"><apex:param value="{!IF(Implementing_Mechanism__c.TotAdv__c != null,Implementing_Mechanism__c.TotAdv__c,0)}" /></apex:outputText></div>   
+                 <div class="clear"></div>  
+                <div class="award-t awarded">{!$ObjectType.Implementing_Mechanism__c.fields.TotMortgage__c.label}</div>               
+                <div class="award-d awarded"  align="right"><apex:outputText value="{0,number,$###,###}"><apex:param value="{!IF(Implementing_Mechanism__c.TotMortgage__c != null,Implementing_Mechanism__c.TotMortgage__c,0)}" /></apex:outputText></div>   
+                 <div class="clear"></div>   
+            
+            
+            </div><!-- end last column -->
+
+        
+        </div><!-- end dashboard -->
+        
+          <!------ Charts Start ------>  
+   
+                    
+        <div style="width:100%;display: block">               
+            <div id="financialChart" style="height: 350px;width:49.5%;margin-right:1%;float: left;" ></div>        
+            <div id="burnRateChart" style="height: 350px; width:49.5%; float: left;"></div>           
+         </div>        
+        </apex:outputPanel>
+         
+          <div class="clear"></div> 
+      
+    
+        <!------ Charts Ends ------>  
+     
+
+        <!------ PROJECT-IM TABLE HTML ------>    
+        <!-- <apex:outputpanel rendered="{!IF($Profile.Name <> 'Mission Partner' , IF($Profile.Name <> 'STD - Mission Profile',true,false), false)}">  -->
+        <apex:outputpanel rendered="{!IF(IsPartnerUser ,false, IF(IsSTDUser,false,true))}">
+        <c:RelatedListComponent bTitle="PROJECTS" parentObj="{!Implementing_Mechanism__c}" pId="{!Implementing_Mechanism__c.id}" rowValue="5" secondFilterCol="Project_Type__c" secondFilterVal="LF Project" parentWhereColName="Implementing_Mechanism_Number__c" relatedListName="{!Implementing_Mechanism__c.ImpMechs_Projects__r}"   childName="Public_IM_Link__c" fSetName="ProjectIMLinkIMFieldSet"  newActionUrl="{!URLFOR('/apex/vfProjectLinkNew',null,[CF00Nd0000003319Y=Implementing_Mechanism__c.Name,CF00Nd0000003319Y_lkid=Implementing_Mechanism__c.id,pType='LF',saveURL='/apex/vfIMBasicDetailFactSheet?id='+Implementing_Mechanism__c.id,scontrolCaching=1,retURL='/apex/vfIMBasicDetailFactSheet?id='+Implementing_Mechanism__c.id,sfdc.override=1])}" editActionUrl="apex/vfProjectFactSheet?id=" parentUrl="apex/vfIMBasicDetailFactSheet?id="/>  
+        </apex:outputpanel>
+        <!-- <apex:outputpanel rendered="{!IF($Profile.Name <> 'Mission Partner' , true , false)}"> -->
+        <apex:outputpanel rendered="{!IF(IsPartnerUser , false , true)}">
+        <c:RelatedListComponent bTitle="FACT SHEETS" parentObj="{!Implementing_Mechanism__c}"  pId="{!Implementing_Mechanism__c.id}" rowValue="5" secondFilterCol="Project_Type__c" secondFilterVal="IM Project" parentWhereColName="Implementing_Mechanism_Number__c" relatedListName="{!Implementing_Mechanism__c.ImpMechs_Projects__r}"   childName="Public_IM_Link__c" fSetName="ProjectIMLinkIMACTFieldSet"  newActionUrl="{!URLFOR('/apex/vfProjectLinkNew',null,[CF00Nd0000003319Y=Implementing_Mechanism__c.Name,CF00Nd0000003319Y_lkid=Implementing_Mechanism__c.id,pType='IM',saveURL='/apex/vfIMBasicDetailFactSheet?id='+Implementing_Mechanism__c.id,scontrolCaching=1,retURL='/apex/vfIMBasicDetailFactSheet?id='+Implementing_Mechanism__c.id,sfdc.override=1])}" editActionUrl="apex/vfIMProjectFactSheet?id=" parentUrl="apex/vfIMBasicDetailFactSheet?id="/>                   
+       
+        </apex:outputpanel>
+        
+        <!------ SUB-AWARDEES TABLE HTML   ------>  
+    
+        <!-- <apex:outputpanel rendered="{!IF($Profile.Name <> 'Mission Partner' , true , false)}">  -->
+        <apex:outputpanel rendered="{!IF(IsPartnerUser , false, true)}">
+        <c:RelatedListComponent bTitle="SUB-AWARDEES" parentObj="{!Implementing_Mechanism__c}"  pId="{!Implementing_Mechanism__c.id}" rowValue="5"   parentWhereColName="ImpMech_Id__c" relatedListName="{!Implementing_Mechanism__c.Sub_Awards__r}"   childName="Sub_Awardee__c" fSetName="SubAwardeeIMFactFieldSet"  newActionUrl="{!URLFOR($Action.Sub_Awardee__c.New,null,[CF00Nd0000006bICm=Implementing_Mechanism__c.Name,CF00Nd0000006bICm_lkid=Implementing_Mechanism__c.id])}" editActionUrl="apex/vfSubAwardeeDetail?id=" parentUrl="apex/vfIMBasicDetailFactSheet?id="/>  
+        </apex:outputpanel>
+        
+        <!-- <apex:outputpanel rendered="{!IF($Profile.Name == 'Mission Partner' , true , false)}">  -->
+        <apex:outputpanel rendered="{!IF(IsPartnerUser , true , false)}">
+        <c:RelatedListComponent bTitle="SUB-AWARDEES" parentObj="{!Implementing_Mechanism__c}"  pId="{!Implementing_Mechanism__c.id}" rowValue="5"   parentWhereColName="ImpMech_Id__c" relatedListName="{!Implementing_Mechanism__c.Sub_Awards__r}"   childName="Sub_Awardee__c" fSetName="SubAwardeeIMFactFieldSet"  newActionUrl="{!URLFOR($Action.Sub_Awardee__c.New,null,[CF00Nd0000006bICm=Implementing_Mechanism__c.Name,CF00Nd0000006bICm_lkid=Implementing_Mechanism__c.id])}" editActionUrl="vfSubAwardeeDetail?id=" parentUrl="Partners/vfIMBasicDetailFactSheet?id="/>  
+        </apex:outputpanel>            
+        <!------ SUB-AWARDEES TABLE End HTML   ------>  
+       
+       
+           
+        <!------ TASKS TABLE HTML ------>    
+       
+    <!-- <apex:outputpanel rendered="{!IF($Profile.Name <> 'Mission Partner' , true , false)}">  -->
+        <apex:outputpanel rendered="{!IF(IsPartnerUser , false, true)}">
+        <c:RelatedListComponent bTitle="TASKS" parentObj="{!Implementing_Mechanism__c}"  pId="{!Implementing_Mechanism__c.id}" rowValue="5"   parentWhereColName="ImpMech_Id__c" relatedListName="{!Implementing_Mechanism__c.Activities__r}"   childName="Activity__c" fSetName="TaskIMFactSheetFieldSet"  newActionUrl="{!URLFOR($Action.Activity__c.New,null,[CF00Nd0000006bID6=Implementing_Mechanism__c.Name,CF00Nd0000006bID6_lkid=Implementing_Mechanism__c.id,CF00Nd000000331jq=taskProject.Project_Code__c,CF00Nd000000331jq_lkid=taskProject.id])}" editActionUrl="apex/vfActivityDetail?id=" parentUrl="apex/vfIMBasicDetailFactSheet?id="/>  
+        </apex:outputpanel>
+        
+       <!--  <apex:outputpanel rendered="{!IF($Profile.Name == 'Mission Partner' , true , false)}">  -->
+        <apex:outputpanel rendered="{!IF(IsPartnerUser , true , false)}">   
+        <c:RelatedListComponent bTitle="TASKS" parentObj="{!Implementing_Mechanism__c}"  pId="{!Implementing_Mechanism__c.id}" rowValue="5"   parentWhereColName="ImpMech_Id__c" relatedListName="{!Implementing_Mechanism__c.Activities__r}"   childName="Activity__c" fSetName="TaskIMFactSheetFieldSet"  newActionUrl="{!URLFOR($Action.Activity__c.New,null,[CF00Nd0000006bID6=Implementing_Mechanism__c.Name,CF00Nd0000006bID6_lkid=Implementing_Mechanism__c.id,CF00Nd000000331jq=taskProject.Project_Code__c,CF00Nd000000331jq_lkid=taskProject.id])}" editActionUrl="vfActivityDetail?id=" parentUrl="Partners/vfIMBasicDetailFactSheet?id="/>  
+        </apex:outputpanel>                   
+       
+       <!------ TASKS TABLE HTML END ------> 
+       
+      <c:HistoryRelatedListComponent recLimit="50" ObjName="{!Implementing_Mechanism__c}"/> 
+       
+       
+ <!------ NOTES AND ATTACHMENTS -->
+
+      <c:RelatedListComponent bTitle="NOTES AND ATTACHMENTS" parentObj="{!Implementing_Mechanism__c}"  pId="{!Implementing_Mechanism__c.id}" parentName="Implementing_Mechanism__c"  rowValue=""  parentWhereColName="Implementing_Mechanism__c" relatedListName="{!Implementing_Mechanism__c.NotesAndAttachments}"   childName="" fSetName=""  newActionUrl="" editActionUrl="/" parentUrl="apex/vfIMBasicDetailFactSheet?id="/> 
+      
+         
+            
+            
+          
+            
+            <apex:repeat value="{!Implementing_Mechanism__c.NotesAndAttachments}" var="noteAtt" rendered="false"> 
+            <div class="clear"></div>         
+            <div class="row">
+                <div class="data" style="width:5%">                 
+                    
+                    <apex:outputLink title="Edit" value="{!URLFOR('/'+noteAtt.id+'/e',null ,[retURL='/apex/vfIMBasicDetailFactSheet?id='+Implementing_Mechanism__c.id])}"><div class="tedit"></div></apex:outputLink>                       
+                    <apex:outputLink title="Delete" value="{!URLFOR($Action.Activity__c.Delete, noteAtt.id,[retURL='/apex/vfIMBasicDetailFactSheet?id='+Implementing_Mechanism__c.id])}" onclick="return window.confirm('Are you sure?');"><div class="tdelete"></div>
+                    </apex:outputLink>
+                    
+                    
+                </div>
+               
+                <div class="data" style="width:7%">
+                    <p>                        
+                        <apex:outputText value="Note" rendered="{!noteAtt.IsNote}"></apex:outputText>
+                        <apex:outputText value="Attachment" rendered="{!NOT(noteAtt.IsNote)}"></apex:outputText>                        
+                    </p>
+                </div>
+                <div class="data" style="width:22%"><p>
+                    <apex:outputLink value="/NotesView?id={!noteAtt.id}" rendered="{!noteAtt.isNote}">{!noteAtt.Title}</apex:outputLink>
+                    <apex:outputLink value="/AttachmentView?id={!noteAtt.id}" rendered="{!NOT(noteAtt.isNote)}">{!noteAtt.Title}</apex:outputLink>
+                    </p>
+                    </div>
+                <div class="data" style="width:12%"><p>
+                <apex:outputText value="{0,date,MM/dd/yyyy}"><apex:param value="{!noteAtt.LastModifiedDate}" /></apex:outputText>
+                </p></div>
+                <div class="data" style="width:15%"><p><apex:outputField value="{!noteAtt.LastModifiedById}"></apex:outputField></p></div>
+                <div class="data" style="width:15%"><p><apex:outputField value="{!noteAtt.createdbyid}"></apex:outputField></p></div>
+                
+            </div>
+            </apex:repeat>   
+          <!--  <apex:outputPanel rendered="{!ObjectRecords != null && rowValue != null  && ObjectRecords.size > VALUE(rowValue)}"> 
+     
+              <apex:commandButton action="{!null}" onclick="popupRelatedDetail('{!parentObj.id}','{!parentObj}','{!parentWhereColName}','{!relatedListName}','{!childName}','{!fSetName}','{!bTitle}','{!newActionUrl }','{!editActionUrl}','{!parentUrl}');return false;" value="More records .."></apex:commandButton> 
+
+          </apex:outputPanel> -->
+            
+           
+    
+    
+    </div>
+
+</div> 
+
+</apex:form>
+</body>
+
+</html>
+</apex:page>

@@ -1,0 +1,447 @@
+<apex:page controller="AAClsUserProfileFinder" >
+<head>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+    
+    <script type="text/javascript">
+    function slideonlyone(thechosenone) {
+     $('.content').each(function(index) {
+          if ($(this).attr("id") == thechosenone) {
+               $(this).fadeIn(400);
+          }
+          else {
+               $(this).fadeOut(0);
+          }
+     });
+}    </script>
+
+    <script type="text/javascript">
+    function toggleDiv(divId) {
+       $("#"+divId).toggle();
+    }
+    </script>
+    
+    <!-- SCROOOLLLLLLLLLLL UPPPPPPPP!!!!!!!!!!!! -->
+    <script type="text/javascript">
+    $(window).scroll(function(){
+        if ($(this).scrollTop() > 100) {
+            $('.up').fadeIn();
+        } else {
+            $('.up').fadeOut();
+        }
+    });
+    
+    $('.up').click(function(){
+    $("html, body").animate({ scrollTop: 0 }, 600);
+    return false;
+    });
+    </script>
+    
+    <style type="text/css">
+    /* template */
+    
+    body { 
+        font-family: helvetica, arial, sans-serif;
+        font-size: 12px;
+    }
+    
+    .content img {
+        background-color: #eee;
+        padding: 2px;
+        border: 1px solid #777;
+    }
+    
+    #sidebarCell {
+        display: none;
+    }
+    
+    strong {
+        font-weight: 600;
+        color: #111;
+    }
+    
+    h1 { 
+        font-family: "arial black";
+        font-size: 36px;
+        text-transform: uppercase;
+        letter-spacing: -3px;
+        font-weight: 900;
+        margin:  0 12px 0 0;
+        position: relative;
+        top: -14px;
+    }
+    
+    h2 {
+        font-family: "arial black";
+        font-size: 21px;
+        letter-spacing: -1px;
+        font-weight: 900;
+        margin: 0 0 12px 0;
+        line-height:20px;
+    }
+    
+    h3 {
+        font-size: 17px;
+        font-family: arial;
+        font-weight: 100;
+        letter-spacing: 1px;
+        margin: 0 0 12px 0;
+        line-height: 18px;
+        text-transform: uppercase;
+    }
+    
+    ul li {
+        margin-bottom: 12px;
+    }
+    
+    ul {
+        margin-top: 20px;
+    }
+    
+    .content a {
+        color: #1954B5;
+        text-decoration: none;
+    }
+    
+
+    .content a:hover {
+        color: #039;
+        text-decoration: none;
+    }
+    
+    .clear {
+        clear: both;
+    }
+    
+    .content b {
+        color: #000;
+        font-size: 14px;
+        font-family: Helvetica, Arial, sans-serif;
+        font-weight: 900;
+        
+    }
+    
+    .content p {
+        line-height: 20px;
+    }
+    
+    tabs a {
+        text-decoration: none;
+        color: #fff;
+    }
+    
+    /* tabs */
+    
+    .tabs {
+        width: 145px;
+        height: 120px   ;
+        margin: 15px;
+        padding: 15px;
+        float: left;
+        color: #222;
+        font-size: 12px;
+        line-height: 17px !important;
+        border: 5px solid #EDEDED;
+        background-color: #d9d9d9;
+    }
+    
+    .tabs:hover {
+        background-image: url(images/square_bg.png);
+        background-repeat: repeat;
+        color: #f4f4f4;
+    }
+    
+    .data:hover {
+        background-color: #2b6b2b;
+        border: 5px solid #3f9f3f;
+    }
+    
+    .access:hover {
+        background-color: #57295c;
+        border: 5px solid #87408f;
+    }
+    
+    .reporting:hover {
+        background-color: #b06b0b;
+        border: 5px solid #e48b0d;
+    }
+    
+    .collaboration:hover {
+        background-color: #123d82;
+        border: 5px solid #1954b5;
+    }
+    
+    .definitions:hover {
+        background-color: #7c0909;
+        border: 5px solid #b92626;
+    }
+    
+    .release:hover {
+        background-color: #709900;
+        border: 5px solid #96cc00;
+    }
+    
+    .tabs:first-child {
+        margin-left: 0px !important;
+    }
+    
+    #release img {
+        background: transparent !important;
+        border: 0 !important;
+    }
+    
+    /* content area */
+    
+    .content {
+        display: none;
+        color: #333;
+        padding: 0 0 15px 15px;
+        width: 750px;
+        margin: 20px 0 0 5px;
+    }
+    
+    .content h1 {
+        left: -3px;
+    }
+    
+    #data {
+        border-left: 10px solid #3f9f3f;
+    }
+    
+    #data h1 {
+        color: #3f9f3f !important;
+    }
+    
+    #access {
+        border-left: 10px solid #87408f;
+    }
+    
+    #access h1 {
+        color: #87408f !important;
+    }
+    
+    #reporting {
+        border-left: 10px solid #e48b0d;
+    }
+    
+    #reporting h1 {
+        color: #e48b0d !important;
+    }
+    
+    #collaboration {
+        border-left: 10px solid #1954b5;
+    }
+    
+    #collaboration h1 {
+        color: #1954b5 !important;
+    }
+    
+    #definitions {
+        border-left: 10px solid #b92626;
+    }
+    
+    #definitions h1 {
+        color: #b92626 !important;
+    }
+    
+    #release {
+        border-left: 10px solid #709900;
+    }
+    
+    #release h1 {
+        color: #709900 !important;
+    }
+    
+    .close {
+        padding: 7px 9px;
+        font-family: Impact, Arial "Arial Black", Gadget, sans-serif;
+        font-size: 13px;
+        color: #fff;
+        background-color: #222;
+        font-weight: 900;
+        float: right;
+    }
+    
+    .close:hover {
+        text-decoration: none;
+        color: #222;
+        background-color: #777;
+    }
+    
+    #up {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        margin:15px;
+        padding:11px 13px 8px 13px;
+        font-family: Impact, Arial "Arial Black", Gadget, sans-serif;
+        font-size: 13px;
+        color: #fff;
+        background-color: #222;
+        font-weight: 900;
+        display: none;
+    }
+    
+    #up:hover {
+        text-decoration: none;
+        color: #222;
+        background-color: #777;
+    }
+        
+        .tile {
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			display: inline-block;
+			float: left;
+			margin-top: 25px;
+			margin-right: 25px;
+		}
+		
+		.tile:hover > .titlecontainer {
+			background-color: #343c44;
+		}
+		
+		.tile .redtriangle {
+			width: 0;
+			height: 0;
+			border-style: solid;
+			border-width: 0 45px 45px 0;
+			border-color: transparent #e41c40 transparent transparent;
+			display: inline-block;
+			position: absolute;
+			right: 0px;
+			top: 0px;
+		}
+		
+		.tile .titlecontainer {
+			background-color: #3d7ab3;
+			display: table;
+		}
+		
+		.tile .titlecontainer .titletext{
+			height: 50px;  /*accounts for padding*/
+			width: 202px;  /*accounts for padding*/
+			padding: 15px;
+			font-size: 17px;
+			font-weight: bold;
+			color: #ffffff;
+			text-align: left;
+			vertical-align: middle;
+			display: table-cell;
+		}
+		
+		.tile .seperator {
+			background-color: #e41c40;
+			width: 232px;
+			height: 3px;
+			margin-top: 3px;
+			margin-bottom: 3px;
+			display: inline-block;
+			float: left;
+		}
+		
+		.tile .bodycontainer {
+			height: 128px; /*accounts for border and padding*/
+			width: 200px; /*accounts for border and padding*/
+			background-color: #ffffff;
+			padding: 15px;
+			border-style: solid;
+			border-width: 1px;
+			border-color: #e2e2e1;
+			display: inline-block;
+			float: left;
+			clear: left;
+		}
+		
+		.tile .bodycontainer .bodytext {
+			font-size: 14px;
+			font-weight: normal;
+			color: #343c44;
+			text-align: left;
+			display: block;
+		}
+    </style>
+    
+</head>
+
+	<body>
+        <div id="wrapper">
+            <a name="top" id="top">&nbsp;</a>
+        
+            <a class="tile" href="javascript:slideonlyone('quickGuides');">
+                <span class="titlecontainer">
+                    <span class="titletext">
+                        Quick Guides
+                    </span>
+                </span>
+                <span class="seperator"></span>
+                <span class="bodycontainer">
+                    <span class="bodytext">
+                        Guides that can help users navigate the system.
+                    </span>
+                </span>
+            </a>
+            
+            <a class="tile" href="javascript:slideonlyone('videos');">
+                <span class="titlecontainer">
+                    <span class="titletext">
+                        Computer based Training
+                    </span>
+                </span>
+                <span class="seperator"></span>
+                <span class="bodycontainer">
+                    <span class="bodytext">
+                        Web-based training on the system.
+                    </span>
+                </span>
+            </a>
+            
+            <a class="tile" href="javascript:slideonlyone('faqs');">
+                <span class="titlecontainer">
+                    <span class="titletext">
+                        Frequently Asked Questions
+                    </span>
+                </span>
+                <span class="seperator"></span>
+                <span class="bodycontainer">
+                    <span class="bodytext">
+                        Frequently asked questions on the A&amp;A Plan system.
+                    </span>
+                </span>
+            </a>
+            
+            <div class="clear"></div>
+            
+            <div id="quickGuides" class="content">
+                <a href="javascript:toggleDiv('quickGuides');"><div class="close">X</div></a>
+                <h2>Quick Guides</h2>
+                <p>These Quick Guides provide a walk through of using A&amp;A Planning's major functions.</p>
+                <apex:repeat value="{!quickGuides}" var="d" >
+                    <div>
+                        <apex:outputLink value="/servlet/servlet.FileDownload?file={!d.id}" >{!d.Name}</apex:outputLink>
+                    </div>
+                </apex:repeat>
+            </div>
+            
+            <div id="faqs" class="content">
+                <a href="javascript:toggleDiv('faqs');"><div class="close">X</div></a>
+                <h2>Frequently Asked Questions</h2>
+                <p>This Frequently Asked Question (FAQ) document provides answers to questions about A&amp;A Planning's major functions.</p>
+                <apex:repeat value="{!faqs}" var="d" >
+                    <div>
+                        <apex:outputLink value="/servlet/servlet.FileDownload?file={!d.id}" >{!d.Name}</apex:outputLink>
+                    </div>
+                </apex:repeat>
+            </div>
+            
+            <div id="videos" class="content">
+                <a href="javascript:toggleDiv('videos');"><div class="close">X</div></a>
+                <h2>Computer Based Training</h2>
+                <p>This video provides additional answers to questions about A&amp;A Planning's major functions.</p>
+                <div>
+                    <a href="https://university.usaid.gov/">https://university.usaid.gov/</a>
+                </div>
+            </div>
+            
+        </div>        
+    </body>
+</apex:page>

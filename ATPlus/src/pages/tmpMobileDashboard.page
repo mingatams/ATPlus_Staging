@@ -1,0 +1,1002 @@
+<apex:page controller="tmpController" sidebar="false" tabStyle="Dashboards__tab" standardStylesheets="false">
+    <apex:styleSheet value="{!URLFOR($Resource.jquery, 'css/plain-theme/jquery-ui-1.10.4.custom.min.css')}" />
+    <apex:styleSheet value="{!URLFOR($Resource.multiselect, 'jquery.multiselect.css')}" />
+    <c:styles />
+    <c:FlatSfStyle />
+    
+    <style>
+        .stats {
+            list-style: none;
+            margin: 0;
+            padding: 5px;
+        }
+        
+        .stats li {
+            background: #f8f8f8;
+            text-align: center;
+            font: 300 34px/36px 'Open Sans';
+            width: 95%; /* Fallback */
+            width: calc(95% - 10px);
+            height: 82px;
+            box-sizing: border-box;
+            margin: 0 auto;
+        }
+        
+        .stats li .desc {
+            display: block;
+            font: 600 12px/16px 'Open Sans';
+            color: #747474;
+            text-transform: uppercase;
+          	width: 90%;
+            margin: 0 auto;
+        }
+        /*
+        	#1797c0
+        	#17c0b2
+        	#7cd6ad
+        	#8ac634
+        */
+        .stat1 {
+            border-bottom: 4px solid #1797c0;
+            color: #1797c0;
+        }
+        
+        .stat2 {
+            border-bottom: 4px solid #17c0b2;
+            color: #17c0b2;
+        }
+        
+        .stat3 {
+            border-bottom: 4px solid #7cd6ad;
+            color: #7cd6ad;
+        }
+        
+        .stat4 {
+            border-bottom: 4px solid #8ac634;
+            color: #8ac634;
+        }
+        
+        .stat5 {
+            border-bottom: 4px solid #ab9fbb;
+            color: #ab9fbb;
+        }
+        
+        .stat6 {
+            border-bottom: 4px solid #ecefb5;
+            color: #ecefb5;
+        }
+        
+        .stat7 {
+            border-bottom: 4px solid #c8e2b5;
+            color: #c8e2b5;
+        }
+        
+        .menu {
+            background: #e3e3e3;
+            height: 29px;
+            font: 700 12px/29px 'Open Sans';
+            color: #747474;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding-left: 10px;
+        }
+        
+        .container {
+            background: #f8f8f8;
+            margin-top: 13px;
+        }
+        
+        .container.type,.container.priority {
+            width: 49%; /* Fallback */
+            width: calc(50% - 7px);
+            /*width: 300px;calc(50%-7px);*/
+            display: inline-block;
+        }
+        
+        .container.priority {
+            float: right;
+        }
+        
+        #type,#priority {
+            height: 275px;
+        }
+        
+        svg > text {
+            display: none;
+        }
+    </style>
+
+
+    <style>
+    /*Jag's Custom Stylesheet*/
+
+    /*Chart Related CSS Classes*/
+    .container.common {
+        width: 95%;
+        width: calc(95% - 10px);
+        display: inline-block;
+    }
+
+    .container.common.left {
+        float: left;
+    }
+
+    .container.common.right {
+        float: right;
+    }
+
+    /*Search Related CSS Classes*/
+    .addBottomPadding {
+        margin-bottom: 13px;
+    }
+
+    .searchDiv{
+        display: none;
+    }
+    
+    .searchList {
+        list-style: none;
+        height: 31px;
+        margin: 0;
+        padding: 0;
+    }
+
+    .searchList li {
+        background: #f8f8f8;
+        float: left;
+        text-align: center;
+        font: 700 12px/29px 'Open Sans';
+        width: 24%; /* Fallback */
+        width: calc(25% - 10px);
+        box-sizing: border-box;
+        margin-left: 0;
+    }
+
+    .searchList li span {
+        color: #747474;
+        text-transform: uppercase;
+        margin: 0 auto;
+    }
+
+    .menu.addMousePointer:hover, .btnStyle:hover{
+        background: #d0d0d0 !important;
+    }
+
+    /*Button Related CSS Classes*/
+
+    .btnStyle {
+        text-transform: uppercase !important;
+        margin: auto !important;
+        color: #747474 !important;
+        font: 700 'Open Sans' !important; 
+        border-radius: 0px !important;
+        background: white !important;
+
+    }
+
+    .addMousePointer {
+        cursor: pointer;
+    }
+
+    /*DropDown CSS Override*/
+    .ui-multiselect-checkboxes li {
+        text-transform: uppercase;
+        font-size: 12px !important;
+        line-height: 14px !important;
+    }
+
+    .ui-multiselect-header ul {
+        text-transform: uppercase;
+        font-size: 13px !important;
+        line-height: 14px !important;
+    }
+
+    .clearfix {
+	    clear: both;
+    }
+    </style>
+    
+    
+    <apex:pageMessages id="messages" />
+
+   <!-- <div class="container addBottomPadding" id="filterTitleContainerId">
+        <div class="menu addMousePointer">Filter Charts</div>
+        <apex:form style="overflow:hidden;">
+            <div class="searchDiv">
+                
+                <div>
+                    <ul class="searchList">
+                        <li>
+                            <span>
+                                Type
+                            </span>
+                            <span>
+                                <apex:selectList size="3" multiselect="true" styleClass="multiselect multiselect-region" >
+                                    <apex:selectOptions value="{!RegionItems}"/>
+                                </apex:selectList>
+                            </span>
+                        </li>
+
+                        <li>
+                            <span>
+                                <apex:outputLabel value="{!$ObjectType.OperatingUnit__c.label}" />
+                            </span>
+                            <span>
+                                <apex:selectList size="3" multiselect="true" styleClass="multiselect-operatingunit">
+                                    <apex:selectOptions value="{!OperatingUnitOptions}" />
+                                </apex:selectList>
+                            </span>
+                        </li>
+
+                        <li>
+                            <span>
+                                <apex:outputLabel value="{!$ObjectType.AAPlan__c.fields.FiscalYear__c.label}" />
+                            </span>
+                            <span>
+                                <apex:selectList size="3" multiselect="true" styleClass="multiselect-fiscalyear">
+                                    <apex:selectOptions value="{!FiscalYearOptions}"/>
+                                </apex:selectList>
+                            </span>
+                        </li>
+
+                        <li>
+                            <span>
+                                <apex:commandButton value="Search" onClick="filter();" rerender="messages" styleClass="btnStyle" />
+                            </span>
+
+                            <span>
+                                <apex:commandButton value="Clear" onClick="multiselect.multiselectClearAll(); filter()" rerender="messages" styleClass="btnStyle" />
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+
+
+            </div>
+        </apex:form>
+    </div> -->
+    
+    
+    <div>
+        <div>
+            <ul class="stats" style="display:none;">
+                <li class="stat1">
+                    <div class="inner">
+                        <div class="statNbr">N/A</div>
+                        <div class="desc">Actions</div>
+                    </div>
+                </li>
+                <li class="stat2">
+                    <div class="inner">
+                        <div class="statNbr">N/A</div>
+                        <div class="desc">Awarded in {!Year.Year__c}</div>
+                    </div>
+                </li>
+                <li class="stat3">
+                    <div class="inner">
+                        <div class="statNbr">N/A</div>
+                        <div class="desc">Remaining to be Executed in {!Year.Year__c}</div>
+                    </div>
+                </li>
+                <li class="stat4">
+                    <div class="inner">
+                        <div class="statNbr">N/A</div>
+                        <div class="desc">Not yet awarded using Expiring Funds</div>
+                    </div>
+                </li>
+            	 <li class="stat5">
+                    <div class="inner">
+                        <div class="statNbr">N/A</div>
+                        <div class="desc">Over $25M not awarded in {!Year.Year__c}</div>
+                    </div>
+                </li>
+                <li class="stat6">
+                    <div class="inner">
+                        <div class="statNbr">N/A</div>
+                        <div class="desc">% of Actions net yet awarded using Expiring Funds</div>
+                    </div>
+                </li>
+                <li class="stat7">
+                    <div class="inner">
+                        <div class="statNbr">N/A</div>
+                        <div class="desc">% of Actions Remaining to be Obligated by End {!Year.Year__c}</div>
+                    </div>
+                </li>
+            </ul>
+
+
+            <div class="container">
+                <div class="menu">Amount by Status</div>
+                <div id="status"></div>
+            </div>
+            <!--
+            <div class="container type">
+                <div class="menu">Actions by Type</div>
+                <div id="type"></div>
+            </div>
+            <div class="container priority">
+                <div class="menu">Actions by Priority</div>
+                <div id="priority"></div>
+            </div>
+           -->
+			
+            <div class="container">
+                <div class="menu">Plans by TEC Threshold</div>
+                <div id="grid_cell0"></div>
+            </div>
+
+            <div class="container">
+                <div class="menu">Plans by Mechanism Type</div>
+                <div id="grid_cell1"></div>
+            </div>
+
+            <div class="container">
+                <div class="menu">Plans by Partner</div>
+                <div id="grid_cell2"></div>
+            </div>
+
+            <div class="container">
+                <div class="menu">Plans by Planning Unit</div>
+                <div id="grid_cell3"></div>
+            </div>
+
+            <div class="container">
+                <div class="menu">Plans by Priority</div>
+                <div id="grid_cell4"></div>
+            </div>
+
+            <div class="container">
+                <div class="menu">Plans by Status</div>
+                <div id="grid_cell5"></div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+		<!--  
+      	<div class="container">
+		    <div class="menu">Actions by Planning Unit</div>
+		    <div id="unit"></div>
+		</div>
+		-->
+    </div>
+    
+    <script src="{!URLFOR($Resource.jquery, 'js/jquery-1.10.2.js')}"></script>
+    <script src="{!URLFOR($Resource.jquery, 'js/jquery-ui-1.10.4.custom.min.js')}"></script>
+    
+    <c:MultiSelectJS />
+    
+    <script src="https://code.highcharts.com/3.0.9/highcharts.js" > </script>
+    <script src="https://code.highcharts.com/3.0.9/modules/funnel.js"> </script>
+    <script src="https://code.highcharts.com/3.0.9/highcharts-more.js" > </script>
+    <!--<script src="https://code.highcharts.com/3.0.9/modules/exporting.js" > </script> -->
+    
+    <script>
+        
+        var j$ = jQuery.noConflict();
+        
+        //Expand/Hide Filter Charts Container
+        
+        j$(document).ready(function(){
+            
+            //This is used for "FILTER CHARTS"
+            j$('.menu.addMousePointer').click(function(){
+                j$('.searchDiv').slideToggle("fast");
+            });
+			
+			var colors = new ChartColors();
+            for(var i=1; i<=0; i++) {
+            	j$('.stat'+i).css({
+            		'color': '4px solid '+colors.next(),
+            		'border-bottom': colors.current
+            	});
+            }
+			
+        });
+        
+        
+        /*
+        j$(function () {
+            j$('#type').highcharts({
+                chart: {
+                    backgroundColor: '#f8f8f8',
+                    type: 'pie',
+                    spacing: [10,2,10,40]
+                },
+                title: {
+                    text: ''
+                },
+                tooltip: {
+                    pointFormat: '{point.y}'
+                },
+                legend: {
+                    align: 'left',
+                    borderColor: '#f8f8f8',
+                    itemMarginBottom: 13,
+                    itemStyle: {
+                        fontFamily: 'Open Sans'
+                    },
+                    layout: 'vertical',
+                    rtl: true,
+                    symbolRadius: '50%',
+                    symbolWidth: 12,
+                    verticalAlign: 'middle'
+                },
+                series: [{
+                    showInLegend: true,
+                    name: '',
+                    data: [
+                        {name:'Data Point 1', y:3200, color:'#ecefb5'},
+                        {name:'Data Point 2', y:8500, color:'#c8e2b5'},
+                        {name:'Data Point 3', y:6000, color:'#82ccba'},
+                        {name:'Data Point 4', y:19800, color:'#42b7c3'},
+                        {name:'Data Point 5', y:2900, color:'#2492be'},
+                        {name:'Data Point 6', y:9500, color:'#4081bf'},
+                        {name:'Data Point 7', y:11900, color:'#6482ba'},
+                        {name:'Data Point 8', y:1900, color:'#ab9fbb'}]
+                }],
+                plotOptions: {
+                    pie: {
+                        dataLabels: {
+                            enabled: false
+                        }
+                    }
+                }
+            });
+        });
+        
+        j$(function () {
+            j$('#priority').highcharts({
+                chart: {
+                    backgroundColor: '#f8f8f8',
+                    type: 'pie',
+                    spacing: [10,40,10,2]
+                },
+                title: {
+                    text: ''
+                },
+                tooltip: {
+                    pointFormat: '{point.y}'
+                },
+                legend: {
+                    align: 'right',
+                    borderColor: '#f8f8f8',
+                    itemMarginBottom: 22,
+                    itemStyle: {
+                        fontFamily: 'Open Sans',
+                    },
+                    layout: 'vertical',
+                    symbolRadius: '50%',
+                    symbolWidth: 12,
+                    verticalAlign: 'middle'
+                },
+                series: [{
+                    showInLegend: true,
+                    name: '',
+                    data: [
+                        {name:'Data Point 1', y:3200, color:'#ecefb5'},
+                        {name:'Data Point 2', y:8500, color:'#c8e2b5'},
+                        {name:'Data Point 3', y:6000, color:'#82ccba'},
+                        {name:'Data Point 4', y:19800, color:'#42b7c3'}]
+                }],
+                plotOptions: {
+                    pie: {
+                        dataLabels: {
+                            enabled: false
+                        }
+                    }
+                }
+            });
+        });
+        
+        
+        j$(function () {
+            j$('#unit').highcharts({
+                chart: {
+                    backgroundColor: '#f8f8f8',
+                    type: 'scatter',
+                    zoomType: 'xy',
+                    spacing: [15,30,30,20]
+                },
+                title: {
+                    text: ''
+                },
+                xAxis: {
+                    title: {
+                        style: {
+                            fontFamily: 'Open Sans',
+                            fontSize: 12,
+                            color: '#5b5b5b',
+                            fontWeight: 600,
+                            textTransform: 'uppercase'
+                        },
+                        margin: 10,
+                        enabled: true,
+                        text: 'Number of Actions'
+                    },
+                    labels: {
+                        style: {
+                            fontFamily: 'Open Sans',
+                            fontSize: 12,
+                            color: '#5b5b5b'
+                        }
+                    },
+                    startOnTick: true,
+                    endOnTick: true,
+                    showLastLabel: true,
+                    lineColor: '#e3e3e2',
+                    gridLineWidth: 1,
+                    gridLineColor: '#e3e3e2',
+                    tickWidth: 0
+                },
+                yAxis: {
+                    categories: ['0', '150K - 500K', '500K - 1M', '1M - 4M', '4M - 10M', '25M - 75M', '75M - 500M', '500M - 2B', '2B - 5B', '5 BILLION+'],
+                    title: {
+                        text: 'Award Amount in U.S. Dollars',
+                        style: {
+                            fontFamily: 'Open Sans',
+                            fontSize: 12,
+                            color: '#5b5b5b',
+                            fontWeight: 600,
+                            textTransform: 'uppercase'
+                        },
+                        margin: 20
+                    },
+                    labels: {
+                        style: {
+                            fontFamily: 'Open Sans',
+                            fontSize: 12,
+                            color: '#5b5b5b'
+                        }
+                    },
+                    lineColor: '#e3e3e2',
+                    gridLineColor: '#e3e3e2'
+                },
+                legend: {
+                    layout: 'horizontal',
+                    align: 'center',
+                    borderWidth: 0,
+                    itemDistance: 45,
+                    x: 40,
+                    symbolRadius: '50%',
+                    symbolWidth: 12,
+                    itemStyle: {
+                        fontFamily: 'Open Sans',
+                    }
+                },
+                plotOptions: {
+                    scatter: {
+                        marker: {
+                            symbol: "circle",
+                            radius: 5,
+                            states: {
+                                hover: {
+                                    enabled: true
+                                }
+                            }
+                        },
+                        states: {
+                            hover: {
+                                marker: {
+                                    enabled: false
+                                }
+                            }
+                        },
+                        tooltip: {
+                            headerFormat: '',
+                            pointFormat: '{point.name} ({series.name})<br>{point.range} U.S. Dollars, {point.x} Actions'
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Awarded',
+                    color: 'rgba(79,191,64,.6)',
+                    data: [{name:'Mission Name', x: 161.2, y: 7, range: '500M - 2B'}, {name:'Mission Name', x: 167.5, y: 7, range: '500M - 2B'}, {name:'Mission Name', x: 159.5, y: 7, range: '500M - 2B'}, {name:'Mission Name', x: 157.0, y: 7, range: '500M - 2B'}, {name:'Mission Name', x: 155.8, y: 7, range: '500M - 2B'},
+                        {name:'Mission Name', x: 174.0, y: 7, range: '500M - 2B'}, {name:'Mission Name', x: 173.0, y: 7, range: '500M - 2B'}, {name:'Mission Name', x: 179.9, y: 7, range: '500M - 2B'}, {name:'Mission Name', x: 170.5, y: 7, range: '500M - 2B'}, {name:'Mission Name', x: 160.0, y: 7, range: '500M - 2B'},
+                        {name:'Mission Name', x: 154.4, y: 7, range: '500M - 2B'}, {name:'Mission Name', x: 162.0, y: 7, range: '500M - 2B'}, {name:'Mission Name', x: 176.5, y: 7, range: '500M - 2B'}, {name:'Mission Name', x: 160.0, y: 7, range: '500M - 2B'}, {name:'Mission Name', x: 152.0, y: 7, range: '500M - 2B'},
+                        {name:'Mission Name', x: 162.1, y: 1, range: '150K - 500K'}, {name:'Mission Name', x: 170.0, y: 1, range: '150K - 500K'}, {name:'Mission Name', x: 160.2, y: 1, range: '150K - 500K'}, {name:'Mission Name', x: 161.3, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 166.4, y: 2, range: '500K - 1M'},
+                        {name:'Mission Name', x: 156.0, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 160.0, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 163.0, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 165.7, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 161.0, y: 2, range: '500K - 1M'},
+                        {name:'Mission Name', x: 162.0, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 166.0, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 174.0, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 172.7, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 167.6, y: 2, range: '500K - 1M'},
+                        {name:'Mission Name', x: 164.0, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 161.2, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 155.0, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 170.0, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 176.2, y: 2, range: '500K - 1M'},
+                        {name:'Mission Name', x: 161.0, y: 3, range: '1M - 4M'}, {name:'Mission Name', x: 151.1, y: 3, range: '1M - 4M'}, {name:'Mission Name', x: 168.2, y: 3, range: '1M - 4M'}, {name:'Mission Name', x: 168.9, y: 3, range: '1M - 4M'}, {name:'Mission Name', x: 173.2, y: 3, range: '1M - 4M'},
+                        {name:'Mission Name', x: 171.8, y: 3, range: '1M - 4M'}, {name:'Mission Name', x: 178.0, y: 3, range: '1M - 4M'}, {name:'Mission Name', x: 164.3, y: 3, range: '1M - 4M'}, {name:'Mission Name', x: 163.0, y: 3, range: '1M - 4M'}, {name:'Mission Name', x: 168.5, y: 3, range: '1M - 4M'},
+                        {name:'Mission Name', x: 166.8, y: 8, range: '2B - 5B'}, {name:'Mission Name', x: 172.7, y: 8, range: '2B - 5B'}, {name:'Mission Name', x: 163.5, y: 8, range: '2B - 5B'}, {name:'Mission Name', x: 169.4, y: 8, range: '2B - 5B'}, {name:'Mission Name', x: 167.8, y: 8, range: '2B - 5B'},
+                        {name:'Mission Name', x: 159.5, y: 8, range: '2B - 5B'}, {name:'Mission Name', x: 167.6, y: 8, range: '2B - 5B'}, {name:'Mission Name', x: 161.2, y: 8, range: '2B - 5B'}, {name:'Mission Name', x: 160.0, y: 3, range: '1M - 4M'}, {name:'Mission Name', x: 163.2, y: 3, range: '1M - 4M'},
+                        {name:'Mission Name', x: 172.7, y: 3, range: '1M - 4M'}, {name:'Mission Name', x: 155.0, y: 3, range: '1M - 4M'}, {name:'Mission Name', x: 156.5, y: 3, range: '1M - 4M'}, {name:'Mission Name', x: 164.0, y: 3, range: '1M - 4M'}, {name:'Mission Name', x: 160.9, y: 3, range: '1M - 4M'},
+                        {name:'Mission Name', x: 160.0, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 168.9, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 165.1, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 162.6, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 165.1, y: 4, range: '4M - 10M'},
+                        {name:'Mission Name', x: 166.4, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 160.0, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 152.4, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 170.2, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 162.6, y: 4, range: '4M - 10M'},
+                        {name:'Mission Name', x: 170.2, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 158.8, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 172.7, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 167.6, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 162.6, y: 4, range: '4M - 10M'},
+                        {name:'Mission Name', x: 167.6, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 156.2, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 175.2, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 172.1, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 162.6, y: 5, range: '25M - 75M'},
+                        {name:'Mission Name', x: 168.9, y: 5, range: '25M - 75M'}, {name:'Mission Name', x: 175.3, y: 5, range: '25M - 75M'}, {name:'Mission Name', x: 159.4, y: 5, range: '25M - 75M'}, {name:'Mission Name', x: 160.0, y: 5, range: '25M - 75M'}, {name:'Mission Name', x: 170.2, y: 5, range: '25M - 75M'},
+                        {name:'Mission Name', x: 162.6, y: 5, range: '25M - 75M'}, {name:'Mission Name', x: 167.6, y: 5, range: '25M - 75M'}, {name:'Mission Name', x: 162.6, y: 5, range: '25M - 75M'}, {name:'Mission Name', x: 160.7, y: 5, range: '25M - 75M'}, {name:'Mission Name', x: 160.0, y: 5, range: '25M - 75M'},
+                        {name:'Mission Name', x: 157.5, y: 5, range: '25M - 75M'}, {name:'Mission Name', x: 162.6, y: 6, range: '75M - 500M'}, {name:'Mission Name', x: 152.4, y: 6, range: '75M - 500M'}, {name:'Mission Name', x: 170.2, y: 6, range: '75M - 500M'}, {name:'Mission Name', x: 165.1, y: 6, range: '75M - 500M'},
+                        {name:'Mission Name', x: 172.7, y: 6, range: '75M - 500M'}, {name:'Mission Name', x: 165.1, y: 6, range: '75M - 500M'}, {name:'Mission Name', x: 170.2, y: 6, range: '75M - 500M'}, {name:'Mission Name', x: 170.2, y: 6, range: '75M - 500M'}, {name:'Mission Name', x: 170.2, y: 6, range: '75M - 500M'},
+                        {name:'Mission Name', x: 167.6, y: 9, range: '5 BILLION+'}, {name:'Mission Name', x: 167.6, y: 9, range: '5 BILLION+'}, {name:'Mission Name', x: 167.6, y: 9, range: '5 BILLION+'}, {name:'Mission Name', x: 154.9, y: 9, range: '5 BILLION+'}, {name:'Mission Name', x: 162.6, y: 9, range: '5 BILLION+'},
+                        {name:'Mission Name', x: 175.3, y: 9, range: '5 BILLION+'}, {name:'Mission Name', x: 171.4, y: 6, range: '75M - 500M'}, {name:'Mission Name', x: 157.5, y: 6, range: '75M - 500M'}, {name:'Mission Name', x: 165.1, y: 6, range: '75M - 500M'}, {name:'Mission Name', x: 160.0, y: 6, range: '75M - 500M'}],
+                    marker: {
+                        states: {
+                            hover: {
+                                lineColor: '#26a587'
+                            }
+                        }
+                    }
+                }, {
+                    name: 'Not Awarded',
+                    color: 'rgba(145,117,170,.6)',
+                    data: [{name:'Mission Name', x: 174.0, y: 1, range: '150K - 500K'}, {name:'Mission Name', x: 175.3, y: 1, range: '150K - 500K'}, {name:'Mission Name', x: 193.5, y: 1, range: '150K - 500K'}, {name:'Mission Name', x: 186.5, y: 1, range: '150K - 500K'}, {name:'Mission Name', x: 187.2, y: 1, range: '150K - 500K'},
+                        {name:'Mission Name', x: 181.5, y: 1, range: '150K - 500K'}, {name:'Mission Name', x: 184.0, y: 1, range: '150K - 500K'}, {name:'Mission Name', x: 184.5, y: 1, range: '150K - 500K'}, {name:'Mission Name', x: 175.0, y: 1, range: '150K - 500K'}, {name:'Mission Name', x: 184.0, y: 1, range: '150K - 500K'},
+                        {name:'Mission Name', x: 180.0, y: 1, range: '150K - 500K'}, {name:'Mission Name', x: 177.8, y: 1, range: '150K - 500K'}, {name:'Mission Name', x: 192.0, y: 1, range: '150K - 500K'}, {name:'Mission Name', x: 176.0, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 174.0, y: 2, range: '500K - 1M'},
+                        {name:'Mission Name', x: 184.0, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 192.7, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 171.5, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 173.0, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 176.0, y: 2, range: '500K - 1M'},
+                        {name:'Mission Name', x: 176.0, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 180.5, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 172.7, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 176.0, y: 2, range: '500K - 1M'}, {name:'Mission Name', x: 173.5, y: 2, range: '500K - 1M'},
+                        {name:'Mission Name', x: 178.0, y: 3, range: '1M - 4M'}, {name:'Mission Name', x: 180.3, y: 3, range: '1M - 4M'}, {name:'Mission Name', x: 180.3, y: 3, range: '1M - 4M'}, {name:'Mission Name', x: 164.5, y: 3, range: '1M - 4M'}, {name:'Mission Name', x: 173.0, y: 3, range: '1M - 4M'},
+                        {name:'Mission Name', x: 183.5, y: 3, range: '1M - 4M'}, {name:'Mission Name', x: 175.5, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 188.0, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 189.2, y: 4, range: '4M - 10M'}, {name:'Mission Name', x: 172.8, y: 4, range: '4M - 10M'},
+                        {name:'Mission Name', x: 170.0, y: 5, range: '25M - 75M'}, {name:'Mission Name', x: 182.0, y: 5, range: '25M - 75M'}, {name:'Mission Name', x: 170.0, y: 5, range: '25M - 75M'}, {name:'Mission Name', x: 177.8, y: 5, range: '25M - 75M'}, {name:'Mission Name', x: 184.2, y: 5, range: '25M - 75M'}],
+                    marker: {
+                        states: {
+                            hover: {
+                                lineColor: '#704797'
+                            }
+                        }
+                    }
+                }]
+            });
+        });
+
+	*/
+    </script>
+    
+    <!-- -------------------------------------------------------------------- -->
+    <script>
+        function ChartColors(step) {
+            this.current = 0;
+            this.step = step || 1;
+            this.colors = [
+                '#ecefb5',
+                '#c8e2b5',
+                '#82ccba',
+                '#42b7c3',
+                '#2492be',
+                '#4081bf',
+                '#6482ba',
+                '#ab9fbb'
+            ];
+        };
+        ChartColors.prototype.next = function(){
+            var color = this.colors[this.current];
+            this.current += this.step;
+            if (this.current >= this.colors.length)
+                this.current = 0;
+            return color;
+        };
+        ChartColors.prototype.size = function(){
+            return this.colors.length;
+        };
+        
+        var j$ = jQuery.noConflict();
+        var data = [];
+        var valueLabel = [
+            'Count',
+            'Count',
+            'Count',
+            'Count',
+            'Count',
+            'Count'
+        ];
+        var title = [
+                'Actions by TEC Threshold',
+                'Actions by Mechanism Type',
+                'Actions by Partner',
+                'Actions by Planning Unit',
+                'Actions by Priority',
+                'Actions by Status'
+        ];
+        
+        var lv2Value = function(lblVal) {
+            return lblVal.Value;
+        };
+        
+        var lv2Label = function(lblVal) {
+            return lblVal.Label;
+        };
+        
+        var labelValueToData = function(lblVals) {
+            if(!lblVals)
+                return [];
+            var colors = new ChartColors();
+            return lblVals.map(function(current) {
+                return {
+                    name: lv2Label(current),
+                    y: lv2Value(current),
+                    color: colors.next()
+                };
+            });
+        };
+        
+        var dom2Value = function(ele) {
+            return ele.value;
+        };
+        
+        var queryData = function f() {
+        
+            //the multiselect library should be loaded first
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.tmpController.getChartData}',
+                multiselect.getRegions().map(dom2Value), 
+                multiselect.getOperatingUnits().map(dom2Value), 
+                multiselect.getFiscalYears().map(dom2Value), 
+                function(result, event) {
+                    if(event.status) {
+                        data[0] = labelValueToData(result.tecCount);
+                        data[1] = labelValueToData(result.awardTypeCount);
+                        data[3] = labelValueToData(result.opUnitCount);
+                        data[4] = labelValueToData(result.priorityCount);
+                        data[5] = labelValueToData(result.statusCount);
+                        data[6] = labelValueToData(result.statusAmount);
+                        drawGraphs();
+                    } else {
+                        console.error(event.message);
+                    }
+                }
+            );
+            
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.tmpController.getPartnerCount}',
+                multiselect.getRegions().map(dom2Value), 
+                multiselect.getOperatingUnits().map(dom2Value), 
+                multiselect.getFiscalYears().map(dom2Value), 
+                function(result, event) {
+                    if(event.status) {
+                        data[2] = labelValueToData(result);
+                        drawGraphs();
+                    } else {
+                        console.error(event.message);
+                    }
+                }
+            );
+            
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.tmpController.getStatData}',
+                multiselect.getRegions().map(dom2Value), 
+                multiselect.getOperatingUnits().map(dom2Value), 
+                multiselect.getFiscalYears().map(dom2Value), 
+                function(result, event) {
+                    if(event.status) {
+                        j$('.stat1 .statNbr').html(result.nbrActions);
+                        if(result.nbrActions == 1)
+                            j$('.stat1 .desc').text('Action');
+                        j$('.stat2 .statNbr').html(result.nbrAwarded);
+                        j$('.stat3 .statNbr').html(result.nbrNotAwarded);
+                        j$('.stat4 .statNbr').html(result.nbrOver25NotAwarded);
+                        j$('.stat5 .statNbr').html(result.nbrNotAwardedExpiringFunds);
+                        j$('.stat6 .statNbr').html(Math.round(result.pctNotAwardedExpiringFunds)+'%');
+                        j$('.stat7 .statNbr').html(Math.round(result.pctRemainingObligated)+'%');
+                        j$('.stats').slideDown();
+                    } else {
+                        console.error(event.message);
+                    }
+                }
+            );
+        };
+        
+        var filter = function f() {
+            queryData();
+        };
+        filter();
+        
+        function drawGraphs() {
+            j$('#status').height(((data[6] && data[6].length) || 0)*58); //The first number in this equation is the number of bars in the 'actions by status' chart
+            j$(function () {
+                j$('#status').highcharts({
+                    chart: {
+                        backgroundColor: '#f8f8f8',
+                        type: 'bar'
+                        //spacing: [0,30,15,90]
+                    },
+                    title: {
+                        text: ''
+                    },
+                    xAxis: {
+                        categories: data[6].map(function(x){return x.name}),
+                        tickColor: '#f8f8f8',
+                        lineColor: '#e3e3e2',
+                        gridLineColor: '#e3e3e2',
+                        labels: {
+                            style: {
+                                fontFamily: 'Open Sans',
+                                fontSize: 12,
+                                color: '#5b5b5b'
+                            },
+                            x: -16
+                        },
+                    },
+                    yAxis: {
+                        title: {
+                            text: ''
+                        },
+                        lineColor: '#e3e3e3',
+                        gridLineColor: '#e3e3e3',
+                        labels: {
+                            style: {
+                                fontFamily: 'Open Sans',
+                                textTransform: 'uppercase',
+                                color: '#5b5b5b'
+                            }
+                        },
+                    },
+                    tooltip: {
+                        pointFormat: '${point.y}'
+                    },
+                    plotOptions: {
+                        series: {
+                            borderWidth: 0,
+                            pointWidth: 44
+                        }
+                    },
+                    series: [{
+                        showInLegend: false,
+                        name: '',
+                        data: data[6],
+                    }]
+                });
+                
+                for(var i=1; i<5; i++) {
+                    j$('#grid_cell'+i).highcharts({
+                        chart: {
+                            plotBackgroundColor: null,
+                            plotBorderWidth: null,
+                            plotShadow: false,
+                            backgroundColor: '#f8f8f8',
+                            spacing: [15,30,30,20]
+                        },
+                        title: {
+                            text: title[i]
+                        },
+                        tooltip: {
+                            pointFormat: '{series.name}: <b>{point.y}</b>'
+                        },
+                        plotOptions: {
+                            pie: {
+                                allowPointSelect: true,
+                                cursor: 'pointer',
+                                dataLabels: {
+                                    enabled: false
+                                }
+                            }
+                        },
+                        credits: {
+                            enabled: false
+                        },
+                        legend: {
+                            align: i%2 ? 'right' : 'left',
+                            borderColor: '#f8f8f8',
+                            itemMarginBottom: i%2 ? 22 : 13,
+                            itemStyle: {
+                                fontFamily: 'Open Sans'
+                            },
+                            layout: 'vertical',
+                            rtl: i%2 ? false : true,
+                            symbolRadius: '50%',
+                            symbolWidth: 12,
+                            verticalAlign: 'middle',
+                            labelFormatter: function() {
+                                var val = this.name;
+                                var truncatedVal = '';
+
+                                if(val){
+                                    if(val.length > 10){
+                                        var truncatedVal = val.substring(0,10);
+                                        truncatedVal += '...';
+                                        return truncatedVal;
+                                    }
+                                    return val;
+                                }
+                                return this.name;
+                            }
+                        },
+                        series: [{
+                            showInLegend: true,
+                            type: 'pie',
+                            name: valueLabel[i],
+                            data: data[i]
+                        }]
+                    });
+                }
+                
+                j$('#grid_cell0').highcharts({
+                    chart: {
+                        type: 'funnel',
+                        marginRight: 100,
+                        backgroundColor: '#f8f8f8'
+                    },
+                    title: {
+                        text: title[0],
+                        x: -50
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    plotOptions: {
+                        series: {
+                            dataLabels: {
+                                enabled: false,
+                                format: '<b>{point.name}</b> ({point.y:,.0f})',
+                                color: 'black',
+                                softConnector: true
+                            },
+                            neckWidth: '30%',
+                            neckHeight: '25%'
+                            
+                            //-- Other available options
+                            // height: pixels or percent
+                            // width: pixels or percent
+                        }
+                    },
+                    legend: {
+                        align: 'left',
+                        borderColor: '#f8f8f8',
+                        itemMarginBottom: 13,
+                        itemStyle: {
+                            fontFamily: 'Open Sans'
+                        },
+                        layout: 'vertical',
+                        rtl: true,
+                        symbolRadius: '50%',
+                        symbolWidth: 12,
+                        verticalAlign: 'middle'
+
+                    },
+                    series: [{
+                        showInLegend: true,
+                        name: valueLabel[0],
+                        data: data[0]
+                    }]
+                });
+                
+                j$('#grid_cell5').highcharts({
+                    chart: {
+                        type: 'funnel',
+
+                        backgroundColor: '#f8f8f8'
+                    },
+                    title: {
+                        text: title[5],
+                        x: -50
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    plotOptions: {
+                        series: {
+                            dataLabels: {
+                                enabled: false,
+                                format: '<b>{point.name}</b> ({point.y:,.0f})',
+                                color: 'black',
+                                softConnector: true
+                            },
+                            neckWidth: '30%',
+                            neckHeight: '25%'
+                        }
+                    },
+                    legend: {
+                        align: 'right',
+                        borderColor: '#f8f8f8',
+                        itemMarginBottom: 23,
+                        itemStyle: {
+                            fontFamily: 'Open Sans'
+                        },
+                        layout: 'vertical',
+                        rtl: true,
+                        symbolRadius: '50%',
+                        symbolWidth: 12,
+                        verticalAlign: 'middle',
+                        rtl: false
+
+                    },
+                    series: [{
+                        showInLegend: true,
+                        name: valueLabel[0],
+                        data: data[5]
+                    }]
+                });
+            });
+        }
+    </script>
+</apex:page>

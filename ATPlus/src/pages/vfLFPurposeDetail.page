@@ -1,0 +1,148 @@
+<apex:page standardController="LF_Purpose__c" tabStyle="Project_Design__tab" sidebar="false" extensions="ClsTabController,ClsDeleteControllerExt,ClsUserProfileFinder" id="LFPURPOSEPage" action="{!doAction}">
+ 
+ <head> 
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        
+       
+        <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'project-style.css')}"/>        
+        <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/modernizr.custom.79639.js')}"/>        
+        <noscript><apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'css/noJS.css')}"/></noscript>        
+       
+ </head>
+ <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+        
+    <apex:sectionHeader title="{!$ObjectType.LF_Purpose__c.label}" subtitle="{!LF_Purpose__c.name}"/>
+    
+    <div style="height:5px; background:#1797C0;"></div> <br></br>
+<apex:outputText style="font-size:12px;font-weight:bold;" value="{!navigationLink}" escape="false"> </apex:outputText> 
+ <br></br>
+  <br></br>
+   <apex:outputPanel rendered="{!HasErrorMessages}">               
+     <apex:pagemessages />        
+  </apex:outputPanel>  
+    
+   <apex:tabPanel switchType="server"  id="LFPURPOSEPanel"  value="{!selectedTab}" onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+      <apex:tab label="Purpose" name="LFPURPOSEDetails"  id="tabLFPURPOSEdetails" style="margin-left: -1px;" styleClass="activeTabBackground">
+      <apex:pageBlock mode="maindetail"  id="LFPURPOSEPageBlock">
+      
+         <apex:pageBlockButtons >
+                <apex:form >
+                        <apex:commandButton action="{!edit}" value="Edit" rendered="{!$ObjectType['LF_Purpose__c'].updateable}"/>
+                          <apex:commandLink styleClass="btn" rendered="{!$ObjectType['LF_Purpose__c'].deletable}"  style="text-decoration:none;" reRender="" action="{!customDelete}" value="Delete" onclick="return window.confirm('Are you sure?');">
+                             <apex:param name="deleUrl" assignTo="{!deleUrl}" value="/apex/vfLFGoalDetail?id={!LF_Purpose__c.LF_Goal_Id__r.id}"/>
+                         </apex:commandLink>
+                        
+                      
+                       <apex:outputLink styleClass="btn" rendered="{!$ObjectType['LF_Purpose__c'].updateable}" style="text-decoration:none;" value="/apex/vfProjectIRSIRLink?Lid={!LF_Purpose__c.LF_Goal_Id__r.Project_Id__c}&purposeId={!LF_Purpose__c.id}" id="theLink">Results Framework Linkage</apex:outputLink> <!-- Radha asked to add this and remove from Project navigation 08/12/2013 -->
+                      
+                </apex:form>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection showHeader="true" title="Project Overview" columns="2">
+                        <apex:outputField value="{!LF_Purpose__c.ouName__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!LF_Purpose__c.Project_Code__c}"/>
+                        <apex:outputField value="{!LF_Purpose__c.Project_Name__c}"/>
+                   <!--     <apex:outputField value="{!LF_Purpose__c.Project_Id__c}"/> -->
+                        <apex:pageBlockSectionItem />
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="LF Purpose Overview" columns="1">
+                        <apex:outputField value="{!LF_Purpose__c.LF_Goal_Id__c}"/>
+                        <apex:outputField value="{!LF_Purpose__c.LF_Goal_Name__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!LF_Purpose__c.Name}"/>
+                        <apex:outputField value="{!LF_Purpose__c.LF_Purpose_Name__c}"/>
+                </apex:pageBlockSection>
+               
+                <!---
+                <apex:pageBlockSection showHeader="true" title="Indicator Reporting" columns="2">
+                        <apex:outputField value="{!LF_Purpose__c.Indicators_Established__c}"/>
+                        <apex:outputField value="{!LF_Purpose__c.Reporting_Periods_Established__c}"/>
+                </apex:pageBlockSection>
+                
+                -->
+                
+                <apex:pageBlockSection showHeader="true" title="System Information" columns="2"  rendered="{!IsADMINUser}">
+                        <apex:outputField value="{!LF_Purpose__c.CreatedById}"/>
+                        <apex:outputField value="{!LF_Purpose__c.LastModifiedById}"/>
+                        <apex:outputField value="{!LF_Purpose__c.OwnerId}" />
+                </apex:pageBlockSection>               
+         </apex:pageBlock>
+           <apex:relatedList pageSize="20" list="LogFrame_Sub_Purpose__r"/>
+          <apex:relatedList pageSize="20" list="LF_Outputs__r"/> 
+          <apex:relatedList pageSize="20"  list="NotesAndAttachments"/>
+          <c:HistoryRelatedListComponent recLimit="50" ObjName="{!LF_Purpose__c}"/> 
+      </apex:tab>
+        
+   <!--   <apex:tab label="Sub-Purposes" name="LF_SubPurposes" 
+                id="tabLFPURPOSEPurpose">
+         <apex:relatedList pageSize="20" title="" list="LogFrame_Sub_Purpose__r"/>
+      </apex:tab>
+      
+      <apex:tab label="Outputs" name="LF_Outputs" 
+                id="tabLFPURPOSEOutput">
+         <apex:relatedList pageSize="20" title="" list="LF_Outputs__r"/>
+      </apex:tab>  -->
+     
+      <apex:tab label="Purpose Indicators" name="LFPurpose_OrgUnit_Indicators" 
+                id="tabLFPURPOSEOrgIndicators" styleClass="activeTabBackground">
+       <!--   <apex:relatedList pageSize="20" title="" list="OrgUnit_Indicators__r"/> -->
+         <c:Manage_Indicators />
+      </apex:tab>
+      
+        <apex:tab label="Purpose Indicator Data" name="LF_Purpose_Reporting_Periods" 
+                id="tabLFPURPOSEReportingPeriod" styleClass="activeTabBackground">
+        <!--  <apex:relatedList pageSize="20" title="" list="LF_Reporting_Periods__r"/> -->
+          <c:ManageTargets id="targetcomp_id"/>
+      </apex:tab>
+     
+    <!--  <apex:tab label="Notes and Attachments" 
+                name="NotesAndAttachmentsLFPURPOSE" 
+               id="tabNoteAtt">
+         <apex:relatedList pageSize="20" title="" list="NotesAndAttachments"/>
+      </apex:tab> -->
+   </apex:tabPanel>
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['LFPURPOSEPage:LFPURPOSEPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+    
+function addLoadEvent(func) {   
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+
+function hideHeadSesction() {
+ twistSection(document.getElementById('LFPURPOSEPage:LFPURPOSEPageBlock:SysHeadSection').childNodes[0].childNodes[0]);
+}
+
+addLoadEvent(hideHeadSesction);            
+</script>
+</apex:page>

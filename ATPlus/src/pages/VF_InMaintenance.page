@@ -1,0 +1,108 @@
+<apex:page showHeader="false" sideBar="false" showchat="false" >
+
+<html>
+
+<head>
+<apex:stylesheet value="{!URLFOR($Resource.in_maintenance, 'style.css')}" /> 
+
+</head>
+
+
+
+<body>
+
+<div id="wrapper">
+
+    <div id="header">
+      
+ <img src="{!URLFOR($Resource.in_maintenance, 'images/usaid-logo.png')}" />
+
+        <div id="rh-wrapper">
+
+        
+            
+            <div id="maint-icon">&nbsp;</div>
+    
+            <div id="pagetitle">
+            <h2>SCHEDULED MAINTENANCE</h2>
+            <h4>SERVICE WILL BE UNAVAILABLE</h4>
+            </div>
+            
+            
+        </div> <!-- end rh-wrapper -->
+        
+        
+        <div class="clear"></div>
+        
+    
+    
+    </div> <!-- end header -->
+
+    <div id="container">
+                
+        <div id="content">
+            
+            <p><b>DURATION</b> 1 HOUR</p>
+            
+            <p>Tuesday, January 29, 2013 @ 11:00 PM EDT <img src="{!URLFOR($Resource.in_maintenance,'images/arrow.png')}"/> Wednesday, January 30, 2012 @ 12:00 AM EDT</p>
+           
+       
+           <div id="details">           
+               <span>
+               
+                    Between the specified times above, <b>AIDtracker will be performing scheduled maintenance</b> and will not be accessible. Please plan accordingly. 
+                    <br />
+                    <br />
+                    We apologize for any inconvenience this may cause you. If you have any question please contact David Santiago at dsantiago@usaid.gov
+               </span>           
+           
+           </div> <!-- end details -->     
+           
+        
+        
+        
+        
+        
+  </div> <!-- end content -->  
+    
+    
+    
+    </div> 
+<p>
+  <!-- end container -->
+
+
+
+</p>
+<p>&nbsp; </p>
+<!-- END WRAPPER -->
+
+
+
+ </div>
+</body>
+</html>
+</apex:page>
+
+
+
+
+<!--<apex:page showHeader="false" title="{!$Label.site.in_maintenance}" cache="false">
+  <apex:composition template="StdExceptionTemplate">
+    <apex:define name="icon">
+      <apex:image url="{!URLFOR($Resource.SiteSamples, 'img/warning.gif')}"/>
+    </apex:define>
+    <apex:define name="error">
+      <apex:outputText escape="false" styleClass="title" value="{!$Label.site.down_for_maintenance}">
+        <apex:param value="{!$Site.CurrentSiteUrl}"/>
+      </apex:outputText>
+      <br/>
+      <br/>
+      <apex:outputText value="{!$Label.site.sorry_for_inconvenience_back_shortly}"/>
+      <apex:outputText escape="false" value=" {!$Label.site.get_in_touch}">
+      <apex:param value="mailto:{!$Site.AdminEmailAddress}"/>
+      <apex:param value="{!$Label.site.email_us}"/>
+    </apex:outputText>
+   </apex:define>
+  </apex:composition>
+</apex:page> -->

@@ -1,0 +1,324 @@
+<apex:page showHeader="true" sidebar="false" controller="AdminController" standardStylesheets="false" docType="html-5.0" tabStyle="Admin__tab">
+    
+    <apex:StyleSheet value="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/cupertino/jquery-ui.min.css" />
+    <apex:stylesheet value="//cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css" />
+    <c:styles />
+
+    <style> 
+
+        .mainDiv{
+            border: 1px solid silver;
+            width: 98%;
+            margin: auto;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .sideDiv{
+
+        }
+
+        .resultsDiv{
+
+        }
+
+        td.details-control {
+            background: url("{!URLFOR($Resource.datatables_graphics, 'details_open.png')}") no-repeat center center;
+            cursor: pointer;
+        }
+
+        tr.shown td.details-control {
+            background: url("{!URLFOR($Resource.datatables_graphics, 'details_close.png')}") no-repeat center center;
+        }
+    </style>
+    <apex:Messages id="msgs"/>
+    <div id="container" class="mainDiv">
+
+        <div class="sideDiv">
+            <apex:outputPanel id="sidePanel">
+                <apex:pageBlock title="Admin Actions">
+                    <apex:pageBlockSection columns="1" collapsible="false">
+                        <button id="createNewYearBtn">Create New Year</button>
+                        <button id="createNewQuarterBtn">Create New Quarter</button>
+                        <button id="createNewOperatingUnit">Create New A&amp;A M/B/IOs</button>
+                        <button onClick="window.location.href='/{!$ObjectType.AAPlan__c.KeyPrefix}/e';">Create New {!$ObjectType.AAPlan__c.label}</button>
+                        <button onClick="window.location.href='{!URLFOR($Page.AA_AnnouncementAdmin)}';">Create New {!$ObjectType.A_A_Announcement__c.label}</button>
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:outputPanel>
+        </div>
+        
+        <apex:form >
+            <div class="resultsDiv">
+                <apex:outputPanel id="resultPanel">
+                    <apex:pageBlock title="Year Lists">
+                        <apex:pageBlockSection columns="1"> 
+                            <apex:pageBlockTable value="{!fiscalYearList}" var="results">
+                                <apex:column headerValue="{!$ObjectType.FiscalYear__c.fields.Year__c.label}" >
+                                    <apex:outputText value="{0, number, 0000}" >
+                                        <apex:param value="{!results.Year__c}" />
+                                    </apex:outputText>
+                                </apex:column>
+                                <apex:column value="{!results.StartDate__c}" />
+                                <apex:column value="{!results.EndDate__c}" />
+                                <apex:column headerValue="{!$ObjectType.FiscalYear__c.fields.CurrentQuar__c.label}" >
+                                    <apex:outputText rendered="{!results.IsActive__c = false}" value="{!results.CurrentQuar__c}" />
+                                    <apex:selectList value="{!selectedQuarter}" multiselect="false" size="1" rendered="{!results.IsActive__c = True}">
+                                        <apex:selectOptions value="{!QuarterOptions}" rendered="{!results.IsActive__c = True}" />
+                                    </apex:selectList>
+                                </apex:column>
+                                <apex:column value="{!results.IsActive__c}" />
+                            </apex:pageBlockTable>
+                            <apex:commandButton value="Update Current Quarter" action="{!updateCurrentQuarter}" reRender="msgs, resultPanel" />
+                        </apex:pageBlockSection>
+                    </apex:pageBlock>
+                </apex:outputPanel>
+            </div>
+        </apex:form>
+        <div class="resultsDiv">
+            <apex:outputPanel id="OUResultsPanel">
+                <apex:pageBlock title="A&A M/B/IOs">
+                    <apex:pageBlockSection columns="1">
+                        <apex:outputPanel >
+                            <table id="planningUnits">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" id="colAction" ></th>
+                                        <th scope="col" id="opUnitName" >M/B/IO Name</th>
+                                        <th scope="col" id="opUnitParent" >M/B/IO Parent</th>
+                                        <th scope="col" id="opUnitType" >Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <apex:repeat value="{!operatingUnitGrpWrapper}" var="results1" >
+                                        <tr >
+                                            <td headers="colAction" onclick="planningUnitGroupSelect(this, '{!results1.operatingUnit.id}');"></td>
+                                            <td headers="opUnitName"><apex:outputField value="{!results1.operatingUnit.OperatingUnitName__c}" /></td>
+                                            <td headers="opUnitParent"><apex:outputText value="{!results1.operatingUnit.Parent__r.OperatingUnitName__c}" /></td>
+                                            <td headers="opUnitType"><apex:outputField value="{!results1.operatingUnit.Region__c}" /></td>
+                                        </tr>
+                                    </apex:repeat>
+                                </tbody>
+                            </table>
+                        </apex:outputPanel>
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:outputPanel>
+        </div>
+    </div>
+    
+    <apex:includeScript value="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />
+    <apex:includeScript value="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js" />
+    <apex:includeScript value="//cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js" />
+
+    <script>
+        var j$ = jQuery.noConflict();
+        var groupArray = {!JSONGroups};
+        j$(document).ready(function(){
+
+            setFormProperties();
+            addHooks();
+        });
+
+        var setFormProperties = function(){
+            console.log('Setting Form Properties');
+
+            j$("#createNewYearForm").dialog({
+                autoOpen: false,
+                height: 215,
+                width: 275,
+                modal: true
+            });
+
+            j$("#batchDialog").dialog({
+                autoOpen: false,
+                height: 275,
+                width: 375
+            });
+            
+
+            j$("#createNewAAPlanningUnitForm").dialog({
+                autoOpen: false,
+                height: 210,
+                width: 660,
+                modal: true
+            });
+
+            var planninggrouptable = j$('#planningUnits').DataTable( {
+                "columns": [
+                    {
+                        "class":          'details-control',
+                        "orderable":      false,
+                        "data":           null,
+                        "defaultContent": ''
+                    },
+                    { "data": 1 },
+                    { "data": 2 },
+                    { "data": 3 }
+                ],
+                "order": [[1, 'asc']]
+            });
+        };
+    
+        var planningUnitGroupSelect = function( tdObject, id ){
+            var tr = j$(tdObject).closest('tr');
+            var table = j$('#planningUnits').DataTable();
+            var row = table.row( tr );
+            
+            if ( row.child.isShown() ) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // Open this row
+                var childTable = funcFormat( id );
+                if(childTable.length > 0) {
+                    row.child( childTable ).show();
+                    tr.addClass('shown');
+                }
+            }
+        }
+        
+        var funcFormat = function ( id ) {
+            var formattedTable = "";
+            if( groupArray[id].length > 0 ){
+                formattedTable = '<table id="' + id + '" cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">';
+                for (i = 0; i < groupArray[id].length; i++) {
+                    formattedTable += '<tr>'
+                    formattedTable += '<td>Access Level: ' + groupArray[id][i].accessLevel + '</td>';
+                    formattedTable += '<td>Group Name: ' + groupArray[id][i].groupName + '</td>';
+                    formattedTable += '<td>Group API Name: ' + groupArray[id][i].groupAPIName + '</td>';
+                    formattedTable += '<td><a href="{!URLFOR($Page.AAPlanGroupAdmin)}?id=' + groupArray[id][i].groupID +'">Edit Public Group</a></td>';
+                    formattedTable += '</tr>'
+                }
+                formattedTable += '<tr> <td><a href="{!URLFOR($Page.AAPlanPlanningUnitAdmin)}?id=' + id +'">Edit Default Planning Unit</a></td> <td></td> <td></td> <td></td> <td></td> </tr>'
+                formattedTable += '</table>';
+            }else{
+                formattedTable = '<span>There are no groups associated with this Planning Unit.</span> <a href="{!URLFOR($Page.AAPlanPlanningUnitAdmin)}?id=' + id +'">Click here</a><span> to add Planning Unit Groups.</span>'
+            }
+            return formattedTable;
+        }
+
+        var addHooks = function(){
+            console.log('Adding Hooks');
+
+            //New Year Btn
+            j$('#createNewYearBtn').click(function(){
+                dialogBox('createNewYearForm','open');
+                clearFields('addYearId');
+            });
+
+            //New Quarter Btn
+            j$('#createNewQuarterBtn').click(function(){
+                createNewQuarterRecords();
+                dialogBox('batchDialog','open');
+            });
+
+            //New Operating Unit Btn
+            j$('#createNewOperatingUnit').click(function(){
+                dialogBox('createNewAAPlanningUnitForm','open');
+                clearFields('addOUName');
+            });
+        }
+        
+        //Function to Open and Close the dialog Box
+        var dialogBox = function(dialogBoxName, action){
+            j$('#' + dialogBoxName).dialog(action);
+        }
+
+        //Function to clear all the fields in dialog box
+        var clearFields = function(){
+
+            for(var i=0; i< arguments.length; i++){
+                j$('[data-id='+ arguments[i] +']').val('');
+            }
+        }
+
+        //VF Remoting to invoke Batch Process.
+        var createNewQuarterRecords = function(){
+
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.AdminController.createNewQuarterRecords}',
+                handleCreateNewQuarterRecordsResult
+            );
+
+            function handleCreateNewQuarterRecordsResult(result, event){
+                if(event.status){
+                    console.log('VF Remoting Success');
+
+                }else{
+                    console.log(event.message);
+                }
+            }
+        }
+
+    </script>
+
+
+    <!-- Forms -->
+    <div id="createNewYearForm" title="New Year Form">
+        <apex:form >
+            <apex:pageBlock >
+                <apex:pageBlockSection columns="1">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Year" for="addYear"/>
+                        <apex:inputField id="addYear" html-data-id="addYearId" value="{!dummyFiscalYearRecord.Year__c}" required="true" />
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection columns="1">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Start Date" for="startDate"/>
+                        <apex:inputField id="startDate" value="{!dummyFiscalYearRecord.StartDate__c}" />
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection columns="1">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="End Date" for="endDate"/>
+                        <apex:inputField id="endDate" value="{!dummyFiscalYearRecord.EndDate__c}" />
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+
+                <apex:commandButton value="Add Year" reRender="resultPanel" action="{!createNewYear}" oncomplete="dialogBox('createNewYearForm', 'close')" />
+            </apex:pageBlock>
+        </apex:form>
+    </div>
+
+
+    <div id="createNewAAPlanningUnitForm" title="A&A Planning Unit Form">
+        <apex:form >
+            <apex:pageBlock >
+                <apex:pageBlockSection columns="1">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="M/B/IO" for="newName"/>
+                        <apex:inputField id="newName" html-data-id="addOUName" value="{!dummyOperatingUnit.Name}" required="true" />
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection columns="1">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Bureau" for="newBureau"/>
+                        <apex:inputField id="newBureau" html-data-id="addBureauName" value="{!dummyOperatingUnit.Bureau__c}" required="true" />
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection columns="1">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Type" for="regionPicklist"/>
+                        <apex:inputField id="regionPicklist" value="{!dummyOperatingUnit.Region__c}" />
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+
+                <apex:commandButton value="Add M/B/IO" reRender="OUResultsPanel" action="{!createNewOU}" oncomplete="dialogBox('createNewAAPlanningUnitForm', 'close')" />
+            </apex:pageBlock>
+        </apex:form>
+    </div>
+
+    <div id="batchDialog" title="Batch Job Infomation">
+      <p>Salesforce have started to create new Quaterly Records. This might take few minutes to reflect.</p>
+      <p>For more information on this Batch Job, go to SETUP --> JOBS --> APEX JOBS</p>
+    </div>
+
+</apex:page>

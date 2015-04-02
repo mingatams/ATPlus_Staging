@@ -1,0 +1,175 @@
+<apex:page id="pgAAPlanPlanningUnitAdmin" controller="AAPlanPlanningUnitAdminController" tabStyle="Admin__tab">
+    <apex:StyleSheet value="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/cupertino/jquery-ui.min.css" />
+    <c:styles />
+    <style>
+
+        .activeTab {
+            background-color: #1796bf;
+            color: white;
+            background-image: none;
+            padding: 5px;
+            font-style: bold;
+            cursor: pointer;
+        }
+        
+        .inactiveTab {
+            background-color: #d3d3d3;
+            color: black;
+            background-image: none;
+            padding: 5px;
+            font-style: bold;
+            cursor: pointer;
+        }
+        
+        textarea {
+            width: 97%;
+        }
+        
+        .commandButtonContainer {
+            text-align: center;
+            margin: 10px;
+            clear: both;
+            padding: 5px;
+        }
+        
+        .recordHeader > div {
+            font-weight: bold;
+            width: 33.33%;
+            font-size: 14px !important;
+            float: left;
+        }
+        
+        .recordHeader a {
+            color: #000;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+    </style>
+    
+    <apex:Messages id="msgs" />
+    <apex:outputPanel rendered="{!planningUnitID == null}">This page requires a Planning Unit ID be specified.</apex:outputPanel>
+    <apex:pageBlock title="{!UPPER(varPlanningUnit.Name)} Default Planning Unit Administration">
+        <apex:tabPanel rendered="{!planningUnitID != null}" switchType="Ajax" value="{!ActiveTab}" html-data-id="AandAPlanPlanningUnitAdminTabPanelID" tabClass="activeTab" inactiveTabClass="inactiveTab">
+            <apex:tab name="planningUnitTab" label="Planning Unit" id="planningUnitTab">
+                <apex:pageBlock rendered="{!EditPlanningUnitGroup == null || ReadPlanningUnitGroup == null}" >
+                    <apex:form >
+                        <apex:pageBlockSection columns="1" collapsible="false" title="Add a Planning Unit Group to Planning Unit">
+                            <apex:pageBlockSectionItem id="pbsiAddGroup" helpText="Select a Group to add to {!UPPER(varPlanningUnit.Name)} Planning Unit">
+                                <apex:outputLabel id="lblAddGroupLabel" for="txtAddGroupLabel" value="Group Name" ></apex:outputLabel>
+                                <apex:outputPanel id="divReqInput" styleClass="requiredInput" layout="block">
+                                    <apex:outputPanel id="divReqBlock" styleClass="requiredBlock" layout="block" />
+                                    <apex:inputText styleClass="requiredInput" id="txtAddGroupLabel" value="{!groupSearch}" />
+                                </apex:outputPanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSection columns="2" rendered="{!Groups.size > 0}">
+                                <apex:pageBlockSectionItem >
+                                    <apex:outputLabel id="lblavailableGroups" for="availableGroups" value="Available Groups" ></apex:outputLabel>
+                                    <apex:selectList id="availableGroups" multiselect="false" size="1" value="{!selectedGroup}">
+                                        <apex:selectOptions value="{!Groups}">
+                                        </apex:selectOptions>    
+                                    </apex:selectList>
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem >
+                                    <apex:outputLabel id="lblavailableAccess" for="availableAccess" value="Available Access" ></apex:outputLabel>
+                                    <apex:selectList id="availableAccess" multiselect="false" size="1" value="{!selectedAccessLevel}">
+                                        <apex:selectOptions value="{!AccessLevels}">
+                                        </apex:selectOptions>
+                                    </apex:selectList>
+                                </apex:pageBlockSectionItem>
+                                <apex:commandButton value="Add Planning Unit Group" action="{!addPlanningUnitGroup}"/>
+                            </apex:pageBlockSection>
+                            <apex:commandButton title="Search" value="Search" action="{!searchForGroups}"/>
+                        </apex:pageBlockSection>
+                    </apex:form>
+                </apex:pageBlock>
+                <apex:pageBlock rendered="{!EditPlanningUnitGroup != null || ReadPlanningUnitGroup != null}">
+                    <apex:form >
+                        <apex:pageBlockSection columns="1" collapsible="false" title="Associate a Planning Unit Group with a Public Group">
+                            <apex:outputPanel >
+                                <table>
+                                    <tr>
+                                        <td><apex:outputPanel >Access Level: Edit</apex:outputPanel></td>
+                                        <td>
+                                            <apex:selectList rendered="{!EditPlanningUnitGroup!= NULL && EditPlanningUnitGroup.Group_ID__c == NULL}" value="{!selectedEditGroup}">
+                                                <apex:selectOptions value="{!AvailableGroups}">
+                                                </apex:selectOptions>
+                                            </apex:selectList>
+                                            <apex:commandButton action="{!addEditPlanningUnitGroupPublicGroup}" value="Associate Group" rendered="{!EditPlanningUnitGroup!= NULL && EditPlanningUnitGroup.Group_ID__c == NULL}" />
+                                            <apex:outputPanel rendered="{!EditPlanningUnitGroup == NULL}" style="color:red">Associate a Planning Unit Group with Planning Unit above. Specifiy the "Edit" permission.</apex:outputPanel>
+                                            <apex:outputPanel rendered="{!EditPlanningUnitGroup.Group_ID__c != NULL}">Public Group Name: {!existingEditGroup}</apex:outputPanel>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><apex:outputPanel >Access Level: Read</apex:outputPanel></td>
+                                        <td>
+                                            <apex:selectList rendered="{!ReadPlanningUnitGroup != NULL && ReadPlanningUnitGroup.Group_ID__c == NULL}" value="{!selectedReadGroup}">
+                                                <apex:selectOptions value="{!AvailableGroups}">
+                                                </apex:selectOptions>
+                                            </apex:selectList>
+                                            <apex:commandButton action="{!addReadPlanningUnitGroupPublicGroup}" value="Associate Group" rendered="{!ReadPlanningUnitGroup != NULL && ReadPlanningUnitGroup.Group_ID__c == NULL}" />
+                                            <apex:outputPanel rendered="{!ReadPlanningUnitGroup == NULL}" style="color:red">Associate a Planning Unit Group with Planning Unit above. Specifiy the "Read" permission.</apex:outputPanel>
+                                            <apex:outputPanel rendered="{!ReadPlanningUnitGroup.Group_ID__c != NULL}">Public Group Name: {!existingReadGroup}</apex:outputPanel>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </apex:outputPanel>
+                        </apex:pageBlockSection>
+                    </apex:form>
+                </apex:pageBlock>
+            </apex:tab>
+            <!-- 
+            <apex:tab name="userTab" label="Users" id="userTab">
+                    <apex:pageBlock >
+                        <apex:form >
+                            <apex:pageBlockSection columns="1" collapsible="false" title="Add User to Planning Unit" id="pbs3">
+                                <apex:pageBlockSectionItem id="pbsiAddUser" helpText="Select a User to add to {!UPPER(varPlanningUnit.Name)} Planning Unit">
+                                    <apex:outputLabel id="lblAddUserLabel" for="txtAddUserLabel" value="User Name" ></apex:outputLabel>
+                                    <apex:outputPanel id="divReqInput" styleClass="requiredInput" layout="block">
+                                        <apex:outputPanel id="divReqBlock" styleClass="requiredBlock" layout="block" />
+                                        <apex:inputText styleClass="requiredInput" id="txtAddUserLabel" value="{!userSearch}" />
+                                    </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSection columns="2" rendered="{!Users.size > 0}">
+                                    <apex:pageBlockSectionItem >
+                                        <apex:outputLabel id="lblUserReturn" for="availableUsers" value="Available Users" ></apex:outputLabel>
+                                        <apex:selectList id="availableUsers"  value="{!selectedUser}">
+                                            <apex:selectOptions value="{!Users}"></apex:selectOptions>
+                                        </apex:selectList>
+                                    </apex:pageBlockSectionItem>
+                                    <apex:pageBlockSectionItem >
+                                        <apex:outputLabel id="lblUserSelection" for="selectUser" value="Click to add Users to group" ></apex:outputLabel>
+                                        <apex:commandButton id="selectUser" action="{!addUser}" value="Add" reRender="pbs3,pbs4" />
+                                    </apex:pageBlockSectionItem>
+                                </apex:pageBlockSection>
+                                <apex:commandButton title="Search" value="Search" action="{!searchForUsers}"/>
+                                <apex:outputPanel rendered="{!addedUserName != NULL}">
+                                    {!addedUserName} has been added to {!varPlanningUnit.Name}.
+                                </apex:outputPanel>
+                            </apex:pageBlockSection>
+                        </apex:form>
+                </apex:pageBlock>
+                <apex:pageBlock >
+                    <apex:form >
+                        <apex:pageBlockSection columns="1" collapsible="false" title="Remove User from Planning Unit" id="pbs4">
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel id="lblSelectUserRemove" for="removeUsers" value="Users" ></apex:outputLabel>
+                                <apex:selectList id="removeUsers" value="{!userToRemove}">
+                                    <apex:selectOptions value="{!PlanningUnitUsers}"></apex:selectOptions>
+                                </apex:selectList>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                    <apex:outputLabel id="lblUserRemove" for="selectUserToRemove" value="Click to remove user's default Planning Unit" ></apex:outputLabel>
+                                    <apex:commandButton id="selectUserToRemove" action="{!removeUser}" value="Remove" reRender="pbs3,pbs4" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!userRemoved}">
+                                <apex:outputPanel >User has been removed</apex:outputPanel>
+                            </apex:pageBlockSectionItem>
+                        </apex:pageBlockSection>
+                    </apex:form>
+                </apex:pageBlock>
+            </apex:tab>
+             -->
+        </apex:tabPanel>
+    </apex:pageBlock>
+</apex:page>

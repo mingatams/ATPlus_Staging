@@ -1,0 +1,31 @@
+<apex:page standardController="Project__c"
+           recordSetVar="projects" sidebar="false">
+
+  <apex:form >
+
+    <apex:pageBlock >
+      <apex:pageBlockTable value="{!projects}" var="pro">
+
+         <apex:column headerValue="Code">
+          <apex:outputField value="{!pro.Program_Code__c}"/>
+         </apex:column>
+         
+         <apex:column headerValue="Name">
+          <apex:outputField value="{!pro.Project_Name__c}"/>
+         </apex:column>   
+         
+
+         <apex:column headerValue="Description">
+          <apex:outputField value="{!pro.Project_Description__c}"/>
+         </apex:column>
+         
+         <apex:column headerValue="Image">
+          <apex:outputField value="{!pro.Public_Photo__c}"/>
+         </apex:column>         
+        
+      </apex:pageBlockTable>     
+    </apex:pageBlock>
+
+  </apex:form>
+  
+  </apex:page>

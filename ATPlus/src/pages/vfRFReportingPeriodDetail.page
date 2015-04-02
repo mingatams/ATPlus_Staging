@@ -1,0 +1,127 @@
+<apex:page standardController="RF_Reporting_Period__c" tabStyle="Results_Framework__tab" extensions="ClsReportingPeriodExtension,ClsTabController" id="RFReportingPeriodPage" sidebar="false" action="{!doAction}">
+ <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+        
+     <apex:sectionHeader title="{!$ObjectType.RF_Reporting_Period__c.label}" subtitle="{!RF_Reporting_Period__c.name}"/>
+  
+   <apex:tabPanel switchType="client"  id="RFReportingPeriodPanel"  value="{!selectedTab}" onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+      <apex:tab label="Overview" name="RFReportingPeriodDetails"  id="tabReportingPerioddetails" styleClass="activeTabBackground">
+      <apex:form id="RFReportingPeriodForm">
+      <apex:pageBlock mode="maindetail" id="RFReportingPeriodPageBlock">
+      
+      <apex:pageBlockButtons >
+          <!--  <apex:form > -->
+                <apex:commandButton action="{!edit}" value="Edit"/>
+                <apex:commandButton action="{!delete}" value="Delete"/>
+        <!--    </apex:form> -->
+        </apex:pageBlockButtons>
+        <apex:pageBlockSection showHeader="true" title="Results Framework" columns="1" >
+                               <!-- rendered="{!RF_Reporting_Period__c.RecordType.Name == 'RF Goal'
+                                         || RF_Reporting_Period__c.RecordType.Name == 'RF DO'
+                                         || RF_Reporting_Period__c.RecordType.Name == 'RF IR'
+                                         || RF_Reporting_Period__c.RecordType.Name == 'RF SUB IR'}"> -->
+                                                               
+            <apex:outputField value="{!RF_Reporting_Period__c.ouName__c}" />    
+            <apex:outputField value="{!RF_Reporting_Period__c.Goal_Id__c}" rendered="{!showLevel == 1}" />
+            <apex:outputField value="{!RF_Reporting_Period__c.Goal_Name__c}" rendered="{!showLevel >= 1}" />
+            <apex:outputField value="{!RF_Reporting_Period__c.DO_Id__c}" rendered="{!showLevel == 2}" />
+            <apex:outputField value="{!RF_Reporting_Period__c.DO_Name__c}" rendered="{!showLevel >= 2}" />
+            <apex:outputField value="{!RF_Reporting_Period__c.IR_Id__c}" rendered="{!showLevel == 3}"/>
+            <apex:outputField value="{!RF_Reporting_Period__c.IR_Name__c}" rendered="{!showLevel >= 3}" />
+            <apex:outputField value="{!RF_Reporting_Period__c.SIR_Id__c}" rendered="{!showLevel == 4}" />
+            <apex:outputField value="{!RF_Reporting_Period__c.Sub_IR_Name__c}" rendered="{!showLevel >= 4}" />
+                                                              
+        </apex:pageBlockSection>         
+       
+        
+        <apex:pageBlockSection showHeader="true" title="Basic Information" columns="2">       
+            
+            <apex:outputField value="{!RF_Reporting_Period__c.Start_Date__c}"/>
+            <apex:outputField value="{!RF_Reporting_Period__c.Fiscal_Period__c}"/>           
+            <apex:outputField value="{!RF_Reporting_Period__c.End_Date__c}"/>
+            <apex:outputField value="{!RF_Reporting_Period__c.Fiscal_Year__c}"/>
+            <apex:outputField value="{!RF_Reporting_Period__c.Status__c}"/>
+            <apex:outputField value="{!RF_Reporting_Period__c.Targets_Established__c}"/>
+          
+        </apex:pageBlockSection>
+        <apex:pageBlockSection showHeader="true" title="Descriptive Information" columns="1">
+           <apex:outputField value="{!RF_Reporting_Period__c.Narrative__c}" />
+           <!--<apex:inputTextArea style="border-color: Transparent;" rows="10" cols="150" value="{!RF_Reporting_Period__c.Narrative__c}" disabled="true" required="false" />-->
+           
+        </apex:pageBlockSection> 
+               
+        <apex:pageBlockSection showHeader="true" title="System Information" columns="2" id="SysHeadSection">
+        
+            <apex:outputField value="{!RF_Reporting_Period__c.CreatedById}"/>
+            <apex:outputField value="{!RF_Reporting_Period__c.LastModifiedById}"/>
+      
+            <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Owner"/>
+                    <apex:outputPanel >
+                            <apex:outputField value="{!RF_Reporting_Period__c.OwnerId}"/>&nbsp;
+                            <apex:outputLink value="{!URLFOR($Action.RF_Reporting_Period__c.ChangeOwner,RF_Reporting_Period__c.id)}">[Change]</apex:outputLink>
+                    </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem />
+        </apex:pageBlockSection>
+      
+                 
+        </apex:pageBlock>         
+       </apex:form>
+      <apex:relatedList pageSize="20"  list="NotesAndAttachments"/>
+      </apex:tab>
+ 
+    
+      
+      <apex:tab label="Indicator Data" name="RF_Indicator_Results" 
+                id="tabRFIndicatorResults" styleClass="activeTabBackground">
+         <apex:relatedList pageSize="20" title="" list="RF_Indicator_Results__r"/>
+      </apex:tab>
+      
+    
+   </apex:tabPanel>
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['RFReportingPeriodPage:RFReportingPeriodPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+    
+function addLoadEvent(func) {   
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+
+function hideHeadSesction() {
+ twistSection(document.getElementById('RFReportingPeriodPage:RFReportingPeriodForm:RFReportingPeriodPageBlock:SysHeadSection').childNodes[0].childNodes[0]);
+}
+
+addLoadEvent(hideHeadSesction);        
+</script>
+
+</apex:page>

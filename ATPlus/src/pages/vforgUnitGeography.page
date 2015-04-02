@@ -1,0 +1,127 @@
+<apex:page standardController="orgUnitGeography__c" extensions="ClsOrgUnitGeography" id="mypage"  sidebar="false">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head> 
+  
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxcommon.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgridcell.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/dhtmlxtreegrid.js')}" /> 
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/excells/dhtmlxgrid_excell_link.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_lines.js')}" /> 
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid_skins.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/skins/dhtmlxgrid_dhx_skyblue.css')}"/>
+
+<style>
+   .activeTab {background-color: #236FBD; color:white; background-image:none; height:25px;font-size:15px;  }
+   .inactiveTab {background-color: lightgrey; color:black; background-image:none; height:25px;font-size:15px;  }  
+</style>
+
+<script type="text/javascript">
+   var mygrids;
+   var selectedCtr = new Array();
+   
+   window.onload = function dispProvienceGrid()
+   {
+       var xmlStrLocal = '{!xmlStr}';
+       document.getElementById("gridboxS").innerHTML = "";
+       mygrids = new dhtmlXGridObject("gridboxS","100%", "100%");     
+       mygrids.selMultiRows = true;     
+       mygrids.setImagePath("{!URLFOR($Resource.dhtmlxGrid, '/dhtmlxGrid/codebase/imgs/')}"); 
+       mygrids.setHeader("Region/Country Code,Name,Select",null,["","","text-align:center;vertical-align:middle"]);
+       mygrids.attachHeader("#text_filter,#text_filter,#rspan");
+       mygrids.setInitWidths("145,445,143");
+       mygrids.setColAlign("left,left,center");
+       mygrids.setColTypes("tree,rotxt,ch");
+       mygrids.setColSorting("str,str,str");
+       mygrids.enableAutoHeight(false);
+       mygrids.enableResizing("false,false,false");
+       mygrids.attachEvent("onCheck",selectCountry);
+       mygrids.setSkin("dhx_skyblue");   
+       mygrids.init();
+       mygrids.loadXMLString(xmlStrLocal);
+        
+    }
+      
+    function selectCountry(rId, cId, state){
+       if(state){
+                selectedCtr.push(rId);
+                }
+                else {
+                    for(var i in selectedCtr){                  
+                        if( selectedCtr[i] == rId ) {
+                            selectedCtr.splice(i,1);
+                            break;
+                        }
+                    }
+                }
+             //alert('Selected Row Ids::' +selectedCtr);
+                }
+   function call02(hiddenId)
+   {
+       var selectedStr = selectedCtr.toString();  
+       document.getElementById(hiddenId).value = selectedStr;
+       //alert('Selected Row Ids::' +selectedStr);
+   }   
+
+   function checkAll(cb)
+   {
+      var inputElem = document.getElementsByTagName("input");
+      for(var i=0; i<inputElem.length; i++)
+      {
+         if(inputElem[i].id.indexOf("checkedone")!=-1)
+         {
+          inputElem[i].checked = cb.checked;
+         }
+      }
+   }
+</script>
+ 
+</head>
+
+ <body>
+ <apex:form id="theform">
+ 
+ <div class="bPageTitle">
+     <div class="ptBody">
+         <div class="content">
+             <img src="/s.gif" alt="Location" class="pageTitleIcon" title="Location"/>             
+             <h1 class="pageType">OrgUnit Geography<span class="titleSeparatingColon">:</span></h1>
+             <h2 class="pageDescription">
+                 <apex:outputText value="Manage Scope for USAID Organization : {!orgUnit.ouName__c}" />
+             </h2>
+         </div>
+     </div> 
+ </div>    
+ 
+ <apex:pageBlock >
+     <div id="gridbixsParent" style="height:500px;margin:15px auto auto auto;">
+    <!-- <table id="gridHeader" style="width:750px;height:25px;margin: 0px auto 5px auto; font-size:125%; font-weight:bold;">
+     <tr>
+     <td style="text-align: left;" >OrgUnit Code : {!orgUnit.ouName__c}</td>
+     <td style="text-align: right;" >OrgUnit Name : {!orgUnit.ouName__c}</td>
+     </tr>
+     </table>-->
+      <!--<div id="gridHeader" style="width:750px;height:35px;margin: 0px auto 5px auto; font-size: 120%; ">
+       <h1 style="width:750px; height:25px; margin: 0px; font-family: Arial, Helvetica, sans-serif;display: block; text-align: left;" >OrgUnit Code:{!orgUnit.ouName__c}</h1>
+       <h1 style="width:750px; height:25px; margin: 0px; font-family: Arial, Helvetica, sans-serif;display: block; text-align: right;" >OrgUnit Name:{!orgUnit.ouName__c}</h1>
+     </div>-->
+     <div id="gridboxS" style="width:750px;height:450px;margin: auto;background-color:#FCFBFC;"></div>
+     <div id="cbBouutons"  style="width:750px;height:50px;margin: 15px auto 0px auto; text-align: center; " >
+     
+     <apex:inputHidden id="selectedCountries" value="{!selectedCountries}"/> 
+     <apex:commandButton style="align:center" value="Create" action="{!insertGeography}"  onclick="call02('{!$Component.selectedCountries}')" />
+     <apex:commandButton style="align:center" value="Cancel" action="{!Cancel}" rendered="true" />
+    
+     </div>
+     </div>
+ </apex:PageBlock>
+
+</apex:form>  
+</body>
+
+</html> 
+</apex:page>

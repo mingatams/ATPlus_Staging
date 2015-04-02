@@ -1,0 +1,15 @@
+<apex:page standardController="Implementing_Mechanism__c" extensions="ClsTabController" tabStyle="Project_Implementation__tab" sidebar="false">
+<Style>
+      a {color:#1797C0; font-size:12px; font-weight:bold;}
+</Style>
+
+<apex:sectionHeader title="Manage IM Indicator Data" subtitle="{!Implementing_Mechanism__c.name}"/> 
+<div style="height:5px; background:#1797C0;"></div> 
+<apex:outputText style="color:#1797C0;font-size:12px;font-weight:bold;" value="{!navigationLink}" escape="false"> </apex:outputText>
+ 
+ <apex:pageBlock mode="maindetail">
+ <!--  <c:Manage_Indicators />  -->
+ <c:IMIndicatorResultComponent id="targetcomp_id"/> 
+ </apex:pageBlock>
+ 
+</apex:page>

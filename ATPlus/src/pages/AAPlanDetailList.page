@@ -1,0 +1,204 @@
+<apex:page sidebar="false" standardController="AAPlanDetail__c" extensions="AAPlanDetailListController"  standardStylesheets="false" docType="html-5.0" recordSetVar="AandAResults" tabStyle="AA_Plans__tab" >
+    
+    <apex:StyleSheet value="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/cupertino/jquery-ui.min.css" />
+    <c:styles />
+    
+    <style> 
+        /* Spacing related CSS */
+        .btnPadding {
+            padding: 5px;
+        }
+        
+        /* Labels to prevent from wrapping */
+        .vfLabelColTextWrap {
+            white-space: nowrap !important;
+        }
+        
+        
+        /* Position related CSS */
+        .mainDiv {
+            border: 1px solid silver;
+            width: 98%;
+            margin: auto;
+            padding: 10px;
+			float: left;
+            /* Rounded Corners to match Salesforce */
+            border-radius: 4px;
+        }
+        
+        .headerDiv {
+            width: 100%;
+            height: 30px;
+            margin: 0 auto;
+            clear: both;
+        }
+        
+        .searchDiv {
+            width: 25%;
+            float: right;
+            clear: right;
+        }
+        
+        .searchDiv2 {
+            width: 25%;
+            margin-top: 8px;
+            float: right;
+            clear: right;
+        }
+
+        .paginationDiv {
+            width: 25%;
+            float: left;
+            clear: left;
+        }
+        
+        .resultDiv {
+            width: 100%; /*74%; removed with search*/
+            float: right;
+        }
+        
+        button {
+            cursor: pointer;
+        }
+        
+        .titleDiv {
+            padding: 5px;
+            text-transform: uppercase;
+            text-decoration: none;
+            float: left;
+            font-size: 15px !important;
+        }
+        .titleDiv a {
+            text-decoration: none;
+        }
+        
+        .btnDiv {
+            float: right;
+        }
+        
+    </style>
+    
+    <div id="container" class="mainDiv">
+
+        <div class="headerDiv">
+            <div class="titleDiv">
+                <a href="{!$Page.AAPlanList}?PlanId={!parentId}&Year={!year}">{!Title}</a>
+                <!-- Sept 11 2014 - Commented out by Brian Mason, Per Bob Pierce
+                -
+                <a href="/{!OpUnitId}">{!OpUnitName}</a>
+                {!Year}
+                -->
+            </div>
+            
+            <div class="btnDiv btnPadding">
+                	
+                <!-- <button onClick="javascript:window.history.back();">Go Back to A&amp;A Search</button> -->
+                <button onClick="window.location.href='{!$Page.AAPlanList}'">Go Back to A&amp;A Search</button>
+                <apex:outputPanel rendered="{!$ObjectType.AAPlanDetail__c.createable}">
+                	<button onClick="window.location.href='{!$Page.AAPlanDetailEdit}?parentId={!parentId}';">Create new {!$ObjectType.AAPlanDetail__c.label}</button>
+                </apex:outputPanel> 
+            	
+            </div>
+        </div>
+        
+        <div class="resultDiv">
+            <apex:outputPanel id="resultPanel">
+                <!-- Display Results if Records are found -->
+                <apex:pageBlock rendered="{!controller.resultSize > 0}">
+                <!-- <apex:pageBlock>-->
+                    <!-- Quarter Filter -->
+                    <div class="searchDiv" >
+                        <apex:form html-data-id="SearchFormID">
+                            <apex:outputLabel value="Quarter"  />
+                            <apex:selectList value="{!QuarterSearch}" size="1" >
+                                <apex:selectOptions value="{!QuarterOptions}"/>
+                            </apex:selectList>
+                        
+                            <apex:commandButton action="{!SearchAandAPlan}" value="Search" rerender="resultPanel" />
+                        </apex:form>
+                    </div>
+                    <!-- <apex:outputPanel layout="block" rendered="{!controller.resultSize > 0}"> -->                    
+                    <!-- Pagination -->
+                    <div class="paginationDiv">
+                    <apex:form >
+                        <apex:outputPanel layout="block" styleClass="pSearchShowMore">
+                            <apex:commandLink action="{!controller.Previous}" title="View the previous page" value="Previous Page" rendered="{!controller.HasPrevious}" rerender="resultPanel" />
+                            
+                            <apex:outputPanel styleClass="pShowLess noLink" style="color:grey" rendered="{!NOT(controller.HasPrevious)}">Previous Page</apex:outputPanel>
+                                ({!controller.pageNumber} of {!CEILING(controller.resultSize / controller.pageSize)})&nbsp;
+                            <apex:outputPanel styleClass="pShowLess noLink" style="color:grey" rendered="{!NOT(controller.HasNext)}">Next Page</apex:outputPanel>
+                            
+                            <apex:commandLink action="{!controller.Next}" title="View the next page" value="Next Page" rendered="{!controller.HasNext}" rerender="resultPanel" />
+                        </apex:outputPanel>
+                    </apex:form>
+                    </div>
+                    
+                    <!-- Actual Search Table -->
+                    <div style="clear: both;">
+                    <apex:pageBlockSection columns="1" id="resultTable">
+                        <apex:pageBlockTable value="{!results}" var="rec"> 
+                            <apex:column headerValue="Action">
+                                <apex:outputLink rendered="{!rec.UserRecordAccess.HasEditAccess}" value="{!$Page.AAPlanDetailEdit}?id={!rec.id}">Edit</apex:outputLink>
+                                <!-- 
+                                |
+                                <a href="#" onclick="if(window.confirm('Are you sure you want to delete this record?')) alert(deleteRecord('<recordId>'));" >Del</a>
+                                -->
+                            </apex:column>
+                            <apex:column headerValue="ID" >
+                                <a href="{!$Page.AAPlanDetailView}?id={!rec.Id}">{!rec.Name}</a>
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.AAPlanDetail__c.fields.AwardTitle__c.label}" >
+                                <c:Truncate title="{!rec.AwardTitle__c}" maxLength="80" />
+                            </apex:column>
+                            <apex:column value="{!rec.CORorAORName__c}" />
+                            <apex:column value="{!rec.Implementing_Partner__c}" />
+                            <apex:column headerValue="{!$ObjectType.AAPlanDetail__c.fields.Award_Description__c.label}" >
+                                <c:Truncate title="{!rec.Award_Description__c}" maxLength="80" />
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:pageBlockSection>
+                    </div>
+                    
+                    <!-- Total Records Found -->
+                    <apex:outputPanel layout="block" styleClass="pSearchShowMore">
+                        {!((controller.pageNumber-1) * controller.pageSize)+1} - {!IF(controller.resultSize > controller.pageNumber * controller.pageSize, controller.pageNumber * controller.pageSize, controller.resultSize)}
+                        out of&nbsp;
+                        <apex:outputText value="{!controller.resultSize}" />
+                        <apex:outputText rendered="{!controller.resultSize == queryLimit}">+</apex:outputText>
+                        Record<apex:outputText rendered="{!controller.resultSize != 1}" >s</apex:outputText>
+                    </apex:outputPanel>
+                    <!-- </apex:outputPanel> -->
+                </apex:pageBlock>
+                
+                <!-- Display Default Message if no records are found -->
+                <apex:pageBlock rendered="{!controller.resultSize == 0}">
+                	<div class="searchDiv2" >
+                        <apex:form html-data-id="SearchFormID">
+                            <apex:outputLabel value="Quarter"  />
+                            <apex:selectList value="{!QuarterSearch}" size="1" >
+                                <apex:selectOptions value="{!QuarterOptions}"/>
+                            </apex:selectList>
+                        
+                            <apex:commandButton action="{!SearchAandAPlan}" value="Search" rerender="resultPanel" />
+                        </apex:form>
+                    </div>
+                    <apex:pageMessage summary="No {!FiscalYearSearch} {!QuarterSearch} records found." severity="info" strength="2" rendered="true" />
+                </apex:pageBlock>
+            </apex:outputPanel>
+        </div>
+    </div>
+    
+    <apex:includeScript value="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />
+    <apex:includeScript value="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js" />
+    
+    <apex:form >
+        <apex:actionFunction name="deleteRecord" action="{!deleteRecord}" rerender="resultTable">
+            <apex:param name="id" value="" />
+        </apex:actionFunction>
+    </apex:form>
+    
+    <script>
+        var j$ = jQuery.noConflict();
+    </script>
+    
+</apex:page>

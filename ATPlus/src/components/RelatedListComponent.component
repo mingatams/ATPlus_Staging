@@ -1,0 +1,156 @@
+<apex:component id="relatedComp" controller="ClsRelatedObjectListController" allowDML="true" >
+
+<apex:attribute name="parentObj"   type="sObject" description="" assignTo="{!parentObject}"/>
+<apex:attribute name="parentWhereColName"   type="String" description="" assignTo="{!parentobjColName}"/>
+<apex:attribute name="relatedListName"   type="sObject[]"  description="" />
+<apex:attribute name="childName" description=""   type="String"  assignTo="{!childObjectName}" />
+<apex:attribute name="parentName" description=""   type="String"   />
+<apex:attribute name="pId" description=""   type="String"  assignTo="{!parentRecordId}" />
+<apex:attribute name="fSetName" description=""  type="String"  assignTo="{!objFieldSetName}"/>  
+<apex:attribute name="bTitle" description=""    type="String" required="true" assignTo="{!blockHeader}" /> 
+<apex:attribute name="rowValue" description=""    type="String" required="true" assignTo="{!rowNumbers}" />
+<apex:attribute name="newActionUrl" description=""    type="String"  required="true" assignTo="{!newPageURL}" /> 
+<apex:attribute name="editActionUrl" description=""    type="String" required="true" assignTo="{!editPageURL}" /> 
+<apex:attribute name="parentUrl" description=""    type="String" required="true" assignTo="{!parentPageURL}" /> 
+<apex:attribute name="secondFilterCol" description=""    type="String" required="false" assignTo="{!secondCondCol}"  /> 
+<apex:attribute name="secondFilterVal" description=""    type="String" required="false" assignTo="{!secondCondVal}" /> 
+
+<style>
+   .headerRow .headerStyle{background-color:rgb(162, 162, 162);color: rgb(34, 34, 34);text-transform:uppercase;font-size: 10px;}
+</style>
+
+<script>
+function popupRelatedDetail(parentId,partobj,partColName,relatedList,childName,fieldSetName,btitle,newPgURL,editPgURL,parentPgURL) {
+
+  url="apex/vfRelatedListComponmentPage?id="+parentId+"&parentObj="+partobj+"&parentColName="+partColName+"&relatedListName="+relatedList+"&childName="+childName+"&fSetName="+fieldSetName+"&bTitle="+btitle+"&newPgURL="+newPgURL+"&editPgURL="+editPgURL+"&parentPgURL="+parentPgURL;  
+  
+ newwindow=window.open(url,'myWindow','height=600,width=950,resizable=no,status=no,scrollbars=yes');
+   
+    if (window.focus) {newwindow.focus()}
+    return false;
+ }
+
+</script>
+
+
+
+
+ <div class="table" id="thisTabel" style="width:100%;display: block">        
+            <div class="ttitle">
+                <p>{!blockHeader}</p>
+                
+                <apex:outputLink rendered="{!bTitle != 'NOTES AND ATTACHMENTS' && $ObjectType[childName].createable && newActionUrl !=''}" title="New {!blockHeader}" value="{!newActionUrl}"><div class="plus"></div></apex:outputLink>
+                
+                <apex:commandLink rendered="{!bTitle == 'NOTES AND ATTACHMENTS' && $ObjectType[parentName].createable}" target="_top" title="New Note" action="/002/e?parent_id={!LEFT(parentObj.Id,15)}&retURL={!parentUrl+parentObj.id}&sfdc.override=1"><div class="note"></div></apex:commandLink>
+                <apex:commandLink rendered="{!bTitle == 'NOTES AND ATTACHMENTS' && $ObjectType[parentName].createable}" target="_top" title="Attach File" action="/p/attach/NoteAttach?pid={!LEFT(parentObj.Id,15)}&parentname={!parentObj['Name']}&retURL={!parentUrl+parentObj.id}&sfdc.override=1"><div class="nattach"></div></apex:commandLink>                
+                
+                 <div class="clear"></div>
+            </div>
+            
+  <apex:pageBlock id="block1" rendered="{!bTitle != 'NOTES AND ATTACHMENTS'}" mode="edit">
+    <apex:pageBlockTable id="table" var="objRec" value="{!ObjectRecords}" rows="{!rowValue}" border="0">
+   
+        <apex:column rendered="{!($ObjectType[childName].updateable && !$ObjectType[childName].deletable) || $ObjectType[childName].updateable || $ObjectType[childName].deletable}"  style="background-color:#FAFAFA;" headerClass="headerStyle" headerValue="Action" > 
+        <div class="data" style="background-color:#FAFAFA;"> 
+                   <apex:outputLink rendered="{!IF(childName == 'Public_IM_Link__c',false,$ObjectType[childName].updateable)}" id="editURL" title="Edit" value="{!URLFOR($Action[childObjectName].Edit, objRec.id,[retURL=parentUrl+parentObj.id])}"><div class="tedit" style="background-color:#FAFAFA;"></div></apex:outputLink>  
+                   <apex:outputLink rendered="{!$ObjectType[childName].deletable}" title="Delete" value="{!URLFOR($Action[childObjectName].Delete, objRec.id,[retURL=parentUrl+parentObj.id])}" onclick="return window.confirm('Are you sure?');"><div class="tdelete" style="background-color:#FAFAFA;"></div>
+                   
+                   </apex:outputLink>
+                </div>
+       </apex:column>       
+       
+       
+        <apex:repeat var="f" value="{!$ObjectType[childObjectName].fieldsets[objFieldSetName]}">        
+         <div class="row" >
+            <!-- <apex:column headerValue="{!f.label}" style="background-color:#FAFAFA;text-transform:uppercase;font-size: 10px;" headerClass="headerStyle"  rendered="{!f != 'Id' }"> -->
+            <apex:column rendered="{!f != 'Id'}"  style="background-color:#FAFAFA;text-transform:uppercase;font-size: 10px;" headerClass="headerStyle" >   
+           <apex:facet name="header">
+        <!--   <apex:commandLink action="{!ViewData}" value="{!f.Label}{!IF(sortExpression!='{!f}',IF(sortDirection='ASC','▼','▲'),'')}">
+             <apex:param value="{!f}" name="column" assignTo="{!sortExpression}" ></apex:param>
+           </apex:commandLink>
+           -->
+               <apex:commandLink action="{!ViewData}" value="{!f.Label}  {!IF(sortExpression!='{!f}' && f.type !='multipicklist',IF(sortDirection='ASC','▼','▲'),'')}" >             
+             <apex:param value="{!IF(f.type !='multipicklist',f,null)}" name="column" assignTo="{!sortExpression}" ></apex:param>            
+           </apex:commandLink>
+         </apex:facet>
+            
+          
+              <div class="data" style="color: rgb(68, 68, 68);text-transform:uppercase;font-size: 10px;">
+                 <apex:outputLink rendered="{!f == 'Activity_Code__c' }"  value="{!URLFOR(editActionUrl+objRec['Project_Code__c'],null,[retURL=parentUrl+parentObj.id])}">{!objRec[f]}</apex:outputLink>                       
+                 
+                 <apex:outputLink rendered="{!f == 'Name' }"  value="{!URLFOR(editActionUrl+objRec.id,null,[retURL=parentUrl+parentObj.id])}">{!objRec['Name']}</apex:outputLink>                       
+              
+                     <apex:outputField style="text-align: right !important;"  value="{!objRec[f]}" rendered="{!(f != 'Name' && f.type=='CURRENCY' ) }"/>   
+                     
+                  <apex:outputField value="{!objRec[f]}" rendered="{!f != 'Name' && f != 'Activity_Code__c' && f.type !='CURRENCY' }"/>
+               </div>
+               
+            </apex:column>
+           </div>        
+        </apex:repeat>
+         
+    </apex:pageBlockTable>
+    <apex:outputPanel rendered="{!ObjectRecords != null && rowValue != null  && ObjectRecords.size > VALUE(rowValue)}"> 
+     
+      <apex:commandButton action="{!null}" onclick="popupRelatedDetail('{!parentObj.id}','{!parentObj}','{!parentWhereColName}','{!relatedListName}','{!childName}','{!fSetName}','{!bTitle}','{!newActionUrl }','{!editActionUrl}','{!parentUrl}');return false;" value="More records .."></apex:commandButton> 
+
+          </apex:outputPanel>
+</apex:pageBlock>
+
+
+
+<apex:pageBlock id="block" rendered="{!bTitle== 'NOTES AND ATTACHMENTS'}" mode="edit">
+
+    <apex:pageBlockTable id="table" var="objRec" value="{!relatedListName}" rows="{!rowValue}" border="0">
+   
+         <apex:column rendered="{!($ObjectType[parentName].updateable && !$ObjectType[parentName].deletable) || $ObjectType[parentName].updateable || $ObjectType[parentName].deletable}" style="background-color:#FAFAFA;" headerClass="headerStyle" headerValue="Action" > 
+        <div class="data" style="background-color:#FAFAFA;"> 
+                  <apex:outputLink rendered="{!$ObjectType[parentName].updateable}" title="Edit" value="{!URLFOR('/'+objRec.id+'/e',null ,[retURL=parentUrl+parentObj.id])}"><div class="tedit"></div></apex:outputLink>                       
+                    <apex:outputLink rendered="{!$ObjectType[parentName].deletable}" title="Delete" value="{!URLFOR($Action.Activity__c.Delete, objRec.id,[retURL=parentUrl+parentObj.id])}" onclick="return window.confirm('Are you sure?');"><div class="tdelete"></div>
+                    </apex:outputLink>
+                </div>
+       </apex:column>       
+        
+       <apex:repeat var="f" value="{!notedAttFieldList}">    
+           
+             <div class="row" >
+            
+            <apex:column rendered="{!f != 'id' && f != 'Name' && f != 'IsNote'  }" style="background-color:#FAFAFA;text-transform:uppercase;font-size: 10px;" headerClass="headerStyle" > 
+           <apex:facet name="header">
+             {!IF(f == 'LastModifiedDate','Last Modified Date','') }
+             {!IF(f == 'LastModifiedById','Last Modified By','') }
+             {!IF(f == 'createdbyid','Created By','') }
+             {!IF(f != 'createdbyid' && f != 'LastModifiedById' && f != 'LastModifiedDate' ,f,'') }
+          </apex:facet>
+         
+           
+              <div class="data" style="color: rgb(68, 68, 68);text-transform:uppercase;font-size: 10px;">
+              <apex:outputpanel rendered="{!f != 'id' && f != 'Name'}">
+            <!--  headerValue="{!f}"   <apex:inputCheckbox rendered="{!f == 'IsNote'}" value="{!objRec[f]}" disabled="true"/> -->
+             
+                 <apex:outputLink rendered="{!f == 'Title' }"  value="/{!objRec.id}">{!objRec[f]}</apex:outputLink>                       
+              <apex:outputText rendered="{!f == 'LastModifiedDate' }" value="{0,date,MM/dd/yyyy}"><apex:param value="{!objRec['LastModifiedDate']}" /></apex:outputText>
+                 
+                  <apex:outputField value="{!objRec[f]}" rendered="{!f != 'Title' && f !='IsNote' && f != 'LastModifiedDate'}"/>
+               </apex:outputpanel>
+               </div>
+               
+            </apex:column>
+           </div>    
+        </apex:repeat>
+    
+         
+    </apex:pageBlockTable>
+   
+</apex:pageBlock>
+
+<!-- Notes and Attachment End -->
+
+
+
+
+
+  </div>
+  
+  
+</apex:component>

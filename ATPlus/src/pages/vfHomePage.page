@@ -1,0 +1,516 @@
+<apex:page standardStylesheets="false" controller="ClsHomePageController" extensions="ClsUserProfileFinder" showHeader="false" sidebar="false" >
+    <html>
+    <head>
+        <title>USAID Portfolio Map</title>
+         <script type="text/javascript">            
+            var USAIDTrackerApp;
+            function initialize() {               
+               USAIDTrackerApp = new USAIDTracker.App({
+                   internal: {!IF($User.Alias=='guest',false, true)},                   
+                   mapDataUrl: "{!IF($User.Alias=='guest','/AidTrackerMapData', '/apex/AidTrackerMapData')}",                  
+                   polygonDataUrl: "{!URLFOR($Resource.AidTrackerMapPolygons)}",
+                   defaultPhotoUrl: "{!URLFOR($Resource.DefaultLogo)}",
+                   missionFlagUrl: "{!URLFOR($Resource.MissionFlags)}",
+                   locationRange: "{!localStr}",
+                   locationFocus: "{!countryStr}",
+                  // orgUnit: "{!$CurrentPage.parameters.m}", 
+                   orgUnit: "{!countryStr}",   
+                   viewMode: "{!$CurrentPage.parameters.v}" || "cluster",  
+                   sector: "{!$CurrentPage.parameters.s}",                                   
+                   debug: false
+               });
+               USAIDTrackerApp.present(dojo.byId("map"));
+               //$('#container').width($('#container').parent().width()- 25);
+               $('.DefaultTheme .footer ').css('display', 'none');
+               $('.DefaultTheme .toolbar ').css('display', 'none');
+              // $('.DefaultTheme .mapOverview ').css('display', 'none');
+              $('.DefaultTheme .mapWidget ').css('height', '475px'); 
+              $('.DefaultTheme .mapWidget ').css('width', '82%');
+              $('.DefaultTheme .mapWidget ').css('marginLeft', '18%');
+              $('.DefaultTheme .sidebar ').css('width', '18%');
+             // $('.DefaultTheme .Popup ').css('height', '250px');
+             
+            }
+            dojo.ready(initialize);
+        </script> 
+        
+        <link href='https://fonts.googleapis.com/css?family=Abel' rel='stylesheet' type='text/css'/>
+        <link rel="stylesheet" href="{!URLFOR($Resource.Dojo161, 'dijit/themes/tundra/tundra.css')}" type='text/css' />
+        <link rel="stylesheet" href="{!URLFOR($Resource.Dojo161, 'dojox/form/resources/RangeSlider.css')}" type='text/css' />
+        <apex:includeScript value="https://maps.googleapis.com/maps/api/js?v=3&sensor=true"/>
+        <!-- Production Only  
+        <apex:includeScript value="https://maps.googleapis.com/maps/api/js?client=gme-usaid&sensor=false" />
+        -->
+        <apex:includeScript value="{!URLFOR($Resource.Dojo161, 'dojo.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.Dojo161, 'usaid-dojo.js')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.AidTrackerMapFrontEnd, 'resources/USAIDTracker.css')}"/>
+      <!--  <apex:stylesheet value="{!URLFOR($Resource.sampleHome, 'USAIDTrackerDefaultTheme-Home.css')}"/> -->
+        <apex:stylesheet value="{!URLFOR($Resource.AidTrackerMapFrontEnd, 'resources/USAIDTrackerDefaultTheme.css')}"/> 
+        <apex:includeScript value="{!URLFOR($Resource.AidTrackerMapFrontEnd, 'USAIDTracker.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.AidTrackerMapPolygons, 'USAIDTrackerStatic.js')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.homePage, 'style.css')}"/>
+        <script type="text/javascript">
+        
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-30663658-1']);
+          _gaq.push(['_setDomainName', 'usaid.gov']);
+          _gaq.push(['_trackPageview']);
+        
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
+          
+          
+        
+        </script>
+        
+        <apex:includeScript value="{!$Resource.JQuery172_js}" />
+        <apex:includeScript value="{!$Resource.Highcharts_js}" />
+        <apex:includeScript value="{!$Resource.Highcharts_export_js}" />
+       
+       <script type="text/javascript">
+           $( document ).ready(function() {
+               // $('.DefaultTheme .footer ').css('display', 'none');
+               // $('.DefaultTheme .toolbar ').css('display', 'none');
+               // $('.DefaultTheme .mapOverview ').css('display', 'none');
+               // $('.DefaultTheme .toolbar ').css('display', 'none');               
+            }); 
+       </script>     
+       <script type="text/javascript"> 
+           function toUSD(number) {
+               var numArray = new Array();
+               var numStr = number.toString();
+               numArray = numStr.split('.');
+               var dollars = numArray[0];
+               dollars = dollars.split('').reverse().join('')
+                        .replace(/(\d{3}(?!$))/g, '$1,')
+                        .split('').reverse().join('');
+               var cents;
+               if (numArray.length > 1){
+                   cents = '.'+numArray[1];
+               } else if (numArray.length == 1) {
+                   cents = '';
+               } else {
+                   cents = '.0';
+               }
+               return '$' + dollars +cents;
+               //// var number = number.toString(), 
+               //// dollars = number.split('.')[0];
+               // cents = (number.split('.')[1] || '') +'00';
+               //// dollars = dollars.split('').reverse().join('')
+                 ////       .replace(/(\d{3}(?!$))/g, '$1,')
+                 ////       .split('').reverse().join('');
+               //// return '$' + dollars  //+ '.' + cents.slice(0, 2);
+            }
+           $(function() {             
+                var chartData=$.map( {!officeReportListStr}, function( obj,i){
+                    return [[ obj.officeName, obj.projectCount]];                            
+                }) 
+                var graph1Width =  Math.round($("#graph11").width() * 0.99 );
+                var graph1height = Math.round($("#graph11").height() * 0.99 );
+                var chart = new Highcharts.Chart({
+                            chart: {
+                                renderTo: 'graph22',
+                                type: 'pie', 
+                               // width: graph1Width,
+                               // height: graph1height,
+                                backgroundColor:'#f5f5f5',
+                                spacingBottom:2,
+                                spacingLeft:0,
+                                spacingRight:0,
+                                spacingTop:0           
+                            },
+                            tooltip: {
+                                enabled: true,
+                                formatter: function() {
+                                    return 'IM Count : ' +this.y;
+                                }
+                            },    
+                            title:{
+                                useHTML: true,
+                                text: '<h2>Implementing Mechanisms Per Office</h2>',
+                                align: 'right'
+                               // x:graph1Width-260
+                                },
+                            colors: [
+                                    '#C4D6E2', 
+                                    '#A0C1D7', 
+                                    '#75ACCD', 
+                                    '#3D8FBC', 
+                                    '#007AB2', 
+                                    '#005E9A', 
+                                    '#004478', 
+                                    '#025367', 
+                                    '#026761',
+                                    '#007F57',
+                                    '#0B882E',
+                                    '#30A02E',
+                                    '#6EB742',
+                                    '#A7D2GD',
+                                    '#DAE57C'
+                                    ],
+                                      
+                            plotOptions: {
+                                pie: {
+                                    borderColor: '#000000',
+                                    center: ['50%', '50%'], 
+                                    //size: 100, 
+                                    size: '97%',
+                                    innerSize: '45%',
+                                    showInLegend: true,
+                                    dataLabels: {                                        
+                                        useHTML: true,
+                                        enabled: false,  
+                                        connectorWidth: 0,
+                                        distance: -10,
+                                        color: 'black', 
+                                   //     formatter: function() {
+                                   //         return this.y;
+                                   //     }
+                                    }
+                                }
+                            },
+                            legend: {
+                                enabled: true,
+                                layout: 'vertical',
+                                align: 'right',
+                                width: 250,
+                                verticalAlign: 'middle',
+                                useHTML: true,
+                                labelFormatter: function() {
+                                    return '<div style="text-align: left; width:180px;">' + this.name + '</div>';
+                                }
+                            },
+                            series: [{                                                                
+                                  data: chartData           
+                               }],
+                            credits: {
+                                enabled:false
+                            },
+                            exporting: {
+                                enabled:false
+                            }   
+   
+                    });
+            });
+       
+       $(function() { 
+           //if ({!$Profile.Name =='System Administrator(c)' || $Profile.Name =='PLT - Mission Profile' }){
+            if ({!IsAdminUser || IsPLTUser }){
+                var chartData1=$.map( {!objectiveReportListStr}, function( obj,i){
+                    return [[ obj.objectiveName, obj.projectCount]];                            
+                }) 
+                var graph2Width =  Math.round($("#graph11").width() * 0.99 );
+                var graph2height = Math.round($("#graph11").height() * 0.99 );
+                var chart = new Highcharts.Chart({
+                            chart: {
+                                renderTo: 'graph11',
+                                type: 'pie', 
+                               // width: graph1Width,
+                               // height: graph1height,
+                                backgroundColor:'#f5f5f5',
+                                spacingBottom:2,
+                                spacingLeft:0,
+                                spacingRight:0,
+                                spacingTop:0           
+                            },
+                            tooltip: {
+                                enabled: true,
+                                formatter: function() {
+                                    return 'Project Count : ' +this.y;
+                                }
+                            },    
+                            title:{
+                                useHTML: true,
+                                text: '<h2>Projects By Program Objective</h2>',
+                                align: 'right'
+                               // x:graph1Width-260
+                                },
+                            colors: [
+                                    '#C4D6E2', 
+                                    '#A0C1D7', 
+                                    '#75ACCD', 
+                                    '#3D8FBC', 
+                                    '#007AB2', 
+                                    '#005E9A', 
+                                    '#004478', 
+                                    '#025367', 
+                                    '#026761',
+                                    '#007F57',
+                                    '#0B882E',
+                                    '#30A02E',
+                                    '#6EB742',
+                                    '#A7D2GD',
+                                    '#DAE57C'
+                                    ],
+                                      
+                            plotOptions: {
+                                pie: {
+                                    borderColor: '#000000',
+                                    center: ['50%', '50%'], 
+                                    //size: 100, 
+                                    size: '97%',
+                                    innerSize: '45%',
+                                    showInLegend: true,
+                                    dataLabels: {                                        
+                                        useHTML: true,
+                                        enabled: false,  
+                                        connectorWidth: 0,
+                                        distance: -10,
+                                        color: 'black', 
+                                   //     formatter: function() {
+                                   //         return this.y;
+                                   //     }
+                                    }
+                                }
+                            },
+                            legend: {
+                                enabled: true,
+                                layout: 'vertical',
+                                align: 'right',
+                                width: 250,
+                                verticalAlign: 'middle',
+                                useHTML: true,
+                                labelFormatter: function() {
+                                    return '<div style="text-align: left; width:180px;">' + this.name + '</div>';
+                                }
+                            },
+                            series: [{                                                                
+                                  data: chartData1           
+                               }],
+                            credits: {
+                                enabled:false
+                            },
+                            exporting: {
+                                enabled:false
+                            }   
+   
+                    });
+           } });
+       
+       
+       
+    $(function () {
+      //if ({!$Profile.Name =='STD - Mission Profile' }){
+       if ({!IsSTDUser}){
+        var graph12Width =  Math.round($("#graph12").width() * 0.99 );
+        var graph12height = Math.round($("#graph12").height() * 0.99 );
+        var chart1 = new Highcharts.Chart({        
+            chart: {
+                renderTo: 'graph12',
+                type: 'bar',
+                //width: graph2Width,
+                //height: graph2height,
+                backgroundColor:'#f5f5f5',                
+                spacingBottom:2,
+                spacingLeft:0,
+                spacingRight:0,
+                spacingTop:0 
+            },
+            title: {
+                useHTML: true,                
+                text: '<h2>Sector Distribution</h2>'
+          //      align: 'left',
+          //      x: 10,
+          //      y: 0                
+            },
+          //  subtitle: {
+          //      text: ''
+          //  },
+            xAxis: {               
+                categories: {!sectorReportXCat},
+                lineWidth: 1,                
+                labels: {
+                    formatter: function(){
+                        return this.value;
+                    }
+                },    
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                min: 0,                
+                lineWidth: 1,
+                title: {
+                    text: 'Award Amount (millions)',
+                    align: 'middle'
+                },
+                labels: {
+                    overflow: 'justify',
+                    formatter: function(){
+                        return toUSD(this.value/1000000)+'M';
+                    }
+                }                
+            },
+            tooltip: {
+               // valueSuffix: ' millions'
+               formatter: function(){
+                    return toUSD(parseFloat(this.y/1000000).toFixed(1)) +'M';
+                }
+            },
+            plotOptions: {
+                bar: {
+                    series: {
+                        pointWidth: 7
+                    },
+                    dataLabels: {
+                        enabled: false
+                    }
+                   // style:{
+                   //     rotation: 15
+                   // }
+                    
+                }
+            },
+            legend: {
+                enabled: false,
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'top',
+                x: -100,
+                y: 100,
+                floating: true,
+                borderWidth: 1,
+               backgroundColor: '#FFFFFF',
+               shadow: true
+           },
+            credits: {
+                enabled:false
+            },
+            exporting: {
+                enabled:false
+            },
+            series: [ {               
+               data: {!sectorReportData}
+            }]
+        });
+   } }); 
+
+
+    $(function () {
+        var bar1Width =  Math.round($("#bargraph11").width() * 0.9999 );
+        var bar1height = Math.round($("#bargraph11").height() * 0.9999 );
+        var chart2 = new Highcharts.Chart({        
+            chart: {
+                renderTo: 'bargraph11',
+                type: 'bar',
+              //  width: bar1Width,
+              //  height: bar1height,
+                backgroundColor:'#f5f5f5',                
+                spacingBottom:2,
+                spacingLeft:0,
+                spacingRight:0,
+                spacingTop:0 
+                
+            },
+            title: {
+                useHTML: true,                
+                text: '<h2>PARTNERS BY AWARD AMOUNT</h2>',
+                align: 'left',
+                x: 70
+                
+            },
+            
+            xAxis: {  
+                lineWidth: 1,              
+                categories: {!partnerReportXCat},
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                min: 0,                              
+                lineWidth: 1,
+                title: {
+                    text: 'Award Amount (millions)',
+                    align: 'middle'
+                },
+                labels: {
+                    overflow: 'justify',
+                    formatter: function(){
+                        return toUSD(this.value/1000000)+'M';
+                    }                    
+                }
+            },
+            tooltip: {
+                valueSuffix: ' millions',
+                formatter: function(){
+                    return toUSD(parseFloat(this.y/1000000).toFixed(1)) +'M';
+                }                
+            },
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        enabled: true,                        
+                        formatter: function(){
+                            return toUSD(parseFloat(this.y/1000000).toFixed(1)) +'M';
+                        }
+                    }
+                }
+            },
+            legend: {
+                enabled: false,
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'top',
+                x: -100,
+                y: 100,
+                floating: true,
+                borderWidth: 1,
+                backgroundColor: '#FFFFFF',
+                shadow: true
+            },
+            credits: {
+                enabled: false
+            },
+            exporting: {
+                enabled:false
+            },
+            series: [ {               
+                 data: {!partnerReportData}
+            }]
+        });
+    });
+    
+   
+    </script>    
+    </head>
+    <body>
+    <!------ HEADER ------>
+   <!-- <header>
+        <div id="date"><apex:outputText value="{0,date,EEEEE, MMM dd, yyyy}"><apex:param value="{!TODAY()}"/></apex:outputText></div>
+        <div id="phase">DISCOVER SPRING 2013</div>    
+    </header> -->
+    <div class="clear"></div>
+    
+    
+    <div id="container">
+    <div id="map"></div>
+   <!-- <div id="charts" style="width: 100%; height: 400px; margin-top:25px;z-index:1;"> -->
+        <div class="boxed" id="graph1">
+           <!-- <apex:outputPanel rendered="{!$Profile.Name =='System Administrator(c)' || $Profile.Name =='PLT - Mission Profile' }"> -->
+           <apex:outputPanel rendered="{!IsAdminUser || IsPLTUser }">
+                <div id="graph11" style="width:97%; height:97%;"></div>
+            </apex:outputPanel>
+           <!-- <apex:outputPanel rendered="{!$Profile.Name =='STD - Mission Profile' }"> -->
+           <apex:outputPanel rendered="{!IsSTDUser }">
+                <div id="graph12" style="width:97%; height:97%;"></div>
+            </apex:outputPanel>    
+        </div>
+        <div class="boxed" id="graph2">           
+            <div id="graph22" style="width:97%; height:97%;"></div>
+        </div>
+    <div class="clear"></div>    
+ <!--    </div>    -->
+    <div class="fgraph"></div>        
+        <div class="boxed1Col" id="bargraph">
+            <div id="bargraph11" style="width:97%; height:97%;"></div>
+        </div>
+      </div> 
+    </body>
+</html>  
+  
+</apex:page>

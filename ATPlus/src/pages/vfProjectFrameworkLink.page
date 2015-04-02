@@ -1,0 +1,193 @@
+<apex:page standardController="Framework_Linkage__c" extensions="ClsProjectFrameworkLink" id="mypage"  sidebar="false">  
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head> 
+  
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxcommon.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgridcell.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/dhtmlxtreegrid.js')}" /> 
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/excells/dhtmlxgrid_excell_link.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_lines.js')}" /> 
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid_skins.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/skins/dhtmlxgrid_dhx_skyblue.css')}"/>
+
+<style>
+   .activeTab {background-color: #236FBD; color:white; background-image:none; height:25px;font-size:15px;}
+   .inactiveTab {background-color: lightgrey; color:black; background-image:none; height:25px;font-size:15px;}
+   div.gridbox_dhx_skyblue table.obj tr td{font-family:Tahoma; font-size:11px; border-width: 1px 1px 1px 1px; border-color : #FDFDFD #A4BED4 #A4BED4 #FDFDFD;}
+    .rich-tabpanel-content { background-color: #E3EFFF;}    
+    .activeTab {background-color: #002060; color:#E3EFFF; background-image:none; height:36px; font-size:15px; font-weight:bold;font-family:Tahoma;}
+    .inactiveTab {background-color: #E3EFFF; color:#002060; background-image:none; height:36px;font-size:15px; font-weight:bold;font-family:Trebuchet MS;}
+    div.gridbox_dhx_skyblue table.hdr td { Font-size:12px; font-family:Trebuchet MS;}
+    div.gridbox_dhx_skyblue table.obj tr td{ font-size:12px; font-family:Trebuchet MS;}
+    .dhx_combo_select, .gridbox_dhx_skyblue .dhx_combo_edit, .gridbox_dhx_skyblue .dhx_textarea{ font-size:12px;}
+    .bPageBlock .detailList .labelCol { width:9%; }
+    .bPageBlock .detailList .dataCol { width:25%; }
+    div.gridbox_dhx_skyblue table.obj tr td { font-family: Arial, Verdana, sans-serif; font-size:11px; }
+    div.gridbox_dhx_skyblue table.hdr td { font-family:Arial, Verdana, sans-serif; font-size:12px; text-align:center;}
+    body .bPageTitle { padding:0 0 0;}
+    a {color:#1797C0; font-size:11px; font-weight:bold;}
+    span ul li {list-style: none; color: #b52828; }
+    element.style {text-align:left;}  
+</style>
+
+<script type="text/javascript">
+   var mygrids;
+   var selectedStr = new Array();
+   var selectedElements = new Array() ;
+   
+   window.onload = function dispProvienceGrid()
+   {
+       var xmlStrLocal = '{!xmlStr}';
+       //alert(xmlStrLocal);
+       document.getElementById("gridboxS").innerHTML = "";
+       mygrids = new dhtmlXGridObject("gridboxS","100%", "100%");     
+       mygrids.selMultiRows = true;
+       mygrids.enableMultiline(true);      
+       mygrids.setImagePath("{!URLFOR($Resource.dhtmlxGrid, '/dhtmlxGrid/codebase/imgs/')}"); 
+       mygrids.setHeader("Framework Code,Framework Name,Select");
+       mygrids.attachHeader("#text_filter,#text_filter,#filter_checkbox");
+       mygrids.setInitWidths("200,400,134");
+       mygrids.setColAlign("left,left,center");
+       mygrids.setColTypes("tree,rotxt,ch");
+       mygrids.setColSorting("str,str,str");
+       mygrids.enableAutoHeight(false);
+       mygrids.enableResizing("false,false,false");
+       //mygrids.attachEvent("onCheck",selectChilds);
+       //mygrids.attachEvent("onXLE",PreSelectedSirs);
+       mygrids.attachEvent("onMouseOver",doonMouseOver);
+       mygrids.setSkin("dhx_skyblue");   
+       mygrids.init();
+       mygrids.loadXMLString(xmlStrLocal);
+       mygrids.sortRows(0,"str","asc"); 
+    }
+    
+    dhtmlXGridObject.prototype._in_header_filter_checkbox=function(t,i,c){
+     t.innerHTML=c[0]+"<input type='checkbox' />"+c[1];
+     var self=this;
+     t.firstChild.onclick=function(e){
+       self.filterBy(i,this.checked?1:0);
+      (e||event).cancelBubble=true;
+       //mygridc.sortRows(0,"str","asc");
+       //mygridc.groupBy(9);
+     }
+   }
+   
+    function doonMouseOver(id,index){
+        var val = mygrids.getItemImage(id);
+        if (val == "po.png") {
+            mygrids.cellById(id,0).setAttribute("title","Program Objective");
+        }
+        if (val == "pa.png") {
+            mygrids.cellById(id,0).setAttribute("title","Program Area");
+        }
+        if (val == "pe.png") {
+            mygrids.cellById(id,0).setAttribute("title","Program Element");
+        }
+        if (val == "pse.png") {
+            mygrids.cellById(id,0).setAttribute("title","Program Sub Element");
+        }
+        var val1 = mygrids.cells(id,index).getValue();
+        if (val1 == 0) return false; 
+        return true;
+    }
+    
+    /*function selectChilds(rId, cInd, state){
+       if(state){
+                               
+                    selectedSirs.push(rId);  
+            } else { 
+                        for(var j in selectedSirs){                  
+                            if( selectedSirs[j] == rId ) {
+                                selectedSirs.splice(j,1);
+                                break;
+                            }
+                        }
+                    }                   
+    }*/ 
+          
+   
+    
+    /*function PreSelectedSirs(g, count ){
+       // alert("I am doing the Count Here::"+count);
+        if (g.getCheckedRows(1) != ''){
+            chked = g.getCheckedRows(1).split(",");    
+        }
+       //alert("I am doing the Checked Row Ids::"+chked );
+    } */
+    
+           
+                
+   function call02(hiddenId,hidd)
+   {
+       mygrids.editStop();
+       document.getElementById(hiddenId).value = mygrids.getChangedRows(true);
+       mygrids.setSerializableColumns("true,true,true");
+       mygrids.xml.cell_attrs.push("Id");
+       document.getElementById(hidd).value = mygrids.serialize();
+   }   
+
+
+   /*function checkAll(cb)
+   {
+      var inputElem = document.getElementsByTagName("input");
+      for(var i=0; i<inputElem.length; i++)
+      {
+         if(inputElem[i].id.indexOf("checkedone")!=-1)
+         {
+          inputElem[i].checked = cb.checked;
+         }
+      }
+   }*/
+   
+</script>
+ 
+</head>
+<body>
+
+<apex:form id="theform">
+ 
+ <div class="bPageTitle">
+     <div class="ptBody">
+         <div class="content">
+             <img src="/s.gif" alt="Location" class="pageTitleIcon" title="Location"/><br></br>            
+             <h2 class="pageDescription">
+             <apex:outputText value="Setup Framework Linkage for : {!projectName}" />   
+             </h2>
+         </div>
+     </div> 
+ </div>    
+   <div style="height:5px; background:#1797C0;"></div> <br></br>
+<apex:outputText style="font-size:12px;font-weight:bold;" value="{!navigationLink}" escape="false"> </apex:outputText> 
+ <br></br>
+  <br></br>
+ <!--<apex:pageBlock rendered="{!ShowErrors}" >
+     <div>
+        <p style="text-align:center;color:blue;font-size:30px;">No Log-Framework to link for this {!dispString}.</p>
+     </div>
+     <div id="cbBouutons"  style="width:750px;height:50px;margin: 10px auto 0px auto; text-align: center; " >
+        <apex:commandButton value="OK" action="{!Cancel}" rendered="true" />
+    </div>
+ </apex:pageBlock>  -->  
+ <apex:pageBlock >
+     
+     <div id="gridbixsParent" style="height:500px;margin:15px auto auto auto;">
+     <div id="gridboxS" style="width:750px;height:400px;margin: auto;background-color:#FCFBFC;"></div>
+     <div id="cbBouutons"  style="width:750px;height:50px;margin: 15px auto 0px auto; text-align: center; " >
+     <apex:inputHidden id="savedXML" value="{!xmlStr}"/>
+     <apex:inputHidden id="selectedEle" value="{!selectedElements}"/> 
+     <apex:commandButton style="align:center" value="  Save  " action="{!saveElements}" onclick="call02('{!$Component.selectedEle}','{!$Component.savedXML}')"/>
+     <apex:commandButton style="align:center" value=" Cancel " action="{!Cancel}" rendered="true" /> 
+     
+     </div>
+     </div>
+ </apex:PageBlock>
+
+</apex:form>  
+</body>
+  
+</html>   
+</apex:page>

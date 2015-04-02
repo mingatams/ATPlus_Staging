@@ -1,0 +1,106 @@
+<apex:page cache="true" expires="600" title="USAID Portfolio Map" showHeader="false" doctype="html-5.0" controller="MapDataController" readOnly="true" standardStylesheets="false">
+<html>
+    <head>
+        <title>USAID Portfolio Map</title>
+         <script type="text/javascript">
+            //google.load("earth", "1");
+            var USAIDTrackerApp;
+            function initialize() {
+               var rootUrl =  "{!IF($User.Alias=='guest','/', '/apex/')}";
+               var h = window.location.protocol + "//" + window.location.host;
+               USAIDTrackerApp = new USAIDTracker.App({
+                   theme: "USAIDTracker.Theme.Default",
+                   mapDataUrl: "{!IF($User.Alias=='guest','/MapData', '/apex/MapData')}",
+                   layerDataUrl: "{!URLFOR($Resource.USAIDTrackerStatic, 'USAIDTrackerStatic.js')}",
+                   rootUrl: h + rootUrl,
+                   polygonDataUrl: "{!URLFOR($Resource.USAIDTrackerPolygons)}",
+                   //projectDetailUrl: null, //your detail page link here, ends with "id="
+                   defaultPhotoUrl: "{!URLFOR($Resource.DefaultLogo)}",
+                   missionFlagUrl: "{!URLFOR($Resource.MissionFlags)}",
+                   locationRange: "{!$CurrentPage.parameters.l}",
+                   locationFocus: "{!$CurrentPage.parameters.w}",
+                   initSettings: {
+                       regionBound: {
+                           "MIDDLE EAST": "20.6,-17.7,38,49",
+                           "SUB SAHARAN AFRICA": "-47.055154,-17.568054,35.95133,48.138427",
+                           "AFGHANISTAN & PAKISTAN": "23,58,40,80",
+                           "ASIA": "-12,67.9,30.2,140.1",
+                           "EUROPE & EURASIA": "39.2,18.2,62.8,79.4",
+                           "LATIN AMERICA & THE CARRIBEAN": "32.5,-118.1,9,-58.5"
+                       }
+                   },
+                   debug: false
+               });
+               USAIDTrackerApp.present(dojo.byId("map_canvas"));
+            }
+            dojo.ready(initialize);
+        </script> 
+        
+        <link href='https://fonts.googleapis.com/css?family=Abel' rel='stylesheet' type='text/css'/>
+        <link rel="stylesheet" href="{!URLFOR($Resource.Dojo161, 'dijit/themes/tundra/tundra.css')}" type='text/css' />
+        <link rel="stylesheet" href="{!URLFOR($Resource.Dojo161, 'dojox/form/resources/RangeSlider.css')}" type='text/css' />
+        
+        <!--    <script type="text/javascript" src="{!URLFOR($Resource.PIE, 'PIE.js')}"></script> -->
+        
+        <apex:includeScript value="https://maps.googleapis.com/maps/api/js?v=3&sensor=true"/>
+        <!-- <apex:includeScript value="https://www.google.com/jsapi"/> -->
+        <!-- Production Only  
+        <apex:includeScript value="https://maps.googleapis.com/maps/api/js?client=gme-usaid&sensor=false" />
+        -->
+        
+        <apex:includeScript value="{!URLFOR($Resource.Dojo161, 'dojo.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.Dojo161, 'usaid-dojo.js')}"/>
+        
+        <apex:stylesheet value="{!URLFOR($Resource.USAIDTracker, 'resources/USAIDTracker.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.USAIDTracker, 'resources/USAIDTrackerDefaultTheme.css')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.USAIDTracker, 'USAIDTracker.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.USAIDTrackerPolygons, 'USAIDTrackerStatic.js')}"/>
+       
+        <script type="text/javascript">
+        
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-30663658-1']);
+          _gaq.push(['_setDomainName', 'usaid.gov']);
+          _gaq.push(['_trackPageview']);
+        
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
+        
+        </script>
+    </head>
+    <body>
+    <!-- IE7 and IE8 support -->
+    <style>
+        .haloBubble {
+        background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPHJhZGlhbEdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY3g9IjUwJSIgY3k9IjUwJSIgcj0iNzUlIj4KICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM5MDhlOGYiIHN0b3Atb3BhY2l0eT0iMC42NSIvPgogICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDAwMDAwIiBzdG9wLW9wYWNpdHk9IjAiLz4KICA8L3JhZGlhbEdyYWRpZW50PgogIDxyZWN0IHg9Ii01MCIgeT0iLTUwIiB3aWR0aD0iMTAxIiBoZWlnaHQ9IjEwMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+        background: -moz-radial-gradient(center, ellipse cover,  rgba(144,142,143,0.65) 0%, rgba(0,0,0,0) 100%);
+        background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(144,142,143,0.65)), color-stop(100%,rgba(0,0,0,0)));
+        background: -webkit-radial-gradient(center, ellipse cover,  rgba(144,142,143,0.65) 0%,rgba(0,0,0,0) 100%);
+        background: -o-radial-gradient(center, ellipse cover,  rgba(144,142,143,0.65) 0%,rgba(0,0,0,0) 100%);
+        background: -ms-radial-gradient(center, ellipse cover,  rgba(144,142,143,0.65) 0%,rgba(0,0,0,0) 100%);
+        background: radial-gradient(center, ellipse cover,  rgba(144,142,143,0.65) 0%,rgba(0,0,0,0) 100%);
+        }
+        
+        .haloBubbleIE {
+          border:1px solid #dcdedf;
+          background: #908E8F;
+          filter: alpha(opacity=65);
+          border-radius: 16px;
+          -pie-background: linear-gradient(#dcdedf, #908E8F);
+          behavior: url("resource/1345760122000/USAIDTracker/resources/PIE.htc");
+        }
+        *+html #map_canvas {
+          margin-top: 8px;
+        }
+    </style>
+    <div class='haloBubbleIE' style='display:none'></div>    
+    <!-- end of IE7 and IE8 support -->  
+      
+    <div id="map_canvas" style="width: 100%; height: 500px;"></div>
+
+    </body>
+</html>
+</apex:page>

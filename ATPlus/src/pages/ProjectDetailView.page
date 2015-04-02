@@ -1,0 +1,864 @@
+<apex:page title="Project Detail" showHeader="false" doctype="html-5.0" controller="ProjectDetailControllerNew" standardStylesheets="false">
+
+<head profile="http://www.w3.org/1999/xhtml/vocab">
+<title>USAID Portfolio Map</title>
+<!-- <base href="http://www.usaid.gov" target="_blank" /> -->
+
+<script type='text/javascript' src='https://www.google.com/jsapi' />
+<apex:includeScript value="{!$Resource.JQuery172_js}"/>
+<apex:includeScript value="{!$Resource.Raphael_js}"/>
+<apex:includeScript value="{!$Resource.Highcharts_js}"/>
+<apex:includeScript value="{!$Resource.Highcharts_export_js}"/>
+
+<base href="{!URLFOR($Resource.WebsiteWIP)}/" target="_blank" />
+<meta https-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+<link rel="shortcut icon" href="images/favicon.ico" type="image/vnd.microsoft.icon"></link>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+<link href="https://fonts.googleapis.com/css?family=Abel" rel="stylesheet" type="text/css" /> 
+<style type="text/css" media="all">
+@import url("css/system.base.css");
+@import url("css/system.theme.css");
+</style>
+
+<style type="text/css" media="all">
+@import url("css/alpha-reset.css?m2owbc");
+@import url("css/alpha-mobile.css?m2owbc");
+@import url("css/alpha-alpha.css?m2owbc");
+@import url("css/formalize.css?m2owbc");
+@import url("css/omega-branding.css?m2owbc");
+</style>
+
+
+
+<!--[if lte IE 7]>
+<link type="text/css" rel="stylesheet" href="css/ie-lte-7.css?m2owbc" media="all"></link>
+<![endif]-->
+
+
+<style type="text/css" media="all">
+@import url("css/global.css");
+</style>
+
+<style type="text/css" media="all">
+@import url("css/usaid-alpha-default-normal.css");
+@import url("css/alpha-default-normal-24.css");</style>
+
+
+
+<script type="text/javascript">
+$(document).ready(function() { 
+            var awdamt = parseFloat("{!AwardAmount}") ;
+            var avgamt = parseFloat("{!AvgAmount}") ;  
+            if (isNaN(awdamt)) {
+                awdamt = 0;
+            }
+            
+            if (isNaN(avgamt)) {
+                avgamt = 0;
+            }
+             
+            var num1 = toUSD(awdamt);
+            var num2 = toUSD(avgamt);
+            
+            alert("{!imgID}");
+           
+         var chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'chart_div3',
+                type: 'column',
+                showAxes:false,
+                reflow:true,
+                marginLeft:150,
+                align:'right',
+                height:200
+            },
+            title: {
+                text: ''
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                min: 0,
+                categories: [],             
+                lineColor:'#FFFFFF',
+                lineWidth:0,
+                endOnTick:false,
+                gridLineColor:'#FFFFFF',                
+                labels:{
+                    enabled:false
+                }               
+            },
+            yAxis: {
+                min: 0,
+                lineColor:'#FFFFFF',
+                lineWidth:0,
+                gridLineColor:'#FFFFFF',                
+                labels:{
+                    enabled:false
+                },
+                title: {
+                    text: ''
+                }               
+            },
+            legend: {
+                layout: 'vertical',
+                backgroundColor: '#FFFFFF',
+                backgroundColor: '#FFFFFF',
+                align: 'left',
+                verticalAlign: 'center',                
+                x: 0,
+                y: 50,
+                floating: true,
+                itemStyle: {
+                color: '#000000',
+                fontWeight: 'bold',
+                fontSize:'10',
+                width:'105px'
+                }
+            },
+            tooltip: {
+                enabled:false
+            },  
+            plotOptions: {
+                series:{
+                    enableMouseTracking: false,
+                    allowPointSelect: false,
+                    legendItemClick: function () {
+                            return false; 
+                    }
+                },
+                column: {
+                    events:{
+                        legendItemClick: function () {
+                            return false; 
+                        }
+                    },
+                    pointPadding: 0.05,
+                    borderWidth: 0,                    
+                }
+            },
+            series: [{
+                name: 'AWARD AMOUNT'+ ' '+ num1,
+                data: [awdamt],
+                color:'#002A6C'  
+                
+            }, {
+                name: 'AVERAGE AMOUNT'+ ' ' + num2,
+                data: [avgamt],
+                color:'#DDDDDD'
+            }],
+            credits: {
+                enabled:false
+            },
+            exporting: {
+                enabled:false
+            }
+        });   
+   });    
+// }); 
+ 
+ function toUSD(number) {
+            var number = number.toString(), 
+            dollars = number.split('.')[0], 
+            cents = (number.split('.')[1] || '') +'00';
+            dollars = dollars.split('').reverse().join('')
+                    .replace(/(\d{3}(?!$))/g, '$1,')
+                    .split('').reverse().join('');
+            return '$' + dollars + '.' + cents.slice(0, 2);
+        }
+ 
+
+
+
+
+    Date.daysBetween = function( date1, date2 ) {
+    
+      var sdate1=new Date(date1);
+      var edate1=new Date(date2);
+      //Get 1 day in milliseconds
+      var one_day=1000*60*60*24;
+      // Convert both dates to milliseconds
+      var date1_ms = sdate1.getTime();
+      var date2_ms = edate1.getTime();
+      // Calculate the difference in milliseconds
+      var difference_ms = date2_ms - date1_ms;
+      // Convert back to days and return
+      return Math.round(difference_ms/one_day); 
+  }
+    
+    var sYear = "{!Startyear}" ;
+    var eYear = "{!EndYear}" ;
+    var sDate = "{!Project.Start_Date__c}" ;
+    var eDate = "{!Project.End_Date__c}" ;    
+    
+    var totaldaysDiff=Date.daysBetween(sDate,eDate);
+    var completedDays = Date.daysBetween(sDate,new Date().toString());
+    var percentDays;
+    if (totaldaysDiff> 0 ){
+        percentDays = (completedDays / totaldaysDiff) * 100;
+    } else {
+        percentDays = 0;
+    }    
+       
+    var stopDegree = ((180 * percentDays) / 100) - 180;
+    
+    if (stopDegree > 0){
+        stopDegree = 0;
+    }
+      
+    window.onload = function () { 
+                            
+    var outerX1, outerY1,outerX2, outerY2,innerX1, innerY1, innerX2, innerY2;                                   
+    var paper = new Raphael(document.getElementById('chart_div1'), 200, 200);                                     
+    paper.customAttributes.arc = function (centerX, centerY, startAngle, endAngle, innerR, outerR) {
+            
+    var radians = Math.PI / 180,        
+    largeArc = +(endAngle - startAngle > 180); 
+        
+    outerX1 = centerX + outerR * Math.cos((startAngle) * radians),
+    outerY1 = centerY + outerR * Math.sin((startAngle) * radians),
+    outerX2 = centerX + outerR * Math.cos((endAngle) * radians),
+    outerY2 = centerY + outerR * Math.sin((endAngle) * radians),
+    innerX1 = centerX + innerR * Math.cos((endAngle) * radians),
+    innerY1 = centerY + innerR * Math.sin((endAngle) * radians),
+    innerX2 = centerX + innerR * Math.cos((startAngle) * radians),
+    innerY2 = centerY + innerR * Math.sin((startAngle) * radians);      
+            
+   // build the path array
+    var path = [
+               ["M", outerX1, outerY1], //move to the start point
+               ["A", outerR, outerR, 0, largeArc, 1, outerX2, outerY2], //draw the outer edge of the arc
+               ["L", innerX1, innerY1], //draw a line inwards to the start of the inner edge of the arc
+               ["A", innerR, innerR, 0, largeArc, 0, innerX2, innerY2], //draw the inner arc
+               ["z"] //close the path
+            ];                      
+        return {path: path};
+    };
+
+    var redParams = {stroke: "#DDDDDD", "stroke-width": 1, fill:"#DDDDDD"},
+    cx = 100, cy = 100, innerRadius = 30, outerRadius = 60
+    var blueParams = {stroke: "#002A6C", "stroke-width": 1, fill:"#002A6C"}       
+
+    var red = paper.path().attr(redParams).attr({arc: [cx, cy, 180, 0, innerRadius, outerRadius]});
+        
+    var firstOuterX1 = outerX1,  firstOuterY1 = outerY1, firstInnerX1 = innerX1,  firstInnerY1 = innerY1;
+        
+    var blue = paper.path().attr(blueParams).attr({arc: [cx, cy, 180, stopDegree, innerRadius, outerRadius]});
+    var test = paper.text(firstOuterX1+18,firstOuterY1+18,sYear);
+
+    test.animate({cx: 20, cy: 20},2000);
+
+    var test = paper.text(firstInnerX1+18,firstInnerY1+18,eYear);
+
+    test.animate({cx: 20, cy: 20},2000);
+    
+    
+    //*************************************************************
+    // Following code is for the third chart...
+    //***************************************
+    
+  /*      var chart;
+    
+ //  $(document).ready(function() { 
+            var awdamt = parseInt("{!AwardAmount}") ;
+            var avgamt = parseInt("{!AvgAmount}") ;   
+            var num1 = toUSD(awdamt);
+            var num2 = toUSD(avgamt);
+            alert("Diaplay numbers" +num1 +"num2"+num2);
+            chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'chart_div3',
+                type: 'column',
+                showAxes:false,
+                reflow:true,
+                marginLeft:150,
+                align:'right'
+            },
+            title: {
+                text: ''
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                min: 0,
+                categories: [],             
+                lineColor:'#FFFFFF',
+                lineWidth:0,
+                endOnTick:false,
+                gridLineColor:'#FFFFFF',                
+                labels:{
+                    enabled:false
+                }               
+            },
+            yAxis: {
+                min: 0,
+                lineColor:'#FFFFFF',
+                lineWidth:0,
+                gridLineColor:'#FFFFFF',                
+                labels:{
+                    enabled:false
+                },
+                title: {
+                    text: ''
+                }               
+            },
+            legend: {
+                layout: 'vertical',
+                backgroundColor: '#FFFFFF',
+                backgroundColor: '#FFFFFF',
+                align: 'left',
+                verticalAlign: 'center',                
+                x: 0,
+                y: 50,
+                floating: true,
+                itemStyle: {
+                color: '#000000',
+                fontWeight: 'bold',
+                fontSize:'10',
+                width:'105px'
+                }
+            },
+            tooltip: {
+                formatter: function() {
+                    return '$'+
+                        this.x +': $'+ this.y +'    ';
+                }
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.05,
+                    borderWidth: 0,                    
+                }
+            },
+            series: [{
+                name: 'AWARD AMOUNT'+ ' '+ num1,
+                data: [awdamt]  
+                
+            }, {
+                name: 'AVERAGE AMOUNT'+ ' ' + num2,
+                data: [avgamt]
+            }],
+            credits: {
+                enabled:false
+            },
+            exporting: {
+                enabled:false
+            }
+        }); */
+    
+    
+    
+  }
+  window.onload(sYear ,eYear ,stopDegree); 
+  
+ // $(function () {   
+ /*function drawChart() {
+  //  var chart; */
+    
+ 
+
+</script>
+
+<style type="text/css">
+.pageDiv {    
+    margin-right: 12%;
+    margin-left: 12%; 
+    width:76%; 
+    height: auto;
+    }
+    
+.headerImgDiv {
+    height: 200px;    
+    }
+
+.projectTitle {
+    font-family: Abel;
+    font-size:22px;
+    text-transform:uppercase;
+    color:#666666; 
+    text-align:left;
+    display:table;
+    height:60px;
+    position:absolute;
+    }
+    
+ .projectTitle p {
+    disply:table cell;
+    vertical-align:middle;
+    text-align:center;
+    font-size:22px;
+    margin-top:10px;
+    font-family: Abel;
+    }
+ 
+.backLinkText{
+    font-family: Abel;
+    font-size:14px;
+    text-align:right;
+    text-transform:uppercase;
+    color:#666666; 
+    width:140; 
+    }             
+    
+.titleDiv {
+    height: 60px;    
+    background-color: #E3E3E3;
+    }
+    
+.titleText {
+    font-family: Abel;
+    font-size:22px;
+    text-transform:uppercase;
+    color:#666666;
+    text-align: left;
+    vertical-align:middle;
+    float: left;
+    width: 82%;
+    height:50px;    
+    }
+    
+.backLinkDiv {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 13px;
+    color: #4A4A4A;
+    float: left;
+    width: 20%;
+    height:50px;
+    vertical-align:middle;
+    text-transform: uppercase;
+    text-align: right;
+    }
+    
+.containerDiv {
+    height: auto;
+    margin-top: 5px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    display:inline-table;    
+    }
+    
+.leftContainer {
+    float: left;
+    width: 18%;
+    height: auto;    
+    }
+    
+.leftContainerDiv1 {
+    height: 400px;    
+    }
+
+.leftNavTitle{
+   font-family: Arial;
+   font-weight: Bold;
+   font-size:10px;
+   color:#666666;
+   text-transform:uppercase;
+   padding:0px;
+   list-style:none;
+   text-align:left;
+   width:100%;
+   margin-left:-2px;
+   }
+   
+.leftNavInfo{
+   font-family: Arial;
+   font-weight:Bold;
+   font-size:10px;
+   color:#1F2028;
+   text-transform:uppercase;
+   padding:0px;
+   list-style:none;
+   text-decoration:none;
+  }
+  
+.fillerLi{
+    list-style:none;
+    height:20px;
+}
+    
+.leftContainerDiv2 {
+    height: auto;
+    }
+    
+.rightContainerDiv {
+    height: auto;
+    width: 82%;
+    float: left;    
+    }
+    
+.rightContainerDiv1 {
+    height: 30px;
+    font-family: Arial;
+    font-weight: Bold;
+    font-size:15px;
+    color:#2B2B2B;
+    text-transform:uppercase;
+    align:top
+    }
+    
+.rightContainerDiv2 {
+    height: auto;
+    }
+
+.rightContainerDiv2Img {
+    float: left;
+    width: 28%;
+    height: auto;
+    border: 1px solid #BFBFBF;    
+    }
+    
+.rightContainerDiv2Text {
+    float: left;
+    width: 70%;
+    height: auto;
+    font-family: Arial;
+    font-weight: normal;
+    font-size: 14px;
+    color: #666666; 
+    align: top; 
+    margin-left:10px;       
+    }
+        
+.rightContainerDiv3 {
+    height: auto;
+    margin-top:200px !important;   
+    }
+
+.rightContainerDiv3Ch1 {
+    width:30%;
+    height: auto;
+    float: left;
+    alignment-adjust: center;
+    margin-top:0px;    
+    }
+    
+.rightContainerDiv3Ch2 {
+    width:30%;
+    height: auto;
+    float: left;
+    alignment-adjust: center;
+    margin-top:0px;    
+    }
+    
+.rightContainerDiv3Ch3 {
+    width:30%;
+    height: auto;
+    float: left;
+    alignment-adjust: center;
+    margin-top:0px;    
+    }
+    
+.fillerDiv{
+    width:3%;
+    height: auto;
+    float: left;
+    border-style:solid;
+    border-color:#FFFFFF;
+    margin-top:0px;
+    }
+
+.rightContainerDiv4 {
+    display: inline-table;
+    height: auto;        
+    width: 100%;
+    }
+
+.rightContainerDiv5{
+    margin-top:450px !important;
+    height: auto;        
+    }
+    
+.bottomLineDiv{
+    width:100%;
+    border-style:solid;
+    border-color:#DDDDDD;
+    border-left:0px;
+    border-right:0px;
+    border-bottom:0px;
+    margin-bottom:0px;
+    display:inline;
+    }
+
+.ldashboard{
+    width:30%;
+    height: auto;
+    border-top:5px;
+    border-style:solid;
+    border-color:#DDDDDD;
+    border-left:0px;
+    border-right:0px;
+    border-bottom:0px;
+    font-family: Arial;
+    font-weight: Bold;
+    font-size:14px;
+    color:#666666;
+    text-transform:uppercase;
+    text-align:center;
+    float:left;
+    }
+.rdashboard{
+    width:30%;
+    height: auto;
+    border-top:5px;
+    border-style:solid;
+    border-color:#DDDDDD;
+    border-left:0px;
+    border-right:0px;
+    border-bottom:0px;
+    font-family: Arial;
+    font-weight: Bold;
+    font-size:14px;
+    color:#666666;
+    text-transform:uppercase;
+    text-align:center;
+    float:left;
+    margin-left: 3%;
+}
+    
+.dashboardLine{
+    border-top:5px;
+    border-style:solid;
+    border-color:#DDDDDD;
+    border-left:0px;
+    border-right:0px;
+    border-bottom:0px;
+    width:78.9%;
+    margin-left:18%               
+    }        
+             
+</style>
+</head>
+
+<body style="margin:0px;" class="html not-front not-logged-in page-node page-node- page-node-857 node-type-page context-who-we-are one-sidebar sidebar-first">
+<!-- Header Starts Here -->
+<div id="skip-link">
+    <a href="#main-content" class="element-invisible element-focusable">Skip to main content</a>
+</div>
+<div class="page clearfix" id="page">
+    <div id="section-header" class="section section-header">
+        <div id="zone-branding-wrapper" class="zone-wrapper zone-branding-wrapper clearfix">  
+            <div id="zone-branding" class="zone zone-branding clearfix container-24">
+                <div class="grid-24 region region-branding" id="region-branding">
+                    <div class="region-inner region-branding-inner">
+                        <div class="branding-data clearfix">
+                            <div class="logo-img">
+                                <a href="/" rel="home" title="U.S. Agency for International Development"><img src="images/logo.png" alt="U.S. Agency for International Development" id="logo" /></a>      
+                            </div>
+                            <div class="site-name-slogan element-invisible">
+                                <h2 class="site-title"><a href="/" title="Home">U.S. Agency for International Development</a></h2>
+                            </div>
+                        </div>
+                        <div class="block block-menu block-menu-administrators-menu block-menu-menu-administrators-menu odd block-without-title" id="block-menu-menu-administrators-menu">
+                            <div class="block-inner clearfix">
+                                <div class="content clearfix">
+                                    <ul class="menu"><li class="first last leaf"><a href="/who-we-are/orgnization/administrator-shah" title="">USAID Administrator</a></li></ul>    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>  
+                </div>
+            </div>
+            <div id="zone-menu-wrapper" class="zone-wrapper zone-menu-wrapper clearfix">  
+                <div id="zone-menu" class="zone zone-menu clearfix container-24">
+                    <div class="grid-24 region region-menu" id="region-menu">
+                        <div class="region-inner region-menu-inner">
+                            <div class="block block-menu-block block-2 block-menu-block-2 odd block-without-title" id="block-menu-block-2">
+                                <div class="block-inner clearfix">
+                                    <div class="content clearfix">
+                                        <div class="menu-block-wrapper menu-block-2 menu-name-main-menu parent-mlid-0 menu-level-1">
+                                            <ul class="menu">
+                                                <li class="first expanded active-trail active menu-mlid-1128"><a href="/who-we-are" class="active-trail active">Who We Are</a></li>
+                                                <li class="expanded menu-mlid-1141"><a href="/what-we-do">What We Do</a></li>
+                                                <li class="expanded menu-mlid-1142"><a href="/where-we-work">Where We Work</a></li>
+                                                <li class="expanded menu-mlid-1143"><a href="/results-and-data" title="">Results and Data</a></li>
+                                                <li class="expanded menu-mlid-1144"><a href="/news-information" title="">News &amp; Information</a></li>
+                                                <li class="last expanded menu-mlid-1145"><a href="/work-usaid" title="">Work with USAID</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Header ends Here -->
+<!-- Page content starts here -->
+
+<div class="pageDiv">
+  <div class="headerImgDiv">
+      <apex:image width="100%" height="200px" value="{!urlfor($Resource.ProjectDetailZip,'Banners/afgpakistan.jpg')}"  rendered="{!IF(region == 'Afghanistan & Pakistan',true,false)}" />
+      <apex:image width="100%" height="200px" value="{!urlfor($Resource.ProjectDetailZip,'Banners/asia.jpg')}"  rendered="{!IF(region == 'Asia',true,false)}"/>
+      <apex:image width="100%" height="200px" value="{!urlfor($Resource.ProjectDetailZip,'Banners/europeeurasia.jpg')}"  rendered="{!IF(region == 'Europe & Eurasia',true,false)}" />
+      <apex:image width="100%" height="200px" value="{!urlfor($Resource.ProjectDetailZip,'Banners/latinamerica.jpg')}"  rendered="{!IF(region == 'Latin America & The Carribean',true,false)}" />
+      <apex:image width="100%" height="200px" value="{!urlfor($Resource.ProjectDetailZip,'Banners/middleeast.jpg')}"  rendered="{!IF(region == 'MIddle East',true,false)}" />
+      <apex:image width="100%" height="200px" value="{!urlfor($Resource.ProjectDetailZip,'Banners/subafrica.jpg')}"  rendered="{!IF(region == 'SUB SAHARAN AFRICA',true,false)}" />
+  </div>
+  <div class="titleDiv">
+      <div class="projectTitle"><p>{!project.public_name__c}</p></div> 
+  </div>
+  <div class="containerDiv">
+    <div class="leftContainer">
+      <div class="leftContainerDiv1">
+          <ul style="width:100%; padding:0px;">
+              <li class="leftNavTitle">Country</li>
+              <li class="leftNavInfo">{!project.MissionName__c}</li>
+              <li class="fillerLi"> </li>
+              <li class="leftNavTitle">Sector</li>
+              <li class="leftNavInfo">{!project.Sector_Name__c}</li>
+              <li class="fillerLi"> </li>
+              <li class="leftNavTitle">Primary Initiative</li>
+              <li class="leftNavInfo">{!project.Primary_Initiative__c}</li>
+              <li class="fillerLi"> </li>
+              <li class="leftNavTitle">Health SubType</li>
+              <li class="leftNavInfo">{!project.Project_Subtype__c}</li>
+                    
+              <li class="fillerLi"> </li>
+              <li class="leftNavTitle">Primary Partner</li>
+              <li class="leftNavInfo">{!imLink.Implementing_Mechanism_Number__r.Primary_Partner__c }</li>
+              <li class="fillerLi"> </li>
+              <li class="leftNavTitle">Project Timeline</li>
+              <li class="leftNavInfo"><apex:outputText value="{0,date,MM/dd/yyyy}">
+                <apex:param value="{!Project.Start_Date__c}" />
+                </apex:outputText> - 
+                <apex:outputText value="{0,date,MM/dd/yyyy}">
+                <apex:param value="{!Project.End_Date__c}" />
+                </apex:outputText>
+              </li>
+              
+              <li class="fillerLi"> </li>
+              <li class="leftNavTitle">Award Amount</li>
+              <li class="leftNavInfo"><apex:outputText value="${0, number, 0,000}">
+                  <apex:param value="{!imlink.Implementing_Mechanism_Number__r.Award_Amount__c}" />
+                  </apex:outputText>
+              </li>
+          </ul>
+      </div>
+      <div class="leftContainerDiv2"></div>      
+    </div>
+    <div class="rightContainerDiv">
+      <div class="rightContainerDiv1"><p>Project Description</p></div>
+      <div class="rightContainerDiv2">
+        <div class="rightContainerDiv2Img">
+       
+        <apex:image value="{!imgID}"   rendered="{!IF(photoflag=false,true,false)}"  height="175em" width="100%" />        
+        <apex:image value="{!urlfor($Resource.DefaultLogo)}"  rendered="{!IF(photoflag=true,true,false)}" height="175em" width="100%" />      
+          
+           </div>
+        <div class="rightContainerDiv2Text">
+           <apex:outputtext value="{!project.Project_Description__c}"  escape="false"  /> 
+        </div>        
+      </div>
+      <div class="rightContainerDiv3">
+          <div  id="chart_div1" class="rightContainerDiv3Ch1"></div>
+          <div class="fillerDiv"></div>
+          <div class="rightContainerDiv3Ch2">
+              <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/agriculture.jpg')}"  rendered="{!IF(project.Sector_Name__c == 'AGRICULTURE & FOOD SECURITY',true,false)}"/>
+              <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/Climate.jpg')}"  rendered="{!IF(project.Sector_Name__c == 'CLIMATE CHANGE',true,false)}"/>
+              <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/crisis.jpg')}"  rendered="{!IF(project.Sector_Name__c == 'CRISIS & CONFLICT',true,false)}"/>
+              <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/democracy.jpg')}"  rendered="{!IF(project.Sector_Name__c == 'DEMOCRACY, HUMAN RIGHTS AND GOVERNANCE',true,false)}"/>
+              <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/economic.jpg')}"  rendered="{!IF(project.Sector_Name__c == 'ECONOMIC GROWTH & TRADE',true,false)}"/>
+              <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/education.jpg')}"  rendered="{!IF(project.Sector_Name__c == 'EDUCATION',true,false)}" />
+              <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/environment.jpg')}"  rendered="{!IF(project.Sector_Name__c == 'ENVIRONMENT',true,false)}"/>
+              <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/gender.jpg')}"  rendered="{!IF(sector='gender',true,false)}"/>
+              <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/globalhealth.jpg')}"  rendered="{!IF(project.Sector_Name__c == 'GLOBAL HEALTH',true,false)}"/>
+              <apex:image value="{!urlfor($Resource.ProjectDetailZip,'Sectors/water.jpg')}"  rendered="{!IF(project.Sector_Name__c == 'WATER',true,false)}"/>
+              <apex:image value="{!urlfor($Resource.SectorIT)}"  rendered="{!IF(project.Sector_Name__c == 'INFORMATION TECHNOLOGY',true,false)}"/>
+                                                
+          </div>
+          <div class="fillerDiv"></div>
+          <div id="chart_div3" class="rightContainerDiv3Ch3"></div>
+      </div>
+      <div class="rightContainerDiv4">
+          <div class="ldashboard">Project Timeline</div>
+          <div class="rdashboard">{!project.Sector_Name__c}</div>
+          <div class="rdashboard">Award Amount</div>
+      </div>
+    </div>              
+  </div>
+  <div class="dashboardLine"></div>  
+</div>
+<!-- Page content ends here -->
+
+<!-- Footer starts here -->
+<div id="zone-footer-wrapper" class="zone-wrapper zone-footer-wrapper clearfix">  
+    <div id="zone-footer" class="zone zone-footer clearfix container-24">
+        <div class="grid-18 push-6 region region-footer-second" id="region-footer-second">
+            <div class="region-inner region-footer-second-inner">
+                <div class="block block-menu block-menu-utility-menu block-menu-menu-utility-menu odd block-without-title" id="block-menu-menu-utility-menu">
+                    <div class="block-inner clearfix">
+                        <div class="content clearfix">
+                            <ul class="menu">
+                                <li class="first leaf"><a href="/guidelines">Guidelines</a></li>
+                                <li class="leaf"><a href="/forms">Forms</a></li>
+                                <li class="leaf"><a href="/privacy-policy">Privacy Policy</a></li>
+                                <li class="leaf"><a href="/egov">EGOV</a></li>
+                                <li class="leaf"><a href="/foia-requests">FOIA Requests</a></li>
+                                <li class="leaf"><a href="/no-fear-act">No Fear Act</a></li>
+                                <li class="leaf"><a href="/accessibility">Accessibility</a></li>
+                                <li class="last leaf"><a href="/open-government">Open Government</a></li>
+                            </ul>    
+                        </div>
+                    </div>
+                </div>
+  
+  
+  
+                <div class="block block-menu-block block-4 block-menu-block-4 even block-without-title" id="block-menu-block-4">
+                    <div class="block-inner clearfix">
+                        <div class="content clearfix">
+                            <div class="menu-block-wrapper menu-block-4 menu-name-main-menu parent-mlid-0 menu-level-1">
+                                <ul class="menu">
+                                    <li class="first expanded menu-mlid-1128"><a href="/who-we-are">Who We Are</a></li>
+                                    <li class="expanded menu-mlid-1141"><a href="/what-we-do">What We Do</a></li>
+                                    <li class="expanded menu-mlid-1142"><a href="/where-we-work">Where We Work</a></li>
+                                    <li class="expanded menu-mlid-1143"><a href="/results-and-data" title="">Results and Data</a></li>
+                                    <li class="expanded menu-mlid-1144"><a href="/news-information" title="">News &amp; Information</a></li>
+                                    <li class="last expanded menu-mlid-1145"><a href="/work-usaid" title="">Work with USAID</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="grid-6 pull-18 region region-footer-first" id="region-footer-first">
+            <div class="region-inner region-footer-first-inner">
+                <div class="block block-block block-1 block-block-1 odd block-without-title" id="block-block-1">
+                    <div class="block-inner clearfix">
+                        <div class="content clearfix">
+                            <p><strong>U.S. AGENCY FOR INTERNATIONAL DEVELOPMENT</strong></p>
+                            <p>Ronald Reagan Building<br />
+                              Washington, D.C. 20523-0016<br />
+                              Telephone: 202-712-4320<br />
+                              FAX: 202-216-3524</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="block block-menu-block block-6 block-menu-block-6 even" id="block-menu-block-6">
+                    <div class="block-inner clearfix">
+                        <h2 class="block-title">FIND AGENCY CONTACT INFORMATION</h2>
+                        <div class="content clearfix">
+                        <div class="menu-block-wrapper menu-block-6 menu-name-menu-directory-menu parent-mlid-2355 menu-level-1">
+                            <ul class="menu">
+                                <li class="first leaf menu-mlid-2217"><a href="/staff-directory" title="">Staff Directory</a></li>
+                                <li class="leaf menu-mlid-2219"><a href="/mission-directory">Mission Directory</a></li>
+                                <li class="last leaf menu-mlid-2218"><a href="/organization-chart" title="">Organization Chart</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>  
+</div>
+</div>
+<!-- Footer ends here -->
+</body>
+</apex:page>

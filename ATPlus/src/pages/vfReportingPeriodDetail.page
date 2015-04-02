@@ -1,0 +1,158 @@
+<apex:page standardController="Reporting_Period__c" tabStyle="Project_Implementation__tab" extensions="ClsUserProfileFinder,ClsReportingPeriodExtension,ClsTabController" id="IMReportingPeriodPage" action="{!doAction}" sidebar="false" >
+ <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+        
+     <apex:sectionHeader title="{!$ObjectType.Reporting_Period__c.label}" subtitle="{!Reporting_Period__c.name}"/>
+    
+   <apex:tabPanel switchType="client"  id="IMReportingPeriodPanel"  value="{!selectedTab}" onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+      <apex:tab label="Overview" name="IMReportingPeriodDetails"  id="tabIMReportingPerioddetails" styleClass="activeTabBackground">
+      <apex:form id="IMReportingPeriodForm">
+      <apex:pageBlock mode="maindetail" id="IMReportingPeriodPageBlock">      
+         <!-- <apex:pageBlockButtons rendered="{!$Profile.Name == 'Mission Partner'}"> -->
+         <apex:pageBlockButtons rendered="{!isMissionPartnerUser}">
+         <!-- <apex:commandButton action="{!changeToSubmit}" image="{!URLFOR($Resource.ButtonImages, 'submit.png')}" title="Submit" rendered="{!Reporting_Period__c.Status__c == 'Open' || Reporting_Period__c.Status__c == 'Rejected' }"/> -->
+           <apex:commandButton action="{!changeToSubmit}" value="Submit" title="Submit" rendered="{!Reporting_Period__c.Status__c == 'Open' || Reporting_Period__c.Status__c == 'Rejected' }"/>
+        </apex:pageBlockButtons>
+        <!-- <apex:pageBlockButtons rendered="{!$Profile.Name == 'PLT - Mission Profile'}"  > -->
+        <apex:pageBlockButtons rendered="{!isPLTMissionUser}"  >
+           <!-- <apex:commandButton action="{!edit}" image="{!URLFOR($Resource.ButtonImages, 'edit.png')}" title="Edit"/>
+            <apex:commandButton action="{!delete}" image="{!URLFOR($Resource.ButtonImages, 'delete.png')}" title="delete"/>            
+            <apex:commandButton action="{!changeToPublish}" image="{!URLFOR($Resource.ButtonImages, 'publish.png')}" title="Publish"   rendered="{!Reporting_Period__c.Status__c == 'Draft'}"/>
+            <apex:commandButton action="{!changeToClose}" image="{!URLFOR($Resource.ButtonImages, 'close.png')}" title="Close" rendered="{!Reporting_Period__c.Status__c == 'Draft' || Reporting_Period__c.Status__c == 'Submitted' }"/>
+            <apex:commandButton action="{!changeToDraft}" image="{!URLFOR($Resource.ButtonImages, 'draft.png')}" title="Draft" rendered="{!Reporting_Period__c.Status__c == 'Publish'}"/>
+            <apex:commandButton action="{!changeToOpen}" image="{!URLFOR($Resource.ButtonImages, 'open.png')}" title="Open" rendered="{!Reporting_Period__c.Status__c == 'Publish'}"/>            
+            <apex:commandButton action="{!changeToExtend}" image="{!URLFOR($Resource.ButtonImages, 'extend.png')}" title="Extend" rendered="{!Reporting_Period__c.Status__c == 'Open'}"/> 
+            <apex:commandButton action="{!changeToReject}" image="{!URLFOR($Resource.ButtonImages, 'reject.png')}" title="Reject" rendered="{!Reporting_Period__c.Status__c == 'Submitted'}"/> -->  
+            
+            <apex:commandButton action="{!edit}" value="Edit" title="Edit"/>
+            <apex:commandButton action="{!delete}" value="Delete" title="delete"/>            
+          <!--  <apex:commandButton action="{!changeToPublish}" value="Publish" title="Publish"   rendered="{!Reporting_Period__c.Status__c == 'Draft'}"/>
+            <apex:commandButton action="{!changeToClose}" value="Close" title="Close" rendered="{!Reporting_Period__c.Status__c == 'Draft' || Reporting_Period__c.Status__c == 'Submitted' }"/>
+            <apex:commandButton action="{!changeToDraft}" value="Draft" title="Draft" rendered="{!Reporting_Period__c.Status__c == 'Publish'}"/>
+            <apex:commandButton action="{!changeToOpen}" value="Open" title="Open" rendered="{!Reporting_Period__c.Status__c == 'Publish'}"/>            
+            <apex:commandButton action="{!changeToExtend}" value="Extend" title="Extend" rendered="{!Reporting_Period__c.Status__c == 'Open'}"/> 
+            <apex:commandButton action="{!changeToApproved}" value="Approve" title="Approve" rendered="{!Reporting_Period__c.Status__c == 'Submitted'}"/> -->
+            <!--<apex:commandButton action="{!changeToReject}" value="Reject" title="Reject" rendered="{!Reporting_Period__c.Status__c == 'Submitted'}"/> -->
+        </apex:pageBlockButtons>       
+        
+        <apex:pageBlockSection showHeader="true" title="Implementing Mechanism" columns="2">                               
+                                                               
+            <apex:outputField value="{!Reporting_Period__c.ouName__c}" /> 
+            <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>  
+            <apex:outputField value="{!Reporting_Period__c.Implementing_Mechanism_Id__c}"  
+                                rendered="{!showLevel >= 1}"/> 
+            <apex:outputField value="{!Reporting_Period__c.Implementing_Mechanism_Name__c }" 
+                                rendered="{!showLevel >= 1}"/>         
+            
+            <apex:outputField value="{!Reporting_Period__c.Activity_Id__c}" 
+                                rendered="{!showLevel == 2}" />            
+            <apex:outputField value="{!Reporting_Period__c.Activity_Name__c}" 
+                                rendered="{!showLevel == 2}"/>                                                  
+        </apex:pageBlockSection>
+        
+        <apex:pageBlockSection showHeader="true" title="Overview" columns="2">       
+            
+            <apex:outputField value="{!Reporting_Period__c.Start_Date__c}"/>
+            <apex:outputField value="{!Reporting_Period__c.Fiscal_Period__c}"/>           
+            <apex:outputField value="{!Reporting_Period__c.End_Date__c}"/>
+            <apex:outputField value="{!Reporting_Period__c.Fiscal_Year__c}"/>
+            <apex:outputField value="{!Reporting_Period__c.Close_Date__c}"/>
+            <apex:outputField value="{!Reporting_Period__c.Status__c}"/>
+            <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+            <apex:outputField value="{!Reporting_Period__c.Targets_Established__c}"/>
+          
+        </apex:pageBlockSection>
+        <apex:pageBlockSection showHeader="true" title="Descriptive Information" columns="2">            
+            <apex:outputText value="{!Reporting_Period__c.Narrative__c}" />            
+        </apex:pageBlockSection> 
+               
+        <!-- <apex:pageBlockSection showHeader="true" title="System Information" columns="2"  id="SysHeadSection" rendered="{!$Profile.Name =='System Administrator(c)'}"> -->
+        
+        <apex:pageBlockSection showHeader="true" title="System Information" columns="2"  id="SysHeadSection" rendered="{!IsADMINUser}">
+        
+            <apex:outputField value="{!Reporting_Period__c.CreatedById}"/>
+            <apex:outputField value="{!Reporting_Period__c.LastModifiedById}"/>
+      
+            <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Owner"/>
+                    <apex:outputPanel >
+                            <apex:outputField value="{!Reporting_Period__c.OwnerId}"/>&nbsp;
+                            <apex:outputLink value="{!URLFOR($Action.Reporting_Period__c.ChangeOwner,Reporting_Period__c.id)}">[Change]</apex:outputLink>
+                    </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem />
+        </apex:pageBlockSection>
+        <apex:pageBlockSection showHeader="false" columns="2">
+        </apex:pageBlockSection>                               
+         </apex:pageBlock>
+         </apex:form>
+         <apex:relatedList pageSize="20" list="NotesAndAttachments"/>
+         <!-- <apex:relatedList pageSize="20" list="ProcessSteps" rendered="{!$Profile.Name <> 'Mission Partner'}" ></apex:relatedList> -->
+         <apex:relatedList pageSize="20" list="ProcessSteps" rendered="{!isMissionPartnerUser == false}" ></apex:relatedList>
+      </apex:tab>
+        
+         
+      <apex:tab label="Task Indicator Results" name="IMReportingPeriodIndResultManagement"   id="tabIMReportingPeriodIndResultManagement" rendered="{!IF(Reporting_Period__c.Reporting_Level__c == 'Task',true,false)}" styleClass="activeTabBackground">
+        <!--  <c:testComponent fSetName="ReportTaskList" parentName="Reporting_Period__c" childName="Activity__c" parentRId="{!Reporting_Period__c.Id}" parentCId="{!Reporting_Period__c.Implementing_Mechanism_Id__c}" colName="ImpMech_Id__c"  pSize="20" bTitle="" />
+     -->
+      </apex:tab>
+      
+          <apex:tab label="IM Indicator Results" name="IMReportingPeriod_IndicatorsResult" id="tabIMReportingPeriodIndResult" rendered="{!IF(Reporting_Period__c.Reporting_Level__c == 'Implementing Mechanism',true,false)}" styleClass="activeTabBackground">
+         <apex:relatedList title="" pageSize="20" list="Indicator_Results__r"  />         
+       
+      </apex:tab>
+        
+       <!--  <apex:tab label="Notes and Attachments" 
+                name="IMReportingPeriodNotesAndAttachments" 
+               id="tabIMReportingPeriodNoteAtt">
+         <apex:relatedList pageSize="20" title="" list="NotesAndAttachments"/>
+      </apex:tab> -->
+        
+   </apex:tabPanel>
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['IMReportingPeriodPage:IMReportingPeriodPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+    
+    
+function addLoadEvent(func) {   
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+
+function hideHeadSesction() {
+ twistSection(document.getElementById('IMReportingPeriodPage:IMReportingPeriodForm:IMReportingPeriodPageBlock:SysHeadSection').childNodes[0].childNodes[0]);
+}
+
+addLoadEvent(hideHeadSesction);               
+    
+    
+</script>
+</apex:page>

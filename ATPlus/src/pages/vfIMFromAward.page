@@ -1,0 +1,237 @@
+<apex:page tabstyle="Implementing_Mechanism__c" sidebar="false"  showHeader="true" controller="clsIMFromAwardController">
+<apex:form > 
+        <apex:sectionHeader subtitle="{!vfpMode}" title="Implementing Mechanism"/>
+        
+<div style="height:5px; background:#1797C0;"></div> <br></br>
+<apex:outputText style="font-size:12px;font-weight:bold;" value="{!navigationLink}" escape="false"> </apex:outputText> 
+ <br></br>
+  <br></br>
+          
+        <apex:pageBlock id="msgBox" rendered="{!pcExists}">
+            <div style="text-align:center;color:Red; overflow:auto; padding: 15px; font-family:Helvetica, sans-serif; font-size:14pt; line-height: 1.0em; width:1000px;height=600px;">
+            <apex:pageMessages />
+            <apex:outputText value="Cannot Reassign GLAAS Award for this Implementing Mechanism since Partner contacts exists." />
+               <apex:pageBlockButtons location="bottom" > 
+              <apex:commandButton action="{!back}" value="Ok" />
+          </apex:pageBlockButtons> 
+          </div>
+        </apex:pageBlock>
+        <apex:pageBlock id="awardList" rendered="{!NOT(pcExists)}">
+         <!--  div style="border: 5px solid #461B7E; text-align:left; overflow:auto; padding: 15px; font-family:Helvetica, sans-serif; font-size:8pt; line-height: 1.5em; width:1100px;height=600px;"-->  
+          <div style="text-align:left; overflow:auto; padding: 15px; font-family:Helvetica, sans-serif; font-size:8pt; line-height: 1.0em; width:1250px;height=600px;">
+            <apex:pageMessages />
+              <apex:pageBlockButtons location="both" >
+                <apex:outputPanel id="myButtons">
+                   <apex:commandButton action="{!Beginning}" title="Beginning" value="<<" disabled="{!disablePrevious}" reRender="awardList,myButtons"/>
+                   <apex:commandButton action="{!Previous}" title="Previous" value="<" disabled="{!disablePrevious}" reRender="awardList,myButtons"/>       
+                   <apex:commandButton action="{!Next}" title="Next" value=">" disabled="{!disableNext}" reRender="awardList"/>
+                   <apex:commandButton action="{!End}" title="End" value=">>" disabled="{!disableNext}" reRender="awardList"/>   
+                   <!--  apex:commandButton onclick="{!back}" value="Cancel"  rendered="{!IF(editMode,true,false)}"/-->
+                   <!-- apex:commandButton action="{!back}" value="Cancel"  rendered="{!IF(editMode,false,true)}"/-->
+                    <apex:commandButton action="{!back}" value="Cancel" />
+            </apex:outputPanel>
+               <apex:outputPanel id="spacer">
+               </apex:outputPanel>
+                </apex:pageBlockButtons> 
+               <!--  apex:outputPanel id="mySearch"-->
+
+           <apex:actionFunction name="filterList" action="{!search}" rerender="dataList" >
+                       <apex:param name="awardtitle"  value="" />
+                       <apex:param name="partner"  value="" />
+                       <apex:param name="docnumber"  value="" />
+                       <apex:param name="userrole"  value="" />
+             </apex:actionFunction> 
+ 
+
+<div align="right">
+ <apex:commandLink value="A | " action="{!searchAlpha}" ><apex:param name="alpha" value="A"/></apex:commandLink>
+ <apex:commandLink value="B | " action="{!searchAlpha}" ><apex:param name="alpha" value="B"/></apex:commandLink>
+ <apex:commandLink value="C | " action="{!searchAlpha}" ><apex:param name="alpha" value="C"/></apex:commandLink>
+ <apex:commandLink value="D | " action="{!searchAlpha}" ><apex:param name="alpha" value="D"/></apex:commandLink>
+ <apex:commandLink value="E | " action="{!searchAlpha}" ><apex:param name="alpha" value="E"/></apex:commandLink>
+ <apex:commandLink value="F | " action="{!searchAlpha}" ><apex:param name="alpha" value="F"/></apex:commandLink>
+ <apex:commandLink value="G | " action="{!searchAlpha}" ><apex:param name="alpha" value="G"/></apex:commandLink>
+ <apex:commandLink value="H | " action="{!searchAlpha}" ><apex:param name="alpha" value="H"/></apex:commandLink>
+ <apex:commandLink value="I | " action="{!searchAlpha}" ><apex:param name="alpha" value="I"/></apex:commandLink>
+ <apex:commandLink value="J | " action="{!searchAlpha}" ><apex:param name="alpha" value="J"/></apex:commandLink>
+ <apex:commandLink value="K | " action="{!searchAlpha}" ><apex:param name="alpha" value="K"/></apex:commandLink>
+ <apex:commandLink value="L | " action="{!searchAlpha}" ><apex:param name="alpha" value="L"/></apex:commandLink>
+ <apex:commandLink value="M | " action="{!searchAlpha}" ><apex:param name="alpha" value="M"/></apex:commandLink>
+ <apex:commandLink value="N | " action="{!searchAlpha}" ><apex:param name="alpha" value="N"/></apex:commandLink>
+ <apex:commandLink value="O | " action="{!searchAlpha}" ><apex:param name="alpha" value="O"/></apex:commandLink>
+ <apex:commandLink value="P | " action="{!searchAlpha}" ><apex:param name="alpha" value="P"/></apex:commandLink>
+ <apex:commandLink value="Q | " action="{!searchAlpha}" ><apex:param name="alpha" value="Q"/></apex:commandLink>
+ <apex:commandLink value="R | " action="{!searchAlpha}" ><apex:param name="alpha" value="R"/></apex:commandLink>
+ <apex:commandLink value="S | " action="{!searchAlpha}" ><apex:param name="alpha" value="S"/></apex:commandLink>
+ <apex:commandLink value="T | " action="{!searchAlpha}" ><apex:param name="alpha" value="T"/></apex:commandLink>
+ <apex:commandLink value="U | " action="{!searchAlpha}" ><apex:param name="alpha" value="U"/></apex:commandLink>
+ <apex:commandLink value="V | " action="{!searchAlpha}" ><apex:param name="alpha" value="V"/></apex:commandLink>
+ <apex:commandLink value="W | " action="{!searchAlpha}" ><apex:param name="alpha" value="W"/></apex:commandLink>
+ <apex:commandLink value="X | " action="{!searchAlpha}" ><apex:param name="alpha" value="X"/></apex:commandLink>
+ <apex:commandLink value="Y | " action="{!searchAlpha}" ><apex:param name="alpha" value="Y"/></apex:commandLink>
+ <apex:commandLink value="Z  " action="{!searchAlpha}" ><apex:param name="alpha" value="Z"/></apex:commandLink>
+
+
+</div>
+
+
+            <apex:pageblocksection columns="1" id="dataList" title="Awards-  Page #{!pageNumber}" >
+                 <apex:facet name="header">
+                   <span style="color:black">Awards-  Page #{!pageNumber} of {!totalPages}</span>
+                 </apex:facet>  
+                         <apex:pageBlockSectionItem >
+                         <apex:panelGroup >
+                         <apex:outputLabel >Award Title</apex:outputLabel>
+                         <input size="30" type="text" value="{!awName}" name="award_title_srh" id="award_title_srh" onkeypress="return noenter(event);" />
+                         <apex:outputLabel >&nbsp;&nbsp;&nbsp;&nbsp;</apex:outputLabel>
+                         <apex:outputLabel >Award#</apex:outputLabel>
+                         <input size="30" type="text" value="{!awAwardRef}"  name="doc_num_srh" id="doc_num_srh" onkeypress="return noenter(event);"/>
+                         <apex:outputLabel >&nbsp;&nbsp;&nbsp;&nbsp;</apex:outputLabel>
+                         <apex:outputLabel >Partner</apex:outputLabel>
+                         <apex:outputLabel >&nbsp;&nbsp;&nbsp;&nbsp;</apex:outputLabel>
+                         <input size="30" type="text" value="{!awPartner}" name="partner_srh" id="partner_srh" onkeypress="return noenter(event);"/>
+                         <apex:outputLabel >&nbsp;&nbsp;&nbsp;&nbsp;</apex:outputLabel>
+                         <input type="Button" class="btn" onclick="filter();return false;"  value="Search" rerender="awardList"/> 
+                         <apex:outputLabel >&nbsp;&nbsp;&nbsp;&nbsp;</apex:outputLabel>
+                         <apex:commandButton action="{!refresh}" value="Clear" rerender="awardList"/>    
+                         <input size="30" type="hidden" value="{!$UserRole.Name}" name="user_role" id="user_role" />
+                <!--  /apex:outputPanel-->
+                        </apex:panelGroup> 
+           </apex:pageBlockSectionItem>
+                <apex:pageBlockTable value="{!Awards}" var="proj" rendered="{!NOT(ISNULL(Awards)) && Awards.size>0}" width="100%" >
+                      <iframe scrolling="yes" >     
+                              <apex:column >
+                                      <apex:facet name="header">
+                                            <apex:commandLink action="{!setSortingOrder}" value="Impl. mech.{!IF(sortExpression=='Implementing_Mechanism__c',IF(sortDirection='ASC','▼','▲'),'')}">
+                                                <apex:param value="Implementing_Mechanism__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                                            </apex:commandLink>
+                                      </apex:facet>
+                                      <apex:commandLink action="{!createIM}"  value="Create IM" rendered="{!IF(editMode,false,IF(proj.Implementing_Mechanism__c==null, true, false))}">
+                                           <apex:param name="awardId"  assignTo="{!Award}" value="{!proj.Id}"/>
+                                           <apex:param name="imId"  assignTo="{!ImpMech}" value="{!proj.Implementing_Mechanism__c}"  />
+                                       </apex:commandLink>
+                                       <apex:commandLink action="{!updateIM}" value="Select" rendered="{!IF(editMode,IF(proj.Implementing_Mechanism__c ==null, true, false),false)}" >
+                                           <apex:param name="awardId" assignTo="{!Award}" value="{!proj.Id}" />
+                                           <apex:param name="imId"  assignTo="{!ImpMech}" value="{!proj.Implementing_Mechanism__c}"  />
+                                       </apex:commandLink>
+                                       <apex:outputField value="{!proj.Implementing_Mechanism__c}" rendered="{!IF(proj.Implementing_Mechanism__c ==null, false, true)}"/>
+                              
+                               </apex:column>
+                               <apex:column >
+                                   <apex:facet name="header">
+                                        <apex:commandLink action="{!setSortingOrder}" value="Award key{!IF(sortExpression=='AWARD_KEY__c',IF(sortDirection='ASC','▼','▲'),'')}">
+                                            <apex:param value="AWARD_KEY__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                                        </apex:commandLink>
+                                   </apex:facet>    
+                               <apex:outputField value="{!proj.AWARD_KEY__c}"/>
+                               </apex:column>
+                               <apex:column >
+                                    <apex:facet name="header">
+                                        <apex:commandLink action="{!setSortingOrder}" value="Award Title{!IF(sortExpression=='PROJECTTITLE__c',IF(sortDirection='ASC','▼','▲'),'')}">
+                                                <apex:param value="PROJECTTITLE__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                                            </apex:commandLink>
+                                        </apex:facet>
+                                    <apex:outputField value="{!proj.PROJECTTITLE__c}"/>
+                               </apex:column>      
+                               <apex:column >
+                                        <apex:facet name="header">
+                                            <apex:commandLink action="{!setSortingOrder}" value="Document#{!IF(sortExpression=='DocNum__c',IF(sortDirection='ASC','▼','▲'),'')}">
+                                                <apex:param value="DocNum__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                                            </apex:commandLink> 
+                                        </apex:facet>
+                                        <apex:outputText value="{!RIGHT(proj.DocNum__c,LEN(proj.DocNum__c)-4)}" rendered="{!IF(proj.OrderNum__c==null, true, false)}"/>
+                             </apex:column>   
+                            <apex:column >
+                                        <apex:facet name="header">
+                                            <apex:commandLink action="{!setSortingOrder}" value="Order#{!IF(sortExpression=='OrderNum__c',IF(sortDirection='ASC','▼','▲'),'')}">
+                                                <apex:param value="OrderNum__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                                            </apex:commandLink> 
+                                        </apex:facet>
+                                        <apex:outputText value="{!RIGHT(proj.OrderNum__c,LEN(proj.OrderNum__c)-4)}"/>
+                             </apex:column> 
+                             <apex:column >
+                                        <apex:facet name="header">
+                                            <apex:commandLink action="{!setSortingOrder}" value="Partner{!IF(sortExpression=='VENDOR_NM__c',IF(sortDirection='ASC','▼','▲'),'')}">
+                                                <apex:param value="VENDOR_NM__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                                            </apex:commandLink>
+                                        </apex:facet>
+                                        <apex:outputField value="{!proj.VENDOR_NM__c}"/>
+                              </apex:column> 
+                              <apex:column >
+                                        <apex:facet name="header">
+                                            <apex:commandLink action="{!setSortingOrder}" value="Source{!IF(sortExpression=='Source__c',IF(sortDirection='ASC','▼','▲'),'')}">
+                                                <apex:param value="Source__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                                            </apex:commandLink>
+                                        </apex:facet>
+                                        <apex:outputField value="{!proj.Source__c}"/>
+                              </apex:column>  
+                              <apex:column >
+                                        <apex:facet name="header">
+                                            <apex:commandLink action="{!setSortingOrder}" value="Org unit{!IF(sortExpression=='OrgUnit_Name__c',IF(sortDirection='ASC','▼','▲'),'')}">
+                                                <apex:param value="OrgUnit_Name__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                                            </apex:commandLink>
+                                        </apex:facet>
+                                        <apex:outputField value="{!proj.OrgUnit_Code__c}"/>
+                              </apex:column>  
+                              <apex:column Style="text-align:right;">
+                                        <apex:facet name="header">
+                                            <apex:commandLink action="{!setSortingOrder}" value="Total Est. Cost{!IF(sortExpression=='TEC__c',IF(sortDirection='ASC','▼','▲'),'')}">
+                                                <apex:param value="TEC__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                                            </apex:commandLink>
+                                        </apex:facet>
+                                        <apex:outputField value="{!proj.TEC__c}"/>
+                              </apex:column>  
+                              <apex:column Style="text-align:right;" >
+                                        <apex:facet name="header">
+                                            <apex:commandLink action="{!setSortingOrder}" value="Start Date{!IF(sortExpression=='StartDate__c',IF(sortDirection='ASC','▼','▲'),'')}">
+                                                <apex:param value="StartDate__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                                            </apex:commandLink>
+                                        </apex:facet>
+                                        <apex:outputField value="{!proj.StartDate__c}"/>
+                              </apex:column>  
+                              <apex:column Style="text-align:right;">
+                                        <apex:facet name="header">
+                                            <apex:commandLink action="{!setSortingOrder}" value="End Date{!IF(sortExpression=='EndDate__c',IF(sortDirection='ASC','▼','▲'),'')}">
+                                                <apex:param value="EndDate__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                                            </apex:commandLink>
+                                        </apex:facet>
+                                        <apex:outputField value="{!proj.EndDate__c}"/>
+                              </apex:column>                                                                
+                              <apex:facet name="footer">Showing Page # {!pageNumber} of {!totalPages}</apex:facet>
+                               </iframe>       
+                           </apex:pageBlockTable>
+                           <input size="30" type="hidden" value="{!$UserRole.Name}" name="user_role" id="user_role" />
+                           <Apex:outputLabel rendered="{!ISNULL(Awards)|| Awards.size=0}">No records</Apex:outputLabel>
+                           </apex:pageblocksection>
+                           <apex:actionFunction name="createIM" action="{!createIM}" rerender="awardList">
+                               <apex:param name="awardId"  assignTo="{!Award}" value="" />
+                               <apex:param name="imId"  assignTo="{!ImpMech}" value="" />
+                           </apex:actionFunction>
+                           <apex:actionFunction name="updateIM" action="{!updateIM}"  rerender="awardList">
+                               <apex:param name="awardid"  assignTo="{!Award}" value="" />
+                           </apex:actionFunction>
+                         
+                     </div>   
+                     </apex:pageBlock>
+            
+             
+               </apex:form>
+
+<Script>
+
+function filter(){
+    filterList(document.getElementById('award_title_srh').value,document.getElementById('partner_srh').value,document.getElementById('doc_num_srh').value,document.getElementById('user_role').value);  
+    
+}
+function noenter(ev)  {
+    if (window.event && window.event.keyCode == 13 || ev.which == 13) {
+        filterList(document.getElementById('award_title_srh').value,document.getElementById('partner_srh').value,document.getElementById('doc_num_srh').value,document.getElementById('user_role').value);  
+        return false;
+    } else {
+        return true;
+    }
+}
+
+             
+</Script>
+</apex:page>

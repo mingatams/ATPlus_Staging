@@ -1,0 +1,34 @@
+<apex:component >
+    <style>
+        body, 
+        .zen .zen-headerBottom {
+            background-image: none !important;
+            background-color: #fff !important;
+            box-shadow: none !important;
+        }
+        
+        .zen .zen-tabMenu .zen-active {
+            background-image: none !important;
+            box-shadow: none !important;
+        }
+        
+        .zen .zen-tabMenu .zen-active > a {
+            color: #000;
+        }
+        
+        .bodyDiv {
+            box-shadow: none;
+        }
+        
+        .allTabsArrow {
+            background-image: none !important;
+        }
+        
+        body .bPageFooter a, 
+        body .bPageFooter {
+            color: #000;
+            margin-left: auto;
+        }
+        
+    </style>
+</apex:component>

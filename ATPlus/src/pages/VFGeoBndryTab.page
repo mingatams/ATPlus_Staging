@@ -1,0 +1,11 @@
+<apex:page tabStyle="GeoBoundary__c" controller="ClsUserProfileFinder" >
+ <!--<apex:enhancedList type="GeoBoundary__c" height="500" rowsPerPage="50"
+        id="GeoBoundaryUserList" customizable="false" rendered="{!IF($Profile.Name <> 'System Administrator(c)' , true , false)}"  />
+ <apex:enhancedList type="GeoBoundary__c" height="500" rowsPerPage="50" 
+        id="GeoBoundaryAdminList" customizable="true" rendered="{!IF($Profile.Name == 'System Administrator(c)' , true , false)}"  /> -->
+    <apex:enhancedList type="GeoBoundary__c" height="500" rowsPerPage="50"
+        id="GeoBoundaryUserList" customizable="false" rendered="{!IF(IsAdminUser , false , true)}"  />
+ <apex:enhancedList type="GeoBoundary__c" height="500" rowsPerPage="50" 
+        id="GeoBoundaryAdminList" customizable="true" rendered="{!IF(IsAdminUser , true , false)}"  />
+          
+</apex:page>

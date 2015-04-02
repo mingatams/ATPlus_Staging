@@ -1,0 +1,759 @@
+<apex:component id="targetComp" controller="ClsManageIndicatorTargets"   allowDML="true" >  
+
+<!-- <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head> -->  
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxtabbar.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxcommon.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxtabbar.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxtabbar_start.js')}" />
+
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgridcell.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/dhtmlxtreegrid.js')}" /> 
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_group.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_splt.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/excells/dhtmlxgrid_excell_link.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_selection.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_lines.js')}" />
+
+
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid_skins.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/skins/dhtmlxgrid_dhx_skyblue.css')}"/>
+<!--<apex:includeScript value="{!URLFOR($Resource.dhtmlxTree,'dhtmlxTree/codebase/ext/dhtmlxtree_sb.js')}"/> -->
+
+<apex:includeScript value="{!URLFOR($Resource.dhtmlPopup, 'codebase/dhtmlxpopup.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlPopup, 'codebase/dhtmlxcommon.js')}" />
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlPopup, 'codebase/skins/dhtmlxpopup_dhx_skyblue.css')}"/>
+
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxcontainer.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.NumberFunction)}" />
+
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxForm, 'codebase/dhtmlxform.js')}" />  
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxForm, 'codebase/dhtmlxcommon.js')}" />  
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxForm, 'codebase/ext/dhtmlxform_item_combo.js')}" />  
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxForm, 'codebase/ext/dhtmlxform_item_editor.js')}" />
+
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxEditor, 'dhtmlxEditor/codebase/dhtmlxeditor.js')}" />
+
+<style>
+    
+    div.gridbox_dhx_skyblue table.obj tr td{font-family:Tahoma; font-size:11px; border-width: 1px 1px 1px 1px; border-color : #FDFDFD #A4BED4 #A4BED4 #FDFDFD;}
+    div.gridbox_dhx_skyblue table.hdr td { Font-size:12px; font-family:Trebuchet MS;}
+    div.gridbox_dhx_skyblue table.obj tr td{ font-size:12px; font-family:Trebuchet MS;}
+    .dhx_combo_select, .gridbox_dhx_skyblue .dhx_combo_edit, .gridbox_dhx_skyblue .dhx_textarea{ font-size:12px;}
+    .bPageBlock .detailList .labelCol { width:9%; }
+    .bPageBlock .detailList .dataCol { width:25%; }
+    div.gridbox_dhx_skyblue table.obj tr td { font-family: Arial, Verdana, sans-serif; font-size:11px; }
+    div.gridbox_dhx_skyblue table.hdr td { font-family:Arial, Verdana, sans-serif; font-size:12px; }
+    body .bPageTitle { padding:0 0 0;}
+    a {color:#1797C0; font-size:11px; font-weight:bold;}
+    span ul li {   list-style: none; color: #b52828; }
+    element.style {  text-align:left;}
+    div.gridbox table.obj td.group_row { background-color: #4B627F; border-color:#FDFDFD #A4BED4 #A4BED4 #FDFDFD; border-width:1px; color: #FFFFFF}
+</style>
+  
+  <script>
+   
+   
+   var mygrids;
+    function dispIndicatorsTargetGrid(){  
+         var isSaveEnabled='{!$CurrentPage.parameters.selectedPeriodSaved}';
+    var preSelectValue='{!$CurrentPage.parameters.previousPeriod}';
+   
+    if(isSaveEnabled=='true')  {
+      
+         document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periodvalue}').value=preSelectValue; 
+         document.getElementById('{!$Component.targetcomp_id:targetComp:theform:selectedPeriod}').value=preSelectValue; 
+             
+         
+         }
+      loadInitialReportPeriod(); 
+       // callGoAction();
+       var xmlStrLocal = '{!xmlStr}';  
+       dispIndicatorsTargetGrid1(xmlStrLocal);
+        
+   }
+   
+ function dispIndicatorsTargetGrid1(xmlStrLocal){        
+
+        document.getElementById("gridboxS").innerHTML = "";
+        mygrids = new dhtmlXGridObject("gridboxS","100%", "100%");
+        
+        mygrids.selMultiRows = true;
+        mygrids.setImagePath("{!URLFOR($Resource.dhtmlxGrid, '/dhtmlxGrid/codebase/imgs/')}");  
+        mygrids.setHeader("Indicator Code,Indicator Name,Baseline, Target, Actuals,Difference,Rating,PartComments,Notes/ Comments,SOURCE,DATA TYPE,MAX,MIN, ");
+        mygrids.attachHeader("#text_filter,#text_filter,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan");
+        //mygrids.setInitWidths("150,550,75,75,75,80,65,150,55,");
+        mygrids.setInitWidthsP("11,49,6,6,6,6,0,0,12,0,0,0,0,4.25");
+        mygrids.setColAlign("left,left,right,right,right,right,right,left,left,center,center,center,center,center");
+        mygrids.setColTypes("tree,rotxt,ed,ed,ed,rotxt,ro,rotxt,txttxt,rotxt,rotxt,rotxt,rotxt,rotxt");
+        //mygrids.setColSorting("str,str,str,str,str,str,str");
+        mygrids.enableAutoHeigth(false);
+        mygrids.enableResizing("false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+        mygrids.enableTooltips("true,true,true,true,true,true,true,true,true,true,false,false,false,false,false");
+        //mygrids.attachEvent("onMouseOver",doonMouseOver);
+        mygrids.attachEvent("onRowCreated",doValidation);
+        mygrids.enableTreeCellEdit(false);
+        mygrids.init();
+        mygrids.setSkin("dhx_skyblue");
+        mygrids.clearAll();
+        mygrids.loadXMLString(xmlStrLocal);
+     
+        mygrids.attachEvent("onEditCell",doOnEditCell);
+        mygrids.attachEvent("onMouseOver",doonMouseOver);
+        //mygrids.attachEvent("onCellChanged",dooncellChanged);
+        //mygrids.attachEvent("onFocus", showPopup(this));
+        //mygrids.attachEvent("onBlur", hidePopup);
+     
+        mygrids.customGroupFormat=function(name,count){
+          if (name == '1') 
+          {  
+              name = 'F / Standard';
+          } else if (name == '2') 
+          {  
+              name = 'FTF';
+          } else if (name == '3') 
+          {  
+              name = 'PEPFAR';
+          }
+          return name;
+        }
+        mygrids.expandAll();
+        mygrids.sortRows(0,"str", "asc");
+        //mygrids.sortRows(9,"int", "asc");
+        mygrids.groupBy(9);
+        mygrids.setColumnHidden(9,true);
+        mygrids.attachEvent("onOpenEnd", doonexpand);
+        
+  }
+   
+   function doonexpand(id,state){
+        /* mygrids.customGroupFormat=function(name,count){
+          if (name == '1') {  
+              name = 'F / Standard';
+          } else if (name == '2') {  
+              name = 'FTF';
+          } else if (name == '3') {  
+              name = 'PEPFAR';
+          }
+          return name;
+        }  */
+         
+         mygrids.sortRows(0,"str", "des");
+         mygrids.sortRows(9,"int", "asc");
+         mygrids.groupBy(9);       
+   }
+   
+   function doValidation(id){
+       var temp =  (mygrids.cells(id,10).getValue().toUpperCase());
+       var temp1 = mygrids.cells(id,2).getValue();
+       var temp2 = mygrids.cells(id,3).getValue();
+       var temp3 = mygrids.cells(id,4).getValue();
+       var temp4 = mygrids.cells(id,5).getValue();
+       
+       if( temp == 'PERCENTAGE'){
+        if(temp1.length != 0){
+            temp1 = temp1/100;
+            mygrids.cells(id,2).setValue(temp1.numberFormat("0.00%"));
+        }
+         if(temp2.length != 0){
+            temp2 = temp2/100;
+            mygrids.cells(id,3).setValue(temp2.numberFormat("0.00%"));
+         }
+         if(temp3.length != 0){
+            temp3 = temp3/100;
+            mygrids.cells(id,4).setValue(temp3.numberFormat("0.00%"));
+         }
+        //  if(temp4.length != 0){
+        //    temp4 = temp4/100;
+        //    mygrids.cells(id,5).setValue(temp4.numberFormat("0.00%"));
+        // }
+       } else if( temp == 'CURRENCY'){
+         if(temp1.length != 0){
+            temp1 = temp1/1;
+            mygrids.cells(id,2).setValue(temp1.numberFormat("$0,0.00"));
+         }
+         if(temp2.length != 0){
+            temp2 = temp2/1;
+            mygrids.cells(id,3).setValue(temp2.numberFormat("$0,0.00"));
+         }
+         if(temp3.length != 0){
+            temp3 = temp3/1;
+            mygrids.cells(id,4).setValue(temp3.numberFormat("$0,0.00"));
+         }
+         // if(temp4.length != 0){
+         //   temp4 = temp4/1;
+         //   mygrids.cells(id,5).setValue(temp4.numberFormat("$0,0.00"));
+        // }
+       } else {
+         if(temp1.length != 0){
+            temp1 = temp1/1;
+            mygrids.cells(id,2).setValue(temp1.numberFormat("#,#.00"));
+         }
+         if(temp2.length != 0){
+            temp2 = temp2/1;
+            mygrids.cells(id,3).setValue(temp2.numberFormat("#,#.00"));
+         }
+         if(temp3.length != 0){
+            temp3 = temp3/1;
+            mygrids.cells(id,4).setValue(temp3.numberFormat("#,#.00"));
+         }
+         // if(temp4.length != 0){
+         //   temp4 = temp4/1;
+         //   mygrids.cells(id,5).setValue(temp4.numberFormat("#,#.00"));
+         //}
+       }
+       if(temp4.length != 0){
+           temp4 = temp4/100;
+           mygrids.cells(id,5).setValue(temp4.numberFormat("0%"));
+       }
+   }
+   
+   function doonMouseOver(id,index){
+       var val = mygrids.getItemImage(id);
+       if (val == "indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Indicator");
+       }
+       if (val == "sub-indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Disaggregation");
+       }
+       if (val == "custom-indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Custom Indicator");
+       }
+       if (val == "custom-sub-indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Custom Disaggregation");
+       }
+       var val = mygrids.cells(id,index).getValue();
+       if (val == "") return false; 
+       return true;
+   }
+   
+    function doOnEditCell(stage,rId,cInd,nValue,oValue){
+        var max = mygrids.cells(rId,11).getValue();
+        var min = mygrids.cells(rId,12).getValue();
+        var dType = mygrids.cells(rId,10).getValue();
+        var cVal = mygrids.cells(rId,cInd).getValue();
+          
+        if(stage == 2 && cInd == 7 && nValue.length > 255){
+            var val = mygrids.cells(rId,7).getValue();
+            mygrids.cells(rId,7).setValue(val.substring(0,255));
+        }
+            
+        if(stage == 0 && cInd == 7){
+            test = 'Please enter Notes & Comments ..';
+        } 
+            
+        if(stage == 0 && (cInd == 2 || cInd == 3 || cInd == 4))
+        {   
+            if(dType == 'Percentage'){
+                mygrids.cells(rId,cInd).setValue(cVal.slice(0,cVal.length-1));
+                if(max.length != 0 && min.length != 0){
+                   test = 'Please enter a value between '+min+' and '+max+' for Percentage..';
+                } else {
+                   test = 'Please enter a value for Percentage';
+                }
+            } else if(dType == 'Currency'){
+                cVal=cVal.replace(/\,/g,'');
+                mygrids.cells(rId,cInd).setValue(cVal.slice(1,cVal.length));
+                if(max.length != 0 && min.length !=0){
+                   test = 'Please enter a value between '+min+' and '+max+' for Currency..';
+                } else {
+                   test = 'Please enter a value for Currency';
+                }
+            } else if (dType == 'Score' ) {
+                cVal=cVal.replace(/\,/g,'');
+                mygrids.cells(rId,cInd).setValue(cVal);
+                if(max.length != 0 && min.length !=0){
+                   test = 'Please enter a value between '+min+' and '+max+' for score..';
+                } else {
+                   test = 'Please enter a value between for score..';
+                }
+            } else if (dType == 'Numeric') {
+                cVal=cVal.replace(/\,/g,'');
+                mygrids.cells(rId,cInd).setValue(cVal);
+                if(max.length != 0 && min.length !=0){
+                   test = 'Please enter a numeric value between '+min+' and '+max;
+                } else {
+                   test = 'Please enter a numeric value ..';
+                }
+            } else { 
+                cVal=cVal.replace(/\,/g,'');
+                mygrids.cells(rId,cInd).setValue(cVal);
+                if(max.length != 0 && min.length !=0){
+                   test = 'Please enter a value between '+min+' and '+max;
+                } else {
+                   test = 'Please enter a value ..';
+                }
+            }
+    
+        }   
+            
+        if (stage == 2 && (cInd == 2 || cInd == 3 || cInd == 4))
+        {   
+            if(isNaN(cVal)){
+                mygrids.cells(rId,cInd).setValue('');
+                alert('"'+cVal+'" is not a valid value. Please enter a numeric value..');
+                window.setTimeout(function(){mygrids.selectCell(mygrids.getRowIndex(rId),cInd,false,false,true);},1);
+                return true;
+            }
+            //cVal1=parseInt(cVal,10);
+            cVal=parseFloat(cVal,10);
+            //alert(cVal);
+            if(max.length != 0 && cVal.length != 0 && cVal > max){
+                mygrids.cells(rId,cInd).setValue('');
+                alert('"'+cVal+'" is not a valid value.');
+                window.setTimeout(function(){mygrids.selectCell(mygrids.getRowIndex(rId),cInd,false,false,true);},1);
+                return true;
+            }
+            if(min.length != 0 && cVal.length != 0 && cVal < min){
+                mygrids.cells(rId,cInd).setValue('');
+                alert('"'+cVal+'" is not a valid value.');
+                window.setTimeout(function(){mygrids.selectCell(mygrids.getRowIndex(rId),cInd,false,false,true);},1);
+                return true;
+            }
+            if (cVal.length != 0){
+                if(dType == 'Percentage' && (cVal > 999 || cVal < 0)){
+                    mygrids.cells(rId,cInd).setValue('');
+                    alert('"'+cVal+'" is not a valid value. Please enter value between 0 and 999'); 
+                    window.setTimeout(function(){mygrids.selectCell(mygrids.getRowIndex(rId),cInd,false,false,true);},1);
+                    return true;
+                } else if(dType == 'Percentage'){
+                    cVal = cVal/100;
+                    mygrids.cells(rId,cInd).setValue(cVal.numberFormat("0.00%"));
+                } else if(dType == 'Currency'){
+                    cVal=cVal/1
+                    mygrids.cells(rId,cInd).setValue(cVal.numberFormat("$0,0.00"));
+                } else {
+                    cVal=cVal/1
+                    mygrids.cells(rId,cInd).setValue(cVal.numberFormat("#,#.00"));
+                }
+            }
+        }
+             
+        if (stage == 2 && (cInd == 3 || cInd == 4)){
+            var tar = mygrids.cells(rId,3).getValue();
+            var act = mygrids.cells(rId,4).getValue();
+            if (dType == 'Percentage'){
+                tar=tar.slice(0,tar.length-1);
+                act=act.slice(0,act.length-1);
+            }
+            if (dType == 'Currency'){
+                tar=tar.slice(1,tar.length);
+                tar=tar.replace(/\,/g,'');
+                tar = parseFloat(tar,10);
+                act=act.slice(1,act.length);
+                act=act.replace(/\,/g,'');
+                act = parseFloat(act,10);
+            } else {
+                tar=tar.replace(/\,/g,'');
+                tar = parseFloat(tar,10);
+                act=act.replace(/\,/g,'');
+                act = parseFloat(act,10);
+            }
+            var variance = (act - tar)/tar;
+            //var rating = act/tar;
+                if (tar != null && act != null){
+               // if (dType == 'Percentage'){
+               //     variance = variance/100;
+                    mygrids.cells(rId,5).setValue(variance.numberFormat("0%"));
+               // } else if (dType == 'Currency'){
+               //     variance = variance/1;
+               //     mygrids.cells(rId,5).setValue(variance.numberFormat("$0,0.00"));
+               // } else {
+               //     mygrids.cells(rId,5).setValue(variance.numberFormat("#,#.00"));
+               // }
+                /*if (rating > 0.99){
+                    mygrids.cells(rId,6).setCValue('<img src="/resource/varianceImages/arrow-up.png">');
+                    return true;
+                } else if(rating < 0.90){
+                    mygrids.cells(rId,6).setCValue('<img src="/resource/varianceImages/arrow-down.png">');
+                    return true;
+                } else {
+                    mygrids.cells(rId,6).setCValue('<img src="/resource/varianceImages/isomorphic.png">');
+                    return true;
+                }*/
+            } else if (tar == '' && act != '') {
+                mygrids.cells(rId,5).setValue(null);
+                //mygrids.cells(rId,6).setValue('NR');
+            } else if (tar == '' && act == '') {
+                mygrids.cells(rId,5).setValue(null);
+                //mygrids.cells(rId,6).setValue(null);
+            } else if (tar != '' && act == '') {
+                mygrids.cells(rId,5).setValue(null);
+                //mygrids.cells(rId,6).setValue(null);
+            }
+        } 
+          
+        hidePopup();
+        if(stage==1){
+            showPopGrid(mygrids.cells(rId,cInd).cell);
+        }
+        return true;
+    }
+   
+   function callTargets(hidd1,hidd2){  
+       mygrids.editStop();
+       document.getElementById(hidd1).value = mygrids.getChangedRows(true);            
+       mygrids.setSerializableColumns("true,false,true,true,true,true,false,true,true,true");
+       mygrids.xml.cell_attrs.push("Id");     
+       document.getElementById(hidd2).value =  mygrids.serialize();
+   }
+   
+     function OnReportChangeOld(){
+       mygrids.editStop();    
+      if( mygrids.getChangedRows(true) != '') { 
+           var conVal=  confirm('Do you want to save changes?');     
+       
+           if(conVal == true){  
+            callTargets('{!$Component.targetcomp_id:targetComp:theform:changedRows}','{!$Component.targetcomp_id:targetComp:theform:savedXML}');
+             callSaveAction();    
+           }else {
+             callGoAction();
+           }
+         }     
+   }
+  
+      function OnReportChange(){
+       mygrids.editStop();    
+      // alert(document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periods}').value);
+      if( mygrids.getChangedRows(true) != '') { 
+          
+           var conVal=  confirm('Do you want to continue without saving the changes?');    
+           if(conVal == true){          
+            //callNoChanged();
+             document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periodvalue}').value=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periods}').value; 
+          
+           }else {           
+             
+              document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periods}').value=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periodvalue}').value; 
+             //callCancel();
+           }
+         }else{
+        document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periodvalue}').value=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periods}').value; 
+           
+         //callNoChanged();
+         }     
+   }
+   
+   
+   function OnGoAction(){
+  document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periodvalue}').value=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periods}').value; 
+           
+            callGoAction();
+   }
+   
+   
+    var test;
+    var  myPop3= new dhtmlXPopup({
+        mode: "right"
+    });
+    function showPopGrid(ins){
+    
+        if (myPop3.isVisible()) {
+            myPop3.hide();
+        } else {    
+            myPop3.attachHTML(test);
+            var x = getAbsoluteLeft(ins); 
+            var y = getAbsoluteTop(ins);
+            var w = ins.offsetWidth;
+            var h = ins.offsetHeight;
+            myPop3.show(x, y, w, h);
+        }
+    }
+ myPop3.attachEvent("onContentClick", function(){ myPop3.hide();});
+    function hidePopup(){
+        if(myPop3.isVisible())
+        myPop3.hide();
+    }
+                
+  </script> 
+  
+  
+  <script>
+ var test;
+    var  myPop4= new dhtmlXPopup({
+        mode: "top"
+    });
+    function showPopGrid1(ins){
+    
+        if (myPop4.isVisible()) {
+            myPop4.hide();
+        } else {    
+            myPop4.attachHTML("Please click Go to refresh grid for selected reporting period");
+            var x = getAbsoluteLeft(ins); 
+            var y = getAbsoluteTop(ins);
+            var w = ins.offsetWidth;
+            var h = ins.offsetHeight;
+            myPop4.show(x, y, w, h);
+        }
+    }
+ myPop4.attachEvent("onMouseOut", function(){ myPop4.hide();});
+    function hidePopup(){
+        if(myPop4.isVisible())
+        myPop4.hide();
+    }
+
+    function addLoadEvent(func) {
+      var oldonload = window.onload;
+      if (typeof window.onload != 'function') {
+        window.onload = func;
+      } else {
+        window.onload = function() {
+          if (oldonload) {
+            oldonload();
+          }
+          func();
+        }
+      }
+    }
+   addLoadEvent(dispIndicatorsTargetGrid);   
+
+
+
+</script>
+  
+  
+ 
+
+  
+  
+<apex:outputPanel id="EmptyBlock"></apex:outputPanel>
+
+<apex:outputPanel id="theBlock">
+  <apex:outputPanel rendered="{!ShowErrors =='true'}">
+    <br></br>
+    <apex:pagemessages />   
+ </apex:outputPanel> 
+<apex:form id="theform" target="DO_IR_Reporting_Periods" >
+
+
+<apex:inputHidden value="{!selectedPeriod}" id="periodvalue" />  
+  <apex:actionFunction name="loadInitialReportPeriod" action="{!prepResultsTree}"    oncomplete="dispIndicatorsTargetGrid1('{!xmlStr}');" reRender="theBlock"  />
+  <apex:actionFunction name="callSaveAction"  reRender="theform" action="{!doSaveTargets}" immediate="false" />  
+  <apex:actionFunction name="callGoAction" action="{!prepResultsTreeChange}"  oncomplete="dispIndicatorsTargetGrid1('{!xmlStr}')" reRender="theBlock" immediate="false" />
+  
+  <apex:actionFunction name="callCancel"  reRender="periods" />
+ <apex:actionFunction name="callNoChanged"  reRender="panel2" />
+
+ <apex:pageBlock mode="maindetail"  rendered="{!IF(Periods==null,true,false)}" > 
+
+ <p style="color:#b52828; font-weight:bold; font-size:12px; font-family:Arial, Helvetica, Sans-Serif; margin:13px;">Reporting Periods are not defined.</p> 
+ 
+     <!--  <apex:outputLabel style="margin:13px; font-weight:bold;font-size:12px;width=25%;" value="Reporting Period: ">    
+        <apex:selectList id="periods" disabled="true" style="font-family: Arial, Verdana, sans-serif; font-size:12px;"  onchange="OnReportChange();"   multiselect="false" value="{!selectedPeriod}" size="1"  >
+         <apex:selectOptions value="{!Periods}" ></apex:selectOptions>
+        </apex:selectList>       
+      </apex:outputLabel> 
+     
+     <apex:commandButton disabled="true" value=" Go" /> 
+  -->
+</apex:pageBlock>
+
+
+
+
+<apex:outputPanel rendered="{!reportPeriodExist}" > 
+
+ 
+  <apex:actionRegion >
+     <apex:outputLabel style="margin:13px; font-weight:bold;font-size:12px;" value="Reporting Period: ">    
+     <apex:selectList style="font-family: Arial, Verdana, sans-serif; font-size:12px;" id="periods"  value="{!selectedPeriod}"  onchange="OnReportChange();"   onmousemove="showPopGrid1(this);"  multiselect="false"  size="1"  >
+         <apex:selectOptions value="{!Periods}"  ></apex:selectOptions>
+    
+     </apex:selectList>     
+     </apex:outputLabel> 
+    
+    <!--  <apex:commandButton value=" Go"   action="{!prepResultsTreeChange}"   oncomplete="dispIndicatorsTargetGrid1('{!xmlStr}')" reRender="theBlock" /> -->
+  
+   <apex:actionStatus startText=" Processing the stuff " stopText=" Done " id="counterStatus"  >
+         <apex:facet name="start" >Processing...
+          <img src="/apexpages/devmode/img/saveStatus.gif" />
+         </apex:facet>
+         <apex:facet name="stop">
+          <apex:commandButton title="Start" disabled="{!ShowErrors == 'true'}" value="Go" action="{!prepResultsTreeChange}" oncomplete="dispIndicatorsTargetGrid1('{!xmlStr}')" status="counterStatus" rerender="counterStatus,theBlock"> </apex:commandButton>
+         </apex:facet>
+        </apex:actionStatus>
+  
+  
+  
+  
+  </apex:actionRegion>   
+   <apex:outputText >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</apex:outputText>
+   <apex:commandButton value=" Cancel " action="{!CancelNGo}"  reRender="theform" />
+   </apex:outputPanel>  
+   
+   
+    <apex:outputPanel rendered="{!selectedPeriodName != null && ShowErrors != 'true'}"> 
+   
+    <p><span  style="color: rgb(1,91,167); font-weight:bold; font-size:12px; font-family:Arial, Helvetica, Sans-Serif; margin:13px;">
+              Establish Indicator Results for Reporting Period:
+             <span  style="color:#b52828;font-weight:bold; font-size:12px; font-family:Arial, Helvetica, Sans-Serif;">{!selectedPeriodName }
+          
+    </span>
+          </span></p>
+   
+   </apex:outputPanel>
+  
+  <!--
+ <apex:pageBlock rendered="{!IF(ShowErrors == 'true',true,false)}">
+     <span><b><apex:messages style="width:97%;margin: 10px auto 0px auto; text-align: center;color:#b52828"/></b>
+     <div id="cbBouutons1"  style="width:97%;margin: 10px auto 0px auto; text-align: center;">
+        <apex:commandButton value="OK"   action="{!null}"  oncomplete="window.top.location='/{!cancelVal}'; return false"/>
+  
+   
+    </div>
+    </span> 
+ </apex:pageBlock>      
+ -->
+<!--
+  <apex:inputHidden value="{!enteredTargets}" id="enteredTargets"/>
+          <apex:inputHidden value="{!changedRowIds}" id="changedRows"/>
+          <apex:inputHidden value="{!xmlStr}" id="savedXML"/>
+           <apex:inputHidden value="{!selectedPeriod}" id="selectedPeriod"/>
+ 
+ 
+  
+           <apex:pageBlock mode="maindetail">
+   
+    
+     <apex:pageBlockSection title="Indicators"  id="panel2" columns="1"  rendered="{!hasTree && reportPeriodExist}">
+          <apex:pageBlock mode="maindetail" >
+           <div id="gridboxS" style="width:97%;height:250px;margin: 15px auto 0px auto;" > </div>   
+          <apex:pageBlockButtons location="both" style="align:right">
+               
+               <apex:commandButton style="align:center" value="  Save  "  reRender="theform" action="{!doSaveTargets}" onclick="callTargets('{!$Component.changedRows}','{!$Component.savedXML}')">
+              <apex:Param name="buttonId" value="save" assignTo="{!buttonId}"/>
+          </apex:commandButton>
+          <apex:commandButton value=" Cancel " action="{!CancelNGo}"  reRender="theform"  immediate="true"/>
+       
+            </apex:pageBlockButtons>       
+            </apex:pageBlock>   
+             </apex:pageBlockSection>
+         
+            
+    </apex:pageBlock>        
+     -->
+      <apex:inputHidden value="{!enteredTargets}" id="enteredTargets"/>
+          <apex:inputHidden value="{!changedRowIds}" id="changedRows"/>
+          <apex:inputHidden value="{!xmlStr}" id="savedXML"/>
+           <apex:inputHidden value="{!selectedPeriod}" id="selectedPeriod"/>
+    
+     
+      <apex:pageBlock mode="maindetail"> 
+     <apex:pageBlockSection title="Indicators"  columns="1"  rendered="{!hasTree && reportPeriodExist}" id="panel2">
+          <apex:pageBlock mode="maindetail" >      
+              <div align="center">
+            <!--  <apex:commandButton style="align:center" value="  Save  "  reRender="panel2" action="{!doSaveTargets}" onclick="callTargets('{!$Component.changedRows}','{!$Component.savedXML}')">
+              <apex:Param name="buttonId" value="save" assignTo="{!buttonId}"/>
+          </apex:commandButton>
+          -->
+          
+           <apex:actionStatus startText=" Processing the stuff " stopText=" Done " id="counterStatus"  >
+         <apex:facet name="start" >Processing...
+          <img src="/apexpages/devmode/img/saveStatus.gif" />
+         </apex:facet>
+         <apex:facet name="stop">
+         <apex:commandButton rendered="{!isPLTReadOnlyUser == false}" style="align:center" value="  Save  " status="counterStatus" reRender="counterStatus,panel2" action="{!doSaveTargets}" onclick="callTargets('{!$Component.changedRows}','{!$Component.savedXML}')">
+              <apex:Param name="buttonId" value="save" assignTo="{!buttonId}"/>
+          </apex:commandButton>
+         </apex:facet>
+        </apex:actionStatus>
+          
+          
+       
+                
+           <apex:actionStatus startText=" Processing the stuff " stopText=" Done " id="counterStatus4"  >
+         <apex:facet name="start" >Processing...
+          <img src="/apexpages/devmode/img/saveStatus.gif" />
+         </apex:facet>
+         <apex:facet name="stop">
+        <apex:commandButton value=" Clear " action="{!null}"  onclick="dispIndicatorsTargetGrid1('{!xmlStr}')" status="counterStatus4"  reRender="counterStatus,EmptyBlock"  immediate="true"/>
+          
+         </apex:facet>
+        </apex:actionStatus>
+               
+               
+               
+               </div>
+            <div id="gridboxS" style="width:97%;height:250px;margin: 15px auto 0px auto;"></div>
+            
+            <div align="center">
+             <!-- <apex:commandButton style="align:center" value="  Save  "  reRender="panel2" action="{!doSaveTargets}" onclick="callTargets('{!$Component.changedRows}','{!$Component.savedXML}')">
+              <apex:Param name="buttonId" value="save" assignTo="{!buttonId}"/>
+          </apex:commandButton> -->
+          
+           
+           <apex:actionStatus startText=" Processing the stuff " stopText=" Done " id="counterStatus2"  >
+         <apex:facet name="start" >Processing...
+          <img src="/apexpages/devmode/img/saveStatus.gif" />
+         </apex:facet>
+         <apex:facet name="stop">
+         <apex:commandButton rendered="{!isPLTReadOnlyUser == false}" style="align:center" value="  Save  " status="counterStatus2" reRender="counterStatus,panel2" action="{!doSaveTargets}" onclick="callTargets('{!$Component.changedRows}','{!$Component.savedXML}')">
+              <apex:Param name="buttonId" value="save" assignTo="{!buttonId}"/>
+          </apex:commandButton>
+          
+         </apex:facet>
+        </apex:actionStatus>
+           <apex:actionStatus startText=" Processing the stuff " stopText=" Done " id="counterStatus3"  >
+         <apex:facet name="start" >Processing...
+          <img src="/apexpages/devmode/img/saveStatus.gif" />
+         </apex:facet>
+         <apex:facet name="stop">
+        <apex:commandButton value=" Clear " action="{!null}"  onclick="dispIndicatorsTargetGrid1('{!xmlStr}')" status="counterStatus3"  reRender="counterStatus,EmptyBlock"  immediate="true"/>
+          
+         </apex:facet>
+        </apex:actionStatus>
+          
+          <!-- <apex:commandButton value=" Clear " action="{!null}"  onclick="dispIndicatorsTargetGrid1('{!xmlStr}')" reRender="EmptyBlock"  immediate="true"/> -->
+               </div>
+     
+            </apex:pageBlock>              
+     
+        </apex:pageBlockSection> 
+         
+     </apex:pageBlock> 
+     
+     
+     
+     
+     
+     <!--
+  
+ <apex:outputPanel rendered="{!hasTree && reportPeriodExist}" id="panel22" >
+ 
+         <div id="cbBouutons"  style="width:97%;height:50px;margin: 15px auto 0px auto; text-align: center;">
+        
+          <apex:commandButton style="align:center" value="  Save  "  reRender="panel2" action="{!doSaveTargets}" onclick="callTargets('{!$Component.changedRows}','{!$Component.savedXML}')">
+              <apex:Param name="buttonId" value="save" assignTo="{!buttonId}"/>
+          </apex:commandButton>
+          <apex:commandButton value=" Cancel " action="{!CancelNGo}"  reRender="theform"  immediate="true"/>
+       
+      </div>
+   <div id="gridbixsParent" style="height:400px;margin:15px auto 0px auto;"> 
+      <div id="gridboxS" style="width:97%;height:350px;margin: 15px auto 0px auto;"></div>
+      <div id="cbBouutons"  style="width:97%;height:50px;margin: 15px auto 0px auto; text-align: center;">
+          <apex:inputHidden value="{!enteredTargets}" id="enteredTargets"/>
+          <apex:inputHidden value="{!changedRowIds}" id="changedRows"/>
+          <apex:inputHidden value="{!xmlStr}" id="savedXML"/>
+           <apex:inputHidden value="{!selectedPeriod}" id="selectedPeriod"/>
+        
+          <apex:commandButton style="align:center" value="  Save  "  reRender="theform" action="{!doSaveTargets}" onclick="callTargets('{!$Component.changedRows}','{!$Component.savedXML}')">
+              <apex:Param name="buttonId" value="save" assignTo="{!buttonId}"/>
+          </apex:commandButton>
+          <apex:commandButton value=" Cancel " action="{!CancelNGo}"  reRender="theform"  immediate="true"/>
+       
+      </div>
+   </div>   
+ </apex:outputPanel> 
+ 
+ -->
+
+  
+   
+</apex:form>
+</apex:outputPanel>
+
+</apex:component>

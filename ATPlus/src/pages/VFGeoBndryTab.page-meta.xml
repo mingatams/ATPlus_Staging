@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>26.0</apiVersion>
+    <availableInTouch>false</availableInTouch>
+    <confirmationTokenRequired>false</confirmationTokenRequired>
+    <description>This VFP is on the Geo Boundary tab-- lands the users to custom Geo Boundary List view page</description>
+    <label>VFGeoBoundaryTab</label>
+</ApexPage>

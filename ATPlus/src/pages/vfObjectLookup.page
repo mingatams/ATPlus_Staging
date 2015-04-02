@@ -1,0 +1,122 @@
+<!--  
+Page to display the fields related to the Object Search 
+-->
+<apex:page sidebar="false" showHeader="false" controller="ClsObjectLookupController" id="page" showChat="false" >
+<apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"  />
+ <apex:includeScript value="{!URLFOR($Resource.JPM)}"  />  
+ <head >
+       <apex:stylesheet value="{!URLFOR($Resource.Partner_Login, 'style.css')}" />  
+       <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+        <style>    
+         
+            .empty-column-content {
+                display: none;
+            }
+        </style>
+ 
+ </head>
+ 
+ 
+   <apex:variable var="rowLimit" value="{!3}" />
+    <apex:form id="lookUpForm" forceSSL="true"> 
+    
+    <br></br>
+       
+        <div id="aidtracker-logo" style='margin-left:0cm;width: 220px;height: 55px;'></div>
+       <apex:messages globalOnly="true" style="text-align:left;color:Red; overflow:auto; font-family:Helvetica, sans-serif; font-size:9pt; font-weight:bold;"/>
+       <br></br>
+ 
+ <apex:tabPanel switchType="client" selectedTab="tabdetails" id="LookupPanel" contentStyle="font-size: 12px;"  tabClass="activeTab" inactiveTabClass="inactiveTab">  
+ <apex:tab label="{!ObjectNameUpper} LOOKUP" name="LookupDetails" id="tabdetails" styleClass="activeTabBackground">
+ 
+  <table  width="100%" border="0" > 
+        <tr>
+        <td align="left"> 
+           <span class="text" style="font-weight:bold;color:Blue;">Search&nbsp;&nbsp;</span>           
+           <apex:inputText value="{!enterstring}"  style="width:150px;height: 15px;"/>          
+           <apex:commandButton disabled="{!totalpageNumber<=1}"  action="{!search1}"  value="Go!" />
+            <apex:commandButton value="Clear" action="{!clearSearch}"/>  
+            <apex:commandButton value="Cancel" onclick="endLookup();"/>            
+           <br />       
+        </td>        
+        </tr>
+    
+</table>
+
+            <apex:outputPanel id="pnlSearchResults" style="margin:15px;height:500px;overflow-Y:auto;" layout="block">
+          <apex:pageblock id="ThePageBlock">
+          
+           <apex:pageBlockTable value="{!ObjectRecords}" var="searchObj"  > 
+           
+           <apex:repeat value="{!$ObjectType[objName].fieldsets[objFieldSet]}" var="rc"> 
+         
+           
+             
+        <tr >
+            <td></td>
+            <td>           
+            
+            <apex:column rendered="{!rc != 'Id'}" >      
+            
+             <apex:facet name="header">
+           
+           <apex:commandLink action="{!ViewData}" value="{! IF(ObjectNameUpper == 'Project' && (rc.Label == 'Factsheet code' || rc.Label == 'Factsheet Name'),IF(rc.Label=='Factsheet code','Project code','Project Name'),rc.Label)}{!IF(sortExpression!='{!rc}',IF(sortDirection='ASC','▼','▲'),'')}">
+             <apex:param value="{!rc}" name="column" assignTo="{!sortExpression}" ></apex:param>
+           </apex:commandLink>
+         </apex:facet>
+        
+          <apex:outputText rendered="{!rc.Type == 'date'}">    
+                   <apex:outputLink value="javascript:window.opener.lookupPick2('{!ParentForm}','{!ParentText}_lkid','{!ParentText}','{!searchObj['Id']}','{!searchObj[urlLinkField]}', false);self.close();" rendered="{!NOT(ISNULL(searchObj['Id']))}"> 
+                           <apex:outputText value="{0,date,MM/dd/yyyy}">        
+                                 <apex:param value="{!searchObj[rc]}" />
+                           </apex:outputText>   
+                      </apex:outputLink>           
+            </apex:outputText>   
+            
+            <apex:outputText rendered="{!rc.Type != 'date'}">  
+               <apex:outputLink value="javascript:window.opener.lookupPick2('{!ParentForm}','{!ParentText}_lkid','{!ParentText}','{!searchObj['Id']}','{!searchObj[urlLinkField]}', false);self.close();" rendered="{!NOT(ISNULL(searchObj['Id']))}">{!searchObj[rc]}</apex:outputLink>     
+            </apex:outputText>   
+          
+         
+           </apex:column>
+            </td> </tr>
+           </apex:repeat>     
+           
+           
+            </apex:pageBlockTable>
+           
+            
+            
+                 <table width="100%" border="0" > 
+          <tr > 
+            <td align="center">  
+ <apex:panelgrid columns="5" style="text-align: center; vertical-align: middle;" >
+        <apex:commandButton action="{!first}" rerender="ThePageBlock" value="<<" />
+        <apex:commandButton action="{!previous}" rendered="{!hasPrevious}" rerender="ThePageBlock" value="<" /> 
+        <apex:outputtext value="     Page #{!pageNumber} of {!totalpageNumber} " style="font-weight:bold;">                 
+        <apex:commandButton action="{!next}" rendered="{!hasNext}" rerender="ThePageBlock" value=">" />
+        <apex:commandButton action="{!last}" rerender="ThePageBlock" value=">>" />       
+        </apex:outputtext>      
+   </apex:panelgrid>
+    </td> 
+         </tr>
+         
+</table>
+</apex:pageblock>
+         
+         
+ </apex:outputPanel>
+        
+      </apex:tab>
+  </apex:tabPanel>
+  
+        
+     </apex:form>
+  <script type="text/javascript">
+  
+  
+  function endLookup() {
+        window.parent.close();   
+  }
+ </script>
+</apex:page>

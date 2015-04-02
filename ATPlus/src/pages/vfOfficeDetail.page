@@ -1,0 +1,99 @@
+<apex:page standardController="Office__c" tabStyle="Data_Admin__tab" extensions="ClsTabController,ClsDeleteControllerExt,ClsUserProfileFinder" id="OfficePage" sidebar="false" action="{!doAction}">
+ <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+        
+     <apex:sectionHeader title="{!$ObjectType.Office__c.label}" subtitle="{!Office__c.name}"/>
+    <div style="height:5px; background:#1797C0;"></div> <br></br>
+<apex:outputText style="font-size:12px;font-weight:bold;" value="{!navigationLink}" escape="false"> </apex:outputText> 
+ <br></br>
+  <br></br>
+  
+  <apex:outputPanel rendered="{!HasErrorMessages}">               
+     <apex:pagemessages />        
+  </apex:outputPanel> 
+  
+   <apex:tabPanel switchType="client"  id="OfficePanel"  value="{!selectedTab}" onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+      <apex:tab label="Overview" name="OfficeDetails"  id="tabOfficedetails" styleClass="activeTabBackground">
+      <apex:pageBlock mode="maindetail" id="OfficePageBlock">      
+         <apex:pageBlockButtons >
+                <apex:form >
+                        <apex:commandButton action="{!edit}" value="Edit"/>
+                        <apex:commandLink styleClass="btn" rendered="{!$ObjectType['Office__c'].deletable}" style="text-decoration:none;" reRender="" action="{!customDelete}" value="Delete" onclick="return window.confirm('Are you sure?');">
+                        <apex:param name="deleUrl" assignTo="{!deleUrl}" value="/apex/vfOrgDetailFactSheet?id={!Office__c.ouId__r.id}"/>
+                        </apex:commandLink>
+                        
+                </apex:form>
+                </apex:pageBlockButtons>
+                <!--<apex:pageBlockSection showHeader="true" title="Basic Information" columns="2"> -->
+                <apex:pageBlockSection showHeader="true" title="Overview" columns="2">
+                        <apex:outputField value="{!Office__c.offCode__c}"/>
+                        <apex:outputField value="{!Office__c.ouId__c}"/>
+                        <apex:outputField value="{!Office__c.Name}"/>
+                        <apex:outputField value="{!Office__c.offType__c}"/>
+                        <apex:outputField value="{!Office__c.offDisplayName__c}"/>
+                        <apex:pageBlockSectionItem />
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Detailed Information" columns="1">
+                        <apex:outputField value="{!Office__c.offOverview__c}"/>
+                </apex:pageBlockSection>
+    <!-- ******************* System Information to be displayed only to SysAdmins******************* --> 
+                <apex:pageBlockSection showHeader="true" title="System Information" columns="2" id="SysHeadSection" rendered="{!IsADMINUser}">
+                        <apex:outputField value="{!Office__c.CreatedById}"/>
+                        <apex:outputField value="{!Office__c.LastModifiedById}"/>
+                </apex:pageBlockSection>
+                                              
+         </apex:pageBlock>      
+      </apex:tab>
+   <!--     **AU-59**
+        <apex:tab label="Activities" 
+                name="OrgOfficeProject" 
+               id="tabOrgOfficeProject" styleClass="activeTabBackground">
+         <apex:relatedList pagesize="20" title="" list="Project__r"/>
+      </apex:tab>     -->
+ 
+        
+   </apex:tabPanel>
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['OfficePage:OfficePanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+function addLoadEvent(func) {   
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+
+function hideHeadSesction() {
+ twistSection(document.getElementById('OfficePage:OfficePageBlock:SysHeadSection').childNodes[0].childNodes[0]);
+}
+
+addLoadEvent(hideHeadSesction);       
+    
+</script>
+</apex:page>

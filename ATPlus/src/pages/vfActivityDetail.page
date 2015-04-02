@@ -1,0 +1,142 @@
+<apex:page standardController="Activity__c" tabStyle="Project_Implementation__tab" extensions="ClsTabController,ClsDeleteControllerExt,ClsUserProfileFinder" id="IMTaskPage" action="{!doAction}" sidebar="false">
+<head> 
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        
+       
+        <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'project-style.css')}"/>        
+        <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/modernizr.custom.79639.js')}"/>        
+        <noscript><apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'css/noJS.css')}"/></noscript>        
+       
+ </head>
+
+ <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+       
+     <apex:sectionHeader title="{!$ObjectType.Activity__c.label}" subtitle="{!Activity__c.name}"/>
+    <div style="height:5px; background:#1797C0;"></div> <br></br>
+<apex:outputText style="font-size:12px;font-weight:bold;" value="{!navigationLink}" escape="false"> </apex:outputText> 
+ <br></br>
+  <br></br>
+    <apex:outputPanel rendered="{!HasErrorMessages}">               
+     <apex:pagemessages />        
+  </apex:outputPanel>  
+   <apex:tabPanel switchType="client"  id="IMTaskPanel"  value="{!selectedTab}" onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+      <apex:tab label="Overview" name="IMTaskDetails"  id="tabIMTaskdetails" style="margin-left: -1px;" styleClass="activeTabBackground">
+      <apex:pageBlock mode="maindetail" id="IMTaskPageBlock">      
+         <apex:pageBlockButtons >
+                <apex:form > 
+                        <apex:commandButton action="{!edit}" value="Edit"/>
+                     <!--   <apex:commandButton action="{!delete}" value="Delete"/> -->                  
+                   <apex:commandLink styleClass="btn" style="text-decoration:none;" rendered="{!$ObjectType['Activity__c'].deletable}" reRender="" action="{!customDelete}" value="Delete" onclick="return window.confirm('Are you sure?');">
+                        <apex:param name="deleUrl" assignTo="{!deleUrl}" value="{!if($CurrentPage.parameters.retURL != null,$CurrentPage.parameters.retURL,'/apex/vfIMBasicDetailFactSheet?id='+Activity__c.ImpMech_Id__r.id)}"/>
+                        </apex:commandLink>
+     
+                </apex:form>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection showHeader="false" columns="2">
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Overveiw" columns="2">
+                        <apex:outputField value="{!Activity__c.ouName__c}"/>
+                        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                        <apex:outputField value="{!Activity__c.Activity_Code__c}"/>
+                        <apex:outputField value="{!Activity__c.Project_Code__c}"/>
+                        <apex:outputField value="{!Activity__c.Activity_Name__c}"/>
+                        <apex:outputField value="{!Activity__c.Project_Name__c}"/>
+                        <apex:outputField value="{!Activity__c.ImpMech_Id__c}"/>
+                        <apex:outputField value="{!Activity__c.Activity_Start_Date__c}"/>
+                        <apex:outputField value="{!Activity__c.ImpMech_Name__c}"/>
+                        <apex:outputField value="{!Activity__c.Activity_End_Date__c}"/>
+                        <apex:outputField value="{!Activity__c.SubAwardee_Id__c}"/>
+                        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                        <apex:outputField value="{!Activity__c.SubAwardee_Name__c}"/>
+                     <!--   <apex:outputField value="{!Activity__c.Reporting_Periods_Established__c}"/> -->
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Detailed Information" columns="1">
+                    <apex:outputField value="{!Activity__c.Activity_Description__c}" />
+                </apex:pageBlockSection>
+               <!-- <apex:pageBlockSection showHeader="true" title="Reporting  Information" columns="2">
+                 
+                        <apex:outputField value="{!Activity__c.Periodicity__c}"/>
+                        <apex:outputField value="{!Activity__c.Grace_Period__c}"/>
+                     
+                </apex:pageBlockSection> -->
+             <!-- ******************* System Information to be displayed only to SysAdmins******************* --> 
+                <apex:pageBlockSection showHeader="true" title="System Information" columns="2" id="SysHeadSection" rendered="{!IsAdminUser}">
+                
+                        <apex:outputField value="{!Activity__c.CreatedById}"/>
+                        <apex:outputField value="{!Activity__c.LastModifiedById}"/>
+                  
+                        <apex:pageBlockSectionItem >
+                                <apex:outputLabel value="Activity Owner"/>
+                                <apex:outputPanel >
+                                        <apex:outputField value="{!Activity__c.OwnerId}"/>&nbsp;
+                                        <apex:outputLink value="{!URLFOR($Action.Activity__c.ChangeOwner,Activity__c.id)}">[Change]</apex:outputLink>
+                                </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem />
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="false" columns="2">
+                </apex:pageBlockSection>                               
+         </apex:pageBlock>   
+          <apex:relatedList pageSize="20"   list="Project_Locations__r"/>
+          <apex:relatedList pageSize="20"  list="NotesAndAttachments"/>
+          <c:HistoryRelatedListComponent recLimit="50" ObjName="{!Activity__c}"/>   
+      </apex:tab>
+        
+   <!--       
+      <apex:tab label="Locations" name="IMTask_Locations" 
+                id="tabIMTaskLocations" styleClass="activeTabBackground">
+         <apex:relatedList pageSize="20" title="" list="Project_Locations__r"/>
+      </apex:tab>
+      
+ <apex:tab label="Notes and Attachments" 
+                name="TaskNotesAndAttachments" 
+               id="tabNoteIMTask">
+         <apex:relatedList title="" list="NotesAndAttachments"/>
+      </apex:tab>     -->
+        
+   </apex:tabPanel>
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['IMTaskPage:IMTaskPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+    
+function addLoadEvent(func) {   
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+
+function hideHeadSesction() {
+ twistSection(document.getElementById('IMTaskPage:IMTaskPageBlock:SysHeadSection').childNodes[0].childNodes[0]);
+}
+
+addLoadEvent(hideHeadSesction);              
+</script>
+</apex:page>

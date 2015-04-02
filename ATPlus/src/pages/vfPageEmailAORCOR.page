@@ -1,0 +1,16 @@
+<apex:page standardcontroller="Reporting_Period__c" sidebar="false">
+
+<p>
+Dear {!if(Reporting_Period__c.Implementing_Mechanism_Id__r.AOR__c!=null,Reporting_Period__c.Implementing_Mechanism_Id__r.AOR__r.name,Reporting_Period__c.Implementing_Mechanism_Id__r.COR__r.name)},  </p>
+<p>
+<br/> The {!Reporting_Period__c.Fiscal_Year__c} {!Reporting_Period__c.Fiscal_Period__c} Reporting Period results have been submitted by Partner: {!Reporting_Period__c.Implementing_Mechanism_Id__r.Partner_Name__c} for IM: {!Reporting_Period__c.Implementing_Mechanism_Id__r.name} ( {!Reporting_Period__c.Implementing_Mechanism_Id__r.Implementing_Mechanism_Name__c}) is now open.  Please <a href="https://cs10.salesforce.com/{!Reporting_Period__c.Id}">Click here </a> to log-in to AIDtracker in order to review and approve these results..</p>
+
+
+Should you need any help, please consult the "Help" tab in AIDtracker, or email us at aidtracker-help@usaid.gov
+
+<p>
+Thank you,</p>
+
+AIDtracker Support Team
+
+</apex:page>

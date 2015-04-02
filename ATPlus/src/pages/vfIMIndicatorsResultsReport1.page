@@ -1,0 +1,70 @@
+<apex:page controller="ClsIMIndicatorsResultsReport" id="thePage" renderAs="pdf" applyBodyTag="false">
+       <head>
+           <style>
+             @page{ size: A4 landscape;}
+           </style>
+       </head>
+    <apex:dataTable value="{!dl}" var="do" id="theTable" rowClasses="odd,even" styleClass="tableClass" style="border:1px solid #000;">
+        <apex:facet name="caption">DO - Indicator - IM Report</apex:facet>
+        <apex:column style="border:1px solid #000;">
+                <apex:outputText value="{!do.doName}"/>
+                
+                <apex:dataTable value="{!do.RclassList}" var="list" id="theTable" rowClasses="odd,even" styleClass="tableClass" style="border:1px solid #000;">
+                
+                <apex:column style="border:1px solid #000;">
+                <apex:facet name="header">Indicator Id</apex:facet>
+                <apex:outputText value="{!list.indId}"/>
+                </apex:column>
+                
+                <apex:column style="border:1px solid #000;">
+                <apex:facet name="header">Indicator Name</apex:facet>
+                <apex:outputText value="{!list.indName}"/>
+                </apex:column>
+                
+                <apex:column style="border:1px solid #000;">
+                <apex:facet name="header">IR Name</apex:facet>
+                <apex:outputText value="{!list.irName}"/>
+                </apex:column>
+                
+                <apex:column style="border:1px solid #000;">
+                <apex:facet name="header">SUB-IR Name</apex:facet>
+                <apex:outputText value="{!list.sirName}"/>
+                </apex:column>
+                
+                <apex:column style="border:1px solid #000;">
+                <apex:facet name="header">Implementing Mechanism</apex:facet>
+                <apex:outputText value="{!list.imName}"/>
+                </apex:column>
+                
+                <apex:column style="border:1px solid #000;">
+                <apex:facet name="header">Project Name</apex:facet>
+                <apex:outputText value="{!list.projName}"/>
+                </apex:column>
+                
+                <apex:column style="border:1px solid #000;">
+                <apex:facet name="header">Reporting Period</apex:facet>
+                <apex:outputText value="{!list.rPeriod}"/>
+                </apex:column>
+                
+                <apex:column style="border:1px solid #000;">
+                <apex:facet name="header">Baseline</apex:facet>
+                <apex:outputText value="{!list.baseline}"/>
+                </apex:column>
+                
+                <apex:column style="border:1px solid #000;">
+                <apex:facet name="header">Target</apex:facet>
+                <apex:outputText value="{!list.target}"/>
+                </apex:column>
+                
+                <apex:column style="border:1px solid #000;">
+                <apex:facet name="header">Actual</apex:facet>
+                <apex:outputText value="{!list.actual}"/>
+                </apex:column>
+
+                </apex:dataTable>
+        </apex:column>
+
+       
+    </apex:dataTable>
+
+</apex:page>

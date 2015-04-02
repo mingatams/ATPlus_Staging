@@ -1,0 +1,90 @@
+<apex:page standardController="orgUnitGeography__c" tabStyle="Data_Admin__tab" extensions="ClsTabController,ClsDeleteControllerExt" id="GeographyPage" action="{!doAction}" sidebar="false">
+ <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+        
+    <apex:sectionHeader title="{!$ObjectType.orgUnitGeography__c.label}" subtitle="{!orgUnitGeography__c.name}"/>
+    <div style="height:5px; background:#1797C0;"></div> <br></br>
+<apex:outputText style="font-size:12px;font-weight:bold;" value="{!navigationLink}" escape="false"> </apex:outputText> 
+ <br></br>
+  <br></br>
+   <apex:outputPanel rendered="{!HasErrorMessages}">               
+     <apex:pagemessages />        
+  </apex:outputPanel> 
+   <apex:tabPanel switchType="client"  id="GeographyPanel"  value="{!selectedTab}" onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+      <apex:tab label="Overview" name="GeographyDetails"  id="tabGeographydetails" style="margin-left: -1px;" styleClass="activeTabBackground">
+      <apex:pageBlock mode="maindetail"  id="GeographyPageBlock">      
+         <apex:pageBlockButtons >
+                <apex:form >
+                        <apex:commandButton action="{!edit}" value="Edit"/>
+                        <apex:commandLink styleClass="btn" style="text-decoration:none;" reRender="" action="{!customDelete}" value="Delete" onclick="return window.confirm('Are you sure?');">
+                        <apex:param name="deleUrl" assignTo="{!deleUrl}" value="/apex/vfOrgDetailFactSheet?id={!orgUnitGeography__c.orgUnitId__r.id}"/>
+                        </apex:commandLink>
+                       
+                </apex:form>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection showHeader="false" columns="2">
+                        <apex:outputField value="{!orgUnitGeography__c.Name}"/>
+                        <apex:pageBlockSectionItem />
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Overview" columns="2">
+                        <apex:outputField value="{!orgUnitGeography__c.orgUnitId__c}"/>
+                        <apex:outputField value="{!orgUnitGeography__c.cntryID__c}"/>
+                        <apex:outputField value="{!orgUnitGeography__c.orgUnitCode__c}"/>
+                        <apex:outputField value="{!orgUnitGeography__c.cntryCode__c}"/>
+                        <apex:outputField value="{!orgUnitGeography__c.orgUnitName__c}"/>
+                        <apex:outputField value="{!orgUnitGeography__c.cntryName__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="System Information" columns="2" id="SysHeadSection">
+                        <apex:outputField value="{!orgUnitGeography__c.CreatedById}"/>
+                        <apex:outputField value="{!orgUnitGeography__c.LastModifiedById}"/>
+                </apex:pageBlockSection>
+               
+                                              
+         </apex:pageBlock>      
+      </apex:tab>
+    
+   </apex:tabPanel>
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['GeographyPage:GeographyPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+    
+function addLoadEvent(func) {   
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+
+function hideHeadSesction() {
+ twistSection(document.getElementById('GeographyPage:GeographyPageBlock:SysHeadSection').childNodes[0].childNodes[0]);
+}
+
+addLoadEvent(hideHeadSesction);                  
+</script>
+</apex:page>

@@ -1,0 +1,4 @@
+<apex:page tabStyle="Results_Framework__tab"  controller="ClsTabController" action="{!redirectPage}" sidebar="false">
+ <apex:enhancedList type="CDCSGoal__c" height="500" rowsPerPage="50"
+        id="CDCSGoalsList" customizable="false"  />
+</apex:page>

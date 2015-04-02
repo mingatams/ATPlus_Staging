@@ -1,0 +1,27 @@
+<apex:page title="Help" sidebar="false" showHeader="false">
+    <apex:pageBlock title="Help">  
+        <apex:pageBlock Title="Color-formatted text:">
+        <ul>
+            <li>Create colored text in a Microsoft Word document</li>
+            <li>Copy text from Microsoft Word</li>
+            <li>Paste copied text into Announcement field</li>
+        </ul>
+        <br/>
+            </apex:pageBlock>
+        <apex:pageBlock title="Insert image into announcement:">
+        <ul>
+            	<li>In Salesforce, go to Documents -> New</li>
+                <li>Fill-in all required fields (remember the folder name for later)</li>
+                <li>Check "Externally Available Image"</li>
+                <li>Click Browse -> select the image file -> Save</li>
+                <li>Return to Documents -> Document Folders -> (folder image is in) -> Go</li>
+                <li>Click "view" for the image you uploaded</li>
+                <li>Copy the URL from the Address Bar in your Browser</li>
+                <li>Return to the Announcements page</li>
+            	<li>In the Announcement field, click the "image" icon</li>
+            	<li>Paste the image URL into the URL field</li>
+            	<li>Click OK</li>
+            	<li>**NOTE: if your image does not show, or an error message is shown in it's place, refresh the page.</li>
+            </ul></apex:pageBlock>
+    </apex:pageBlock>
+</apex:page>

@@ -1,0 +1,464 @@
+<apex:page standardController="Location1__c" extensions="PlacesLocatorController">
+    
+    <apex:stylesheet value="https://serverapi.arcgisonline.com/jsapi/arcgis/2.5/js/dojo/dijit/themes/tundra/tundra.css"/>
+    <apex:includeScript value="https://serverapi.arcgisonline.com/jsapi/arcgis/?v=2.5"/>
+    <apex:includeScript value="{!URLFOR($Resource.USAIDTrackerStatic, 'USAIDTrackerStatic.js')}" />
+    
+    <apex:form >
+        <apex:actionFunction action="{!doLocation}" name="jsLocation" rerender="">
+            <apex:param name="Latitude" assignTo="{!Latitude}" value="" />
+            <apex:param name="Longitude" assignTo="{!Longitude}" value="" />
+            <apex:param name="Country" assignTo="{!Country}" value="" />
+            <apex:param name="State" assignTo="{!State}" value="" />
+            <apex:param name="Region" assignTo="{!Region}" value="" />
+            <apex:param name="City" assignTo="{!City}" value="" />
+            <apex:param name="Location_Name" assignTo="{!Location_Name}" value="" />
+        </apex:actionFunction>
+    </apex:form>
+    
+    <apex:outputPanel id="SearchGrid">
+
+
+        <script type="text/javascript" charset="utf-8">
+            dojo.require("esri.tasks.locator");
+            dojo.require("dijit.layout.BorderContainer");
+            dojo.require("dijit.layout.ContentPane");
+            dojo.require("esri.map");
+            dojo.require("esri.graphic");
+            
+        <!--------------map/polygons--------------------->
+        var map;
+          
+        function init() {
+
+ /*           var initExtent = new esri.geometry.Extent({"xmin":-23011948.55241597,"ymin":-15654257.82779998,"xmax":23011703.422415968,"ymax":15654348.957799979,"spatialReference":{"wkid":4326}});    //{"xmin":-18095833.418683976,"ymin":-8943125.39279998,"xmax":18065607.418683976,"ymax":22365481.39279998,"spatialReference":{"wkid":102100}});
+            map = new esri.Map("map",{extent:initExtent});
+          
+            //Add the world street map layer to the map. View the ArcGIS Online site for services http://arcgisonline/home/search.html?t=content&f=typekeywords:service    
+            var basemap = new esri.layers.ArcGISTiledMapServiceLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer");
+            map.addLayer(basemap);          
+
+            //Graphic layer for polygons
+            polygonLayer = new esri.layers.GraphicsLayer();
+            map.addLayer(polygonLayer);
+*/
+            //create polygons
+            var p;
+            var newsymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
+             new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
+             new dojo.Color([255,0,0]), 1),new dojo.Color([255,255,0,0.45]));
+             
+            for(p in USAIDProjectPolygons) {
+                if (dojo.isFunction(p)) {
+                    return;            
+                }
+                var polygon = new esri.geometry.Polygon({"rings":USAIDProjectPolygons[p].paths, 
+                                                         "spatialReference":{"wkid":4326 }});
+                var newgraphic = new esri.Graphic(esri.geometry.geographicToWebMercator(polygon), newsymbol);
+                //polygonLayer.add(newgraphic);
+                USAIDProjectPolygons[p].polygon = polygon;
+            }
+        }
+        
+        dojo.addOnLoad(init);
+
+        <!----------------------------------->
+
+            var CONST = {
+                ipv4 : /\b(?:\d{1,3}\.){3}\d{1,3}\b/,
+                latitude : /(^\+?([1-8])?\d(\.\d+)?$)|(^-90$)|(^-(([1-8])?\d(\.\d+)?$))/,
+                longitude : /(^\+?1[0-7]\d(\.\d+)?$)|(^\+?([1-9])?\d(\.\d+)?$)|(^-180$)|(^-1[1-7]\d(\.\d+)?$)|(^-[1-9]\d(\.\d+)?$)|(^\-\d(\.\d+)?$)/
+            }
+            
+            var North = {!North};
+            var South = {!South};
+            var East = {!East};
+            var West = {!West};
+
+            //create geocoder (new locator object)
+var locator = new esri.tasks.Locator("http://tasks.arcgisonline.com/ArcGIS/rest/services/Locators/ESRI_Places_World/GeocodeServer");
+var reverseLocator = new esri.tasks.Locator("http://tasks.arcgis.com/ArcGIS/rest/services/WorldLocator/GeocodeServer/reverseGeocode");
+
+
+            function locate() {
+                var terms = dojo.byId("place").value;
+                if (terms.match(/\S+/)) {
+                    var latlon = terms.split(",");
+                    if (latlon.length === 2) {
+                        var lat = dojo.trim(latlon[0]);
+                        var lon = dojo.trim(latlon[1]);
+                        if ( lat.match(CONST.latitude) && lon.match(CONST.longitude) )  {
+                            locateAddressFromGeolocation(lat, lon);
+                            return;
+                        }
+                    }                   
+                    locateGeolocationsFromAddress(terms);
+                }
+            }
+            var t;
+            function locateGeolocationsFromAddress(address) {
+                showLoader();
+                /*if (t) {
+                    clearTimeout(t);
+                }*/
+                var deferred = locator.addressToLocations({'SingleLine': address}, ["*"]//,
+                                //function(addressCandidate) {
+                                //console.debug(this);
+                                //    showData(addressCandidate);
+                               // }, 
+                               // function(error) {//err callback
+                                 //console.debug(error);
+                                    //hideLoader();
+                                 //   showData([]);
+                               // }
+                               );
+                deferred.then(function(addressCandidate) {
+                                //console.debug(this);
+                                    showData(addressCandidate);
+                                }, 
+                                function(error) {//err callback
+                                 //console.debug(error);
+                                    //hideLoader();
+                                    showData({"error" : error});
+                                });
+/*                t = setTimeout(function(){ 
+                    if (deferred && deferred.fired === -1) {  deferred.resolve({"timeout": true});  }
+                    else deferred = null; 
+                }, 20000);*/
+            }
+            
+            function locateAddressFromGeolocation(lat,lon,country,state,region,city, name) { 
+                showLoader();
+                /*if (t) {
+                    clearTimeout(t);
+                }*/
+                /*var name = "";
+                var city = "";
+                var state = "";
+                var region = "";
+                var country = ""; */
+                var deferred = reverseLocator.locationToAddress(
+                                new esri.geometry.Point( {"x": lon, "y": lat }),
+                                0 // distance
+                                
+                );
+                //try { 
+                deferred.then(function(addressCandidate) {
+                                    console.debug(addressCandidate);
+                                    //showData(addressCandidate);
+                                    //get province name from addressCandidate   
+                                    if(name == "") { name =  addressCandidate.address.Street || addressCandidate.address.City || ""; }
+                                    if(city == "") { city = addressCandidate.address.City || ""; } 
+                                    if(state == "") { state = addressCandidate.address.State || addressCandidate.address.Province || addressCandidate.address.County || ""; }
+                                    if(region == "") { region = addressCandidate.address.Region || state || addressCandidate.address.County || addressCandidate.address.City || ""; }
+                                    if(country == "") { country = addressCandidate.address.Country; }
+                                    
+                                    if(country == "AF" || country == "AFG") { country = "Afghanistan"; }    
+                                    if(country == "BD" || country == "BGD") { country = "Bangladesh"; }
+                                    if(country == "CD" || country == "COD") { country = "Democratic Republic of the Congo"; }
+                                    if(country == "DO" || country == "DOM") { country = "Dominican Republic"; }
+                                    if(country == "EG" || country == "EGY") { country = "Egypt"; }
+                                    if(country == "SV" || country == "SLV") { country = "El Salvador"; }
+                                    if(country == "ET" || country == "ETH") { country = "Ethiopia"; }
+                                    if(country == "GH" || country == "GHA") { country = "Ghana"; }
+                                    if(country == "GT" || country == "GTM") { country = "Guatemala";}
+                                    if(country == "HT" || country == "HTI") { country = "Haiti"; }    
+                                    if(country == "IN" || country == "IND") { country = "India"; }
+                                    if(country == "ID" || country == "IDN") { country = "Indonesia"; }
+                                    if(country == "IQ" || country == "IRQ") { country = "Iraq"; }
+                                    if(country == "KE" || country == "KEN") { country = "Kenya"; }
+                                    if(country == "LB" || country == "LBN") { country = "Lebanon"; }
+                                    if(country == "LR" || country == "LBR") { country = "Liberia"; }
+                                    if(country == "MZ" || country == "MOZ") { country = "Mozambique"; }
+                                    if(country == "NG" || country == "NGA") { country = "Nigeria";}
+                                    if(country == "PK" || country == "PAK") { country = "Pakistan"; }
+                                    if(country == "PH" || country == "PHL") { country = "Philippines"; }
+                                    if(country == "RW" || country == "RWA") { country = "Rwanda";}
+                                    if(country == "SN" || country == "SEN") { country = "Senegal"; }    
+                                    if(country == "SD" || country == "SDN") { country = "South Sudan"; } //SUDAN CODES
+                                    if(country == "TZ" || country == "TZA") { country = "Tanzania"; }
+                                    //if(country == "" || country == "") { country = "Timor-Leste"; }
+                                    if(country == "UG" || country == "UGA") { country = "Uganda"; }
+                                    if(country == "IL" || country == "ISR") { country = "WB Gaza"; }
+                                    
+                                    jsLocation(lat,lon,country,state,region,city,name);
+                                    // Lei: I have to use window.parent because window.postMessage won't work
+                                    window.parent.postMessage("G2Maps::Page::Refresh", "*"); 
+                                    
+                                }, 
+                                function(error) {//err callback
+                                    //console.debug(error);
+                                    //hideLoader();
+                                    showData({"error": error});
+                                });
+                  //} catch (err) {}
+/*                t = setTimeout(function(){ 
+                    if (deferred && deferred.fired === -1) { deferred.resolve({"timeout": true}); }
+                    else deferred = null; 
+                }, 20000);*/
+            }
+            
+            function showLoader() {
+                dojo.byId("loader").style.display = 'block';
+                dojo.byId("resultsTable").style.display = 'none';
+            }
+            
+            function hideLoader() {
+                dojo.byId("loader").style.display = 'none';
+                dojo.byId("resultsTable").style.display = 'block';
+            }
+            
+            function enterKey(evt) {
+                if (evt.keyCode == 13) locate();
+            }
+             
+            var selectButtonTemplate = "<button title=\"{title}\" onclick=\"onSelect({lat}, {lon}, '{country}', '{state}', '{region}', '{city}', '{name}')\">Select</button>";
+            function createSelectButton(data) {
+                    var html = dojo.replace(selectButtonTemplate, {
+                        title: data.lat + "," + data.lon,
+                        lat: data.lat,
+                        lon: data.lon,
+                        country: data.country,
+                        state: data.state,
+                        region: data.region,
+                        city: data.city,
+                        name: data.address
+                    });
+                    return html;
+            }   
+            function onSelect(lat,lon,country,state,region,city, name) {               
+                var loc = null;
+                try {
+                    showLoader();
+                    //locateAddressFromGeolocation(lat,lon,country,state,region,city, name);
+                    if(country == "AF" || country == "AFG") { country = "Afghanistan"; }    
+                    if(country == "BD" || country == "BGD") { country = "Bangladesh"; }
+                    if(country == "CD" || country == "COD") { country = "Democratic Republic of the Congo"; }
+                    if(country == "DO" || country == "DOM") { country = "Dominican Republic"; }
+                    if(country == "EG" || country == "EGY") { country = "Egypt"; }
+                    if(country == "SV" || country == "SLV") { country = "El Salvador"; }
+                    if(country == "ET" || country == "ETH") { country = "Ethiopia"; }
+                    if(country == "GH" || country == "GHA") { country = "Ghana"; }
+                    if(country == "GT" || country == "GTM") { country = "Guatemala";}
+                    if(country == "HT" || country == "HTI") { country = "Haiti"; }    
+                    if(country == "IN" || country == "IND") { country = "India"; }
+                    if(country == "ID" || country == "IDN") { country = "Indonesia"; }
+                    if(country == "IQ" || country == "IRQ") { country = "Iraq"; }
+                    if(country == "KE" || country == "KEN") { country = "Kenya"; }
+                    if(country == "LB" || country == "LBN") { country = "Lebanon"; }
+                    if(country == "LR" || country == "LBR") { country = "Liberia"; }
+                    if(country == "MZ" || country == "MOZ") { country = "Mozambique"; }
+                    if(country == "NG" || country == "NGA") { country = "Nigeria";}
+                    if(country == "PK" || country == "PAK") { country = "Pakistan"; }
+                    if(country == "PH" || country == "PHL") { country = "Philippines"; }
+                    if(country == "RW" || country == "RWA") { country = "Rwanda";}
+                    if(country == "SN" || country == "SEN") { country = "Senegal"; }    
+                    if(country == "SD" || country == "SDN") { country = "South Sudan"; } //SUDAN CODES
+                    if(country == "TZ" || country == "TZA") { country = "Tanzania"; }
+                    if(country == "TL" || country == "TP" || country == "TMP") { country = "Timor-Leste"; }
+                    if(country == "UG" || country == "UGA") { country = "Uganda"; }
+                    if(country == "IL" || country == "ISR" || country == "PL") { country = "WB Gaza"; }
+                    if(country == "MA" || country == "MAR") { country = "Morocco"; }
+                    if(country == "AO" || country == "AGO") { country = "Angola"; }
+                    if(country == "NP" || country == "NPL") { country = "Nepal"; }
+                    if(country == "RU" || country == "RUS") { country = "Russia"; }
+                    if(country == "RR" || country == "SRB") { country = "Serbia"; }
+                    if(country == "EC" || country == "ECU") { country = "Ecuador"; }
+                    if(country == "GE" || country == "GEO") { country = "Georgia"; }
+                    if(country == "PE" || country == "PER") { country = "Peru"; }
+                    if(country == "MX" || country == "MEX") { country = "Mexico"; }
+                    if(country == "ZA" || country == "ZAF") { country = "South Africa"; }
+                    if(country == "ME" || country == "MNE") { country = "Montenegro"; }
+                    if(country == "ZW" || country == "ZWE") { country = "Zimbabwe"; }
+                    
+                    //console.debug(country);
+                    var lo = lon.toFixed(5);
+                    var la = lat.toFixed(5);
+                    var point = new esri.geometry.Point(lo, la, new esri.SpatialReference({ wkid: 4326 }));
+                    //console.debug(point);
+                    var p, c;
+                    for (p in USAIDProjectPolygons) {
+                        c = USAIDProjectPolygons[p].polygon;
+                       if (c.contains(point)) {
+                            loc = p;
+                            break;
+                        }
+                    }
+                    
+                    if(loc === null) {
+                        var lat_1 = parseFloat(la) + parseFloat("0.005");
+                        var lon_1 = parseFloat(lo) + parseFloat("0.005");;
+                        var lat_2 = parseFloat(la) - parseFloat("0.005");;
+                        var lon_2 = parseFloat(lo) - parseFloat("0.005");;
+                     
+                        var point_1 = new esri.geometry.Point(lo, lat_1, new esri.SpatialReference({ wkid: 4326 }));
+                        var point_2 = new esri.geometry.Point(lon_1, la, new esri.SpatialReference({ wkid: 4326 }));
+                        var point_3 = new esri.geometry.Point(lo, lat_2, new esri.SpatialReference({ wkid: 4326 }));
+                        var point_4 = new esri.geometry.Point(lon_2, la, new esri.SpatialReference({ wkid: 4326 }));
+
+                        var pol, a;
+                        for (pol in USAIDProjectPolygons) {
+                            a = USAIDProjectPolygons[pol].polygon;
+                            if (a.contains(point_1)) {
+                                loc = pol;
+                                break;
+                            } else if (a.contains(point_2)) {
+                                loc = pol;
+                                break;
+                            } else if (a.contains(point_3)) {
+                                loc = pol;
+                                break;
+                            } else if (a.contains(point_4)) {
+                                loc = pol;
+                                break;
+                            }
+                        }
+                    }
+                     
+                    if(loc != null) {
+                        var provinceCountry = loc.split(","); 
+                        if (provinceCountry.length === 2) {
+                            state = dojo.trim(provinceCountry[0]);
+                            country = dojo.trim(provinceCountry[1]);
+                        }                   
+                    } else {
+                        state = '';  
+                    }
+                    
+                    jsLocation(lat,lon,country,state,region,city, name);
+                   // Lei: I have to use window.parent because window.postMessage won't work
+                    window.parent.postMessage("G2Maps::Page::Refresh", "*");
+                    //TODO: find a better solution - check server state maybe??
+                } catch (err){}//TODO: handle err
+
+
+
+            }
+                                
+            var rowTemplate = "<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td></tr>";
+            function showData(data) {
+                //console.log("showing data");
+                var table = dojo.byId('resultsTable');
+                dojo.empty(table);
+                if (!dojo.isArray(data)) { 
+                    if (data.error || data.timeout) {
+                        var s = "<tr style='vertical-align:top'><td>An error prevented us from running your search. Please try again, and contact your System Administrator if the problem persists.</td></tr>"; 
+                        dojo.place(s, table, "last");
+                        hideLoader();
+                        return;                        
+                    } else {
+                        data = new Array(data);
+                    }
+                }
+                if (data.length === 0) {
+                    var s = "<tr style='vertical-align:top'><td>Please refine your search, no location found with that name.</td></tr>"; 
+                    dojo.place(s, table, "last");
+                    hideLoader();
+                    return;
+                }
+                var theadinnerHTML = " <tr id=\"header\">\
+                <th width=\"25%\">Name</th>\
+                <th width=\"19%\">City</th>\
+                <th width=\"19%\">State</th>\
+                <th width=\"19%\">Country</th>\
+                <th width=\"8%\">Score</th>\
+                <th width=\"10%\"></th>\
+                </tr>";
+                dojo.place(theadinnerHTML, table, "last");
+
+                dojo.forEach(data, function(d, index) {
+                    var ndata = normalizeData(d);
+                    if (!ndata.country) return;//TODO
+/*
+                    if (ndata.lat > North || ndata.lat < South || ndata.lon > East || ndata.lon < West) return; // Check the boundaries and only show locations within the boundaries
+                    
+                    if (ndata.score < 85) return;
+                    
+                    if (ndata.type == 'populated place' ||
+                        ndata.type == 'second-order admin. division' ||
+                        ndata.type == 'administrative division' ||
+                        ndata.type == 'region' ||
+                        ndata.type == 'state') {
+                        // Do nothing, this is a good match
+                    }
+                    else {
+                        return;
+                    } */
+                    
+                    //if (ndata.score == 100.0 && (dojo.byId("performSearch").value === "true")) onSelect(ndata.lat, ndata.lon, ndata.country, ndata.state, ndata.region, ndata.region, ndata.address); // Automatically select the first 100 score we find
+                    
+                    
+                    var trinnerHTML = dojo.replace(rowTemplate, [ndata.address, 
+                                                              ndata.city, 
+                                                              ndata.state, 
+                                                              ndata.country, 
+                                                              ndata.score,
+                                                              createSelectButton(ndata)
+                    ]);
+                    dojo.place(trinnerHTML, table, "last");       
+                });
+                hideLoader(); 
+            }
+            
+            function normalizeData(input) {
+                var output = {};
+                if (input.attributes) {//TODO 
+                    output.address = input.address || "";
+                    output.city = input.attributes.City || input.attributes.County || "";
+                    output.region = input.attributes.County || input.attributes.City || "";
+                    output.state = input.attributes.State || input.attributes.County || "";
+                    output.country = input.attributes.Cntry_Abbr || input.attributes.Country;
+                    output.score = input.score || 50 ;
+                    output.lat = input.location.y;
+                    output.lon = input.location.x;
+                    output.type = input.attributes.Type;
+                    output.rank = input.attributes.Rank;
+                } else if (input.address){
+                    output.address = input.address.Name || input.address.City || input.address.Street || "";
+                    output.city = input.address.City || input.address.County || "";
+                    output.region = input.address.County || input.address.City || "";
+                    output.state = input.address.State || input.address.County || "";
+                    output.country = input.address.Country;
+                    output.score = input.score || 50 ;
+                    output.lat = input.location.y;
+                    output.lon = input.location.x;
+                    //output.type = input.attributes.Type;
+                    //output.rank = input.attributes.Rank;
+                }
+                return output;
+            }
+
+            dojo.ready(function() {
+                if (dojo.byId("performSearch").value === "true") {
+                    setTimeout(function() {locate();}, 2000);
+                } else {
+                    var table = dojo.byId('resultsTable');
+                    dojo.empty(table);
+                    var s = "<tr style='vertical-align:top'><td>Please type in a name or address and click Search button to search the location.</td></tr>"; 
+                    dojo.place(s, table, "last");
+                }
+            });
+
+        </script>        
+        
+        
+        <input type="hidden" id="performSearch" value="{!autoSearch}"/>
+        <input type="text" id="place" size="60" value="{!addressOrName}"/> 
+        <input type="button" onclick="locate()" value="Search"/>
+        <img src= "{!URLFOR($Resource.CTResources, 'loader.gif')}" alt="Loading" style="display: none;" id="loader" align="right" />
+        <div id='_searchResults'></div>
+        <table id="resultsTable" style="width:100%;height:410px;overflow:auto;">
+        <thead>
+            <tr id="header">
+                <th width="25%">Name</th>
+                <th width="19%">City</th>
+                <th width="19%">State</th>
+                <th width="19%">Country</th>
+                <th width="8%">Score</th>
+                <th width="10%"></th>
+            </tr>
+        </thead>
+        </table>
+        
+    </apex:outputPanel>
+</apex:page>

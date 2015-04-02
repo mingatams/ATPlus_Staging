@@ -1,0 +1,142 @@
+<apex:page id="pgAAPlanGroupAdmin" controller="AAPlanGroupAdminController2" >
+    <apex:StyleSheet value="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/cupertino/jquery-ui.min.css" />
+    <c:styles />
+    
+    <style>
+
+        .activeTab {
+            background-color: #1796bf;
+            color: white;
+            background-image: none;
+            padding: 5px;
+            font-style: bold;
+            cursor: pointer;
+        }
+        
+        .inactiveTab {
+            background-color: #d3d3d3;
+            color: black;
+            background-image: none;
+            padding: 5px;
+            font-style: bold;
+            cursor: pointer;
+        }
+        
+        textarea {
+            width: 97%;
+        }
+        
+        .commandButtonContainer {
+            text-align: center;
+            margin: 10px;
+            clear: both;
+            padding: 5px;
+        }
+        
+        .recordHeader > div {
+            font-weight: bold;
+            width: 33.33%;
+            font-size: 14px !important;
+            float: left;
+        }
+        
+        .recordHeader a {
+            color: #000;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+    </style>
+    
+    <div id="container">
+        <apex:PageMessages id="msgs" />
+        <apex:tabPanel switchType="Ajax" value="{!ActiveTab}" html-data-id="AandAPlanGroupAdminTabPanelID" tabClass="activeTab" inactiveTabClass="inactiveTab">
+            <apex:tab name="PlanningUnitGroups" label="Planning Unit Groups" id="PlanningUnitGroupsTab">
+                <apex:pageBlock >
+                    <apex:pageBlockSection columns="2">
+                        
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:tab>
+            <apex:tab name="PubGroupAdmin" label="Public Group Administration" id="PublicGroupAdministrationTab">
+                <apex:form id="frmAddPublicGroup">
+                    <apex:pageBlock title="Add Public Group" mode="edit" id="pbAddPublicGroup">
+                        <apex:pageBlockSection columns="1" id="pbsAddPublicGroup">
+                            <apex:pageBlockSectionItem id="pbsiAddPublicGroup" helpText="This is the value that is displayed.">
+                                <apex:outputLabel id="lblPublicGroupLabel" for="txtPublicGroupLabel" value="Group Name" ></apex:outputLabel>
+                                <apex:outputPanel id="divReqInput" styleClass="requiredInput" layout="block">
+                                    <apex:outputPanel id="divReqBlock" styleClass="requiredBlock" layout="block"/>
+                                    <apex:inputText styleClass="requiredInput" id="txtPublicGroupLabel" value="{!newGroupLabel}"  />
+                                </apex:outputPanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem helpText="This is the API name for the group.">
+                                <apex:outputLabel for="txtPublicGroupDevName" value="Group API Name" ></apex:outputLabel>
+                                <apex:outputPanel styleClass="requiredInput" layout="block">
+                                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                    <apex:inputText styleClass="requiredInput" id="txtPublicGroupDevName" value="{!newPublicGroupDevName}"  />
+                                </apex:outputPanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                <apex:commandButton title="Add Group" value="Add Group" action="{!addGroup}"  />
+                            </apex:pageBlockSectionItem>
+                        </apex:pageBlockSection>
+                    </apex:pageBlock>
+                </apex:form>
+                <apex:form id="frmRemovePublicGroup">
+                    <apex:pageBlock title="Remove Public Group" >
+                        <apex:pageBlockSection columns="1">
+                            <apex:pageBlockSectionItem helpText="Please input the Group name to search for and click 'Search'.">
+                                <apex:outputLabel for="txtRemovePublicGroup" value="Group Name" ></apex:outputLabel>
+                                <apex:outputPanel styleClass="requiredInput" layout="block">
+                                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                    <apex:inputText styleClass="requiredInput" id="txtRemovePublicGroup" value="{!searchGroup}"  />
+                                </apex:outputPanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                <apex:commandButton title="Search" value="Search" action="{!groupSearch}"  />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem helpText="These are the groups that match the group name entered above." rendered="{!matchingGroups!=NUll}">
+                                <apex:outputLabel for="groupDeleteTable" value="Matching Groups" ></apex:outputLabel>
+                                <apex:pageBlockTable value="{!matchingGroups}" var="item" id="groupDeleteTable">
+                                    <apex:column headerValue="Action" styleClass="actionColumn">
+                                        <!-- <apex:outputLink value="/p/own/OrgPublicGroupsPage/d?setupid=PublicGroups&retURL={!$CurrentPage.url}" styleClass="actionLink">Edit</apex:outputLink> |&nbsp; -->
+                                        <apex:commandLink value="Del" onclick="if(!confirm('Are you sure?')) return false;" action="{!deleteGroup}" rerender="groupDeleteTable" styleClass="actionLink">
+                                            <apex:param name="idOfRecordToDelete" assignTo="{!deleteRecordId}" value="{!item.id}"/>
+                                        </apex:commandLink>
+                                    </apex:column>
+                                    <apex:column headerValue="Name" value="{!item.Name}"/>
+                                    <apex:column headerValue="Developer Name" value="{!item.DeveloperName}"/>
+                                </apex:pageBlockTable>
+                            </apex:pageBlockSectionItem>
+                        </apex:pageBlockSection>
+                    </apex:pageBlock>
+                </apex:form>
+            </apex:tab>
+            <apex:tab name="UserGroupAdmin" label="User Group Administration" id="UserGroupAdministrationTab">
+                <apex:form >
+                    <apex:pageBlock mode="edit">
+                        <apex:pageBlockSection columns="2">
+                            <apex:pageBlockSectionItem helpText="Enter the name of the user to search.">
+                                <apex:outputLabel for="txtUserSearch" value="User Name" ></apex:outputLabel>
+                                <apex:outputPanel styleClass="requiredInput" layout="block">
+                                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                    <apex:inputText styleClass="requiredInput" id="txtUserSearch" value="{!searchUser}"  />
+                                </apex:outputPanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                <apex:commandButton title="Search" value="Search" action="{!userSearch}"  />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem helpText="These are the users that match the user name entered above." rendered="{!matchingUsers!=NUll}">
+                                <apex:outputLabel for="userSelect" value="Matching Users" ></apex:outputLabel>
+                                <apex:selectList value="{!selectedUserId}" id="userSelect">
+                                    <apex:selectOptions value="{!Users}">
+                                    </apex:selectOptions>
+                                </apex:selectList>
+                            </apex:pageBlockSectionItem>
+                        </apex:pageBlockSection>
+                    </apex:pageBlock>
+                </apex:form>
+            </apex:tab>
+        </apex:tabPanel>
+    </div>
+</apex:page>

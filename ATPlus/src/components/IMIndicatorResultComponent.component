@@ -1,0 +1,1234 @@
+<apex:component id="targetComp" controller="ClsManageIndicatorTargets"  extensions="ClsReportingPeriodExtension,ClsUserProfileFinder" allowDML="true" >  
+<!--
+<!-- <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head> -->  
+
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxtabbar.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxcommon.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxtabbar.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxtabbar_start.js')}" />
+
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgridcell.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/dhtmlxtreegrid.js')}" /> 
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_group.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_splt.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/excells/dhtmlxgrid_excell_link.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_selection.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_lines.js')}" /> 
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid_skins.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/skins/dhtmlxgrid_dhx_skyblue.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxcontainer.js')}" />
+
+<apex:includeScript value="{!URLFOR($Resource.dhtmlPopup, 'codebase/dhtmlxpopup.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlPopup, 'codebase/dhtmlxcommon.js')}" />
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlPopup, 'codebase/skins/dhtmlxpopup_dhx_skyblue.css')}"/>
+
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxEditor, 'dhtmlxEditor/codebase/skins/dhtmlxeditor_dhx_skyblue.css')}"/>
+
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxForm, 'codebase/skins/dhtmlxform_dhx_skyblue.css')}"/> 
+ 
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxForm, 'codebase/dhtmlxform.js')}" />  
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxForm, 'codebase/dhtmlxcommon.js')}" />  
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxForm, 'codebase/ext/dhtmlxform_item_combo.js')}" />  
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxForm, 'codebase/ext/dhtmlxform_item_editor.js')}" />
+
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxEditor, 'dhtmlxEditor/codebase/dhtmlxeditor.js')}" />
+
+<apex:includeScript value="{!URLFOR($Resource.dhtmlCombo, 'codebase/dhtmlxcombo.js')}" />  
+<apex:includeScript value="{!URLFOR($Resource.dhtmlCombo, 'codebase/dhtmlxcommon.js')}" />  
+<apex:includeScript value="{!URLFOR($Resource.dhtmlCombo, 'codebase/ext/dhtmlxcombo_extra.js')}" />     
+
+
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlCombo, 'codebase/dhtmlxcombo.css')}"/> 
+<apex:includeScript value="{!URLFOR($Resource.NumberFunction)}" /> 
+
+
+<style>
+
+    div.gridbox_dhx_skyblue table.obj tr td{font-family:Tahoma; font-size:11px; border-width: 1px 1px 1px 1px; border-color : #FDFDFD #A4BED4 #A4BED4 #FDFDFD;}
+    div.gridbox_dhx_skyblue table.hdr td { Font-size:12px; font-family:Trebuchet MS;}
+    div.gridbox_dhx_skyblue table.obj tr td{ font-size:12px; font-family:Trebuchet MS;}
+    .dhx_combo_select, .gridbox_dhx_skyblue .dhx_combo_edit, .gridbox_dhx_skyblue .dhx_textarea{ font-size:12px;}
+    .bPageBlock .detailList .labelCol { width:9%; }
+    .bPageBlock .detailList .dataCol { width:25%; }
+    div.gridbox_dhx_skyblue table.obj tr td { font-family: Arial, Verdana, sans-serif; font-size:11px; }
+    div.gridbox_dhx_skyblue table.hdr td { font-family:Arial, Verdana, sans-serif; font-size:12px; }
+    body .bPageTitle { padding:0 0 0;}
+    a {color:#1797C0; font-size:11px; font-weight:bold;}
+    span ul li {   list-style: none; color: #b52828; }
+    element.style {  text-align:left;}
+    div.gridbox table.obj td.group_row { background-color: #4B627F; border-color:#FDFDFD #A4BED4 #A4BED4 #FDFDFD; border-width:1px; color: #FFFFFF}
+    .colstyle {width:45%}
+</style>
+
+ 
+  <script>
+  
+   var mygrids;
+    function dispIndicatorsTargetGrid(){     
+        loadInitialReportPeriod();       
+        callGoAction();
+       var xmlStrLocal = '{!xmlStr}';      
+       dispIndicatorsTargetGrid1(xmlStrLocal);
+    }
+    
+     function renderReload(){
+  // var  xmlStrLocal = '{!xmlStr}';   
+    var xmlStrLocal =document.getElementById('{!$Component.targetcomp_id:targetComp:theform:savedXML}').value;   
+       dispIndicatorsTargetGrid1(xmlStrLocal);
+   
+   }
+   
+ function dispIndicatorsTargetGrid1(xmlStrLocal){    
+       
+        document.getElementById("gridboxS").innerHTML = "";
+        mygrids = new dhtmlXGridObject("gridboxS","100%", "100%");
+        mygrids.selMultiRows = true;
+        mygrids.setImagePath("{!URLFOR($Resource.dhtmlxGrid, '/dhtmlxGrid/codebase/imgs/')}");  
+        mygrids.setHeader("Indicator Code,Indicator Name,Baseline, Target, Actuals,Difference,Rating,Notes/Comments (Partner),Notes/Comments (Mission),SOURCE,DATA TYPE,MAX,MIN,Unit Of Measure");
+        mygrids.attachHeader("#text_filter,#text_filter,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan");
+        //mygrids.setInitWidths("150,550,75,75,75,80,65,150,55,");
+        mygrids.setInitWidthsP("10,42,6,6,6,6,0,10,10,0,0,0,0,4.5");
+        mygrids.setColAlign("left,left,right,right,right,right,right,left,left,center,center,center");
+        mygrids.setColTypes("tree,rotxt,ed,ed,ed,rotxt,ro,txttxt,txttxt,rotxt,rotxt,rotxt,rotxt,rotxt");
+        mygrids.enableAutoHeigth(false);
+        mygrids.enableResizing("false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+        mygrids.enableTooltips("true,true,true,true,true,true,true,true,true,true,false,false,false,false,false");
+        mygrids.attachEvent("onMouseOver",doonMouseOver);  
+        mygrids.attachEvent("onRowCreated",doValidation);    
+        mygrids.attachEvent("onRowCreated",lockCheckbox);  
+        mygrids.enableTreeCellEdit(false);
+        mygrids.init();
+        mygrids.setSkin("dhx_skyblue");
+        mygrids.loadXMLString(xmlStrLocal);
+        mygrids.attachEvent("onEditCell",doOnEditCell);
+        mygrids.attachEvent("onMouseOver",doonMouseOver);
+      
+        mygrids.customGroupFormat=function(name,count){
+          if (name == '1') 
+          {  
+              name = 'F / Standard';
+          } else if (name == '2') 
+          {  
+              name = 'FTF';
+          } else if (name == '3') 
+          {  
+              name = 'PEPFAR';
+          }
+          return name;
+        }
+        //mygrids.sortRows(9,"str", "des");
+        mygrids.expandAll();
+        mygrids.sortRows(0,"str", "asc");
+        mygrids.groupBy(9);
+        mygrids.setColumnHidden(9,true);
+        mygrids.setColumnHidden(6,true);
+        mygrids.setColumnHidden(10,true);
+        mygrids.setColumnHidden(11,true);
+        mygrids.setColumnHidden(12,true);
+        mygrids.attachEvent("onOpenEnd", doonexpand);
+        mygrids.setFiltrationLevel(-2);
+  }
+   
+   function lockCheckbox(id){
+  
+      var repStatus = document.getElementById('{!$Component.targetcomp_id:targetComp:theform:partnerRepStatus}').value; 
+      //alert(repStatus);
+      // var temp1 = mygrids.cells(id,1).getValue();
+       if((repStatus == 'Publish' || repStatus == 'Submitted')){
+         mygrids.lockRow(id,true);
+         mygrids.setCellTextStyle(id,2,"border-width: 1px 1px 1px 1px; border-color : #FDFDFD #A4BED4 #A4BED4 #FDFDFD;");
+         mygrids.setCellTextStyle(id,3,"border-width: 1px 1px 1px 1px; border-color : #FDFDFD #A4BED4 #A4BED4 #FDFDFD;");
+         mygrids.setCellTextStyle(id,4,"border-width: 1px 1px 1px 1px; border-color : #FDFDFD #A4BED4 #A4BED4 #FDFDFD;");
+         mygrids.setCellTextStyle(id,7,"border-width: 1px 1px 1px 1px; border-color : #FDFDFD #A4BED4 #A4BED4 #FDFDFD;");
+         mygrids.setCellTextStyle(id,8,"border-width: 1px 1px 1px 1px; border-color : #FDFDFD #A4BED4 #A4BED4 #FDFDFD;");
+       }
+       if(repStatus == 'Open' && {!isMissionPartnerUser == false}){
+         mygrids.lockRow(id,true);
+         mygrids.setCellTextStyle(id,2,"border-width: 1px 1px 1px 1px; border-color : #FDFDFD #A4BED4 #A4BED4 #FDFDFD;");
+         mygrids.setCellTextStyle(id,3,"border-width: 1px 1px 1px 1px; border-color : #FDFDFD #A4BED4 #A4BED4 #FDFDFD;");
+         mygrids.setCellTextStyle(id,4,"border-width: 1px 1px 1px 1px; border-color : #FDFDFD #A4BED4 #A4BED4 #FDFDFD;");
+         mygrids.setCellTextStyle(id,7,"border-width: 1px 1px 1px 1px; border-color : #FDFDFD #A4BED4 #A4BED4 #FDFDFD;");
+         mygrids.setCellTextStyle(id,8,"border-width: 1px 1px 1px 1px; border-color : #FDFDFD #A4BED4 #A4BED4 #FDFDFD;");
+       }
+     
+   }
+   
+   function doonexpand(id,state){
+           //mygrids.sortRows(9,"str", "des");
+           //mygrids.sortRows(0,"str", "asc");
+           mygrids.groupBy(9);
+   }
+   
+  
+   
+  function doValidation(id){
+   
+       var temp =  (mygrids.cells(id,10).getValue().toUpperCase());
+       var temp1 = mygrids.cells(id,2).getValue();
+       var temp2 = mygrids.cells(id,3).getValue();
+       var temp3 = mygrids.cells(id,4).getValue();
+       var temp4 = mygrids.cells(id,5).getValue();
+           
+       if( temp == 'PERCENTAGE'){
+        if(temp1.length != 0){
+            temp1 = temp1/100;
+            mygrids.cells(id,2).setValue(temp1.numberFormat("0.00%"));
+        }
+         if(temp2.length != 0){
+            temp2 = temp2/100;
+            mygrids.cells(id,3).setValue(temp2.numberFormat("0.00%"));
+         }
+         if(temp3.length != 0){
+            temp3 = temp3/100;
+            mygrids.cells(id,4).setValue(temp3.numberFormat("0.00%"));
+         }
+         // if(temp4.length != 0){
+           // temp4 = temp4/100;
+          //  mygrids.cells(id,5).setValue(temp4.numberFormat("0.00%"));
+        // }
+       } else if( temp == 'CURRENCY'){
+         if(temp1.length != 0){
+            temp1 = temp1/1;
+            mygrids.cells(id,2).setValue(temp1.numberFormat("$0,0.00"));
+         }
+         if(temp2.length != 0){
+            temp2 = temp2/1;
+            mygrids.cells(id,3).setValue(temp2.numberFormat("$0,0.00"));
+         }
+         if(temp3.length != 0){
+            temp3 = temp3/1;
+            mygrids.cells(id,4).setValue(temp3.numberFormat("$0,0.00"));
+         }
+          //if(temp4.length != 0){
+           // temp4 = temp4/1;
+          //  mygrids.cells(id,5).setValue(temp4.numberFormat("$0,0.00"));
+        // }
+       } else {
+         if(temp1.length != 0){
+            temp1 = temp1/1;
+            mygrids.cells(id,2).setValue(temp1.numberFormat("#,#.00"));
+         }
+         if(temp2.length != 0){
+            temp2 = temp2/1;
+            mygrids.cells(id,3).setValue(temp2.numberFormat("#,#.00"));
+         }
+         if(temp3.length != 0){
+            temp3 = temp3/1;
+            mygrids.cells(id,4).setValue(temp3.numberFormat("#,#.00"));
+         }
+         // if(temp4.length != 0){
+           // temp4 = temp4/1;
+         //   mygrids.cells(id,5).setValue(temp4.numberFormat("#,#.00"));
+         //}
+       }
+       if(temp4.length != 0){
+           temp4 = temp4/100;
+           mygrids.cells(id,5).setValue(temp4.numberFormat("0%"));
+       }
+   }
+   
+   function doonMouseOver(id,index){
+       var val = mygrids.getItemImage(id);
+       var indVal = mygrids.cellById(id,0).getValue();
+       indVal= indVal.substring(18);
+       if (val == "indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Indicator: "+indVal);
+       }
+       if (val == "sub-indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Disaggregation: "+indVal);
+       }
+       if (val == "custom-indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Custom Indicator: "+indVal);
+       }
+       if (val == "custom-sub-indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Custom Disaggregation: "+indVal);
+       }
+       var val = mygrids.cells(id,index).getValue();
+       if (val == "") return false; 
+       return true;
+   }
+   
+  
+   function doOnEditCell(stage,rId,cInd,nValue,oValue){
+      
+      var max = mygrids.cells(rId,11).getValue();
+      var min = mygrids.cells(rId,12).getValue();
+      var dType = mygrids.cells(rId,10).getValue();
+      var cVal = mygrids.cells(rId,cInd).getValue();
+      
+      if(stage == 2 && cInd == 7 && nValue.length > 255){
+            var val = mygrids.cells(rId,7).getValue();
+            mygrids.cells(rId,7).setValue(val.substring(0,255));
+      }
+      
+      if(stage == 0 && (cInd == 7 || cInd == 8)){
+            test = 'Please enter Notes & Comments ..';
+      }  
+        
+        if(stage == 0 && (cInd == 2 || cInd == 3 || cInd == 4))
+        {   
+            if(dType == 'Percentage'){
+                mygrids.cells(rId,cInd).setValue(cVal.slice(0,cVal.length-1));
+                if(max.length != 0 && min.length != 0){
+                   test = 'Please enter a value between '+min+' and '+max+' for Percentage..';
+                } else {
+                   test = 'Please enter a value for Percentage';
+                }
+            } else if(dType == 'Currency'){
+                cVal=cVal.replace(/\,/g,'');
+                mygrids.cells(rId,cInd).setValue(cVal.slice(1,cVal.length));
+                if(max.length != 0 && min.length !=0){
+                   test = 'Please enter a value between '+min+' and '+max+' for Currency..';
+                } else {
+                   test = 'Please enter a value for Currency';
+                }
+            } else if (dType == 'Score' ) {
+                cVal=cVal.replace(/\,/g,'');
+                mygrids.cells(rId,cInd).setValue(cVal);
+                if(max.length != 0 && min.length !=0){
+                   test = 'Please enter a value between '+min+' and '+max+' for score..';
+                } else {
+                   test = 'Please enter a value for score..';
+                }
+            } else if (dType == 'Numeric') {
+                cVal=cVal.replace(/\,/g,'');
+                mygrids.cells(rId,cInd).setValue(cVal);
+                if(max.length != 0 && min.length !=0){
+                   test = 'Please enter a numeric value between '+min+' and '+max;
+                } else {
+                   test = 'Please enter a numeric value ..';
+                }
+            } else { 
+                cVal=cVal.replace(/\,/g,'');
+                mygrids.cells(rId,cInd).setValue(cVal);
+                if(max.length != 0 && min.length !=0){
+                   test = 'Please enter a value between '+min+' and '+max;
+                } else {
+                   test = 'Please enter a value ..';
+                }
+            }
+    
+        }    
+        
+        if (stage == 2 && (cInd == 2 || cInd == 3 || cInd == 4))
+        {   
+            if(isNaN(cVal)){
+                mygrids.cells(rId,cInd).setValue('');
+                alert('"'+cVal+'" is not a valid value. Please enter a numeric value..');
+                window.setTimeout(function(){mygrids.selectCell(mygrids.getRowIndex(rId),cInd,false,false,true);},1);
+                return true;
+            }
+            cVal=parseFloat(cVal,10);
+            if(max.length != 0 && cVal.length != 0 && cVal > max){
+                mygrids.cells(rId,cInd).setValue('');
+                alert('"'+cVal+'" is not a valid value.');
+                window.setTimeout(function(){mygrids.selectCell(mygrids.getRowIndex(rId),cInd,false,false,true);},1);
+                return true;
+            }
+            if(min.length != 0 && cVal.length != 0 && cVal < min){
+                mygrids.cells(rId,cInd).setValue('');
+                alert('"'+cVal+'" is not a valid value.');
+                window.setTimeout(function(){mygrids.selectCell(mygrids.getRowIndex(rId),cInd,false,false,true);},1);
+                return true;
+            }
+            if (cVal.length != 0){
+                if(dType == 'Percentage' && (cVal > 999 || cVal < 0)){
+                    mygrids.cells(rId,cInd).setValue('');
+                    alert('"'+cVal+'" is not a valid value. Please enter value between 0 and 999'); 
+                    window.setTimeout(function(){mygrids.selectCell(mygrids.getRowIndex(rId),cInd,false,false,true);},1);
+                    return true;
+                } else if(dType == 'Percentage'){
+                    cVal = cVal/100;
+                    mygrids.cells(rId,cInd).setValue(cVal.numberFormat("0.00%"));
+                } else if(dType == 'Currency'){
+                    cVal=cVal/1
+                    mygrids.cells(rId,cInd).setValue(cVal.numberFormat("$0,0.00"));
+                } else {
+                    cVal=cVal/1
+                    mygrids.cells(rId,cInd).setValue(cVal.numberFormat("#,#.00"));
+                }
+            }
+        }
+      if (stage == 2 && (cInd == 3 || cInd == 4)){
+          var tar = mygrids.cells(rId,3).getValue();
+          var act = mygrids.cells(rId,4).getValue();
+          var temp = mygrids.cells(rId,10).getValue();
+          if (temp == 'Percentage'){
+              tar=tar.slice(0,tar.length-1);
+              act=act.slice(0,act.length-1);
+          }
+          if (temp == 'Currency'){
+              tar=tar.slice(1,tar.length);
+              tar=tar.replace(/\,/g,'');
+              tar = parseFloat(tar,10);
+              act=act.slice(1,act.length);
+              act=act.replace(/\,/g,'');
+              act = parseFloat(act,10);
+          } else {
+              tar=tar.replace(/\,/g,'');
+              tar = parseFloat(tar,10);
+              act=act.replace(/\,/g,'');
+              act = parseFloat(act,10);
+          }
+          var variance = (act - tar)/tar;
+          console.log('Varience::'+variance);
+          var rating = act/tar;
+          if (tar != null && act != null){
+             // if (temp == 'Percentage'){
+             //     variance = variance/100;
+                  mygrids.cells(rId,5).setValue(variance.numberFormat("0%"));
+             // } else if (temp == 'Currency'){
+             //     variance = variance/1;
+             //     mygrids.cells(rId,5).setValue(variance.numberFormat("$0,0.00"));
+             // } else {
+             //     mygrids.cells(rId,5).setValue(variance.numberFormat("#,#.00"));
+             // }
+              /*if (rating > 0.99){
+                  mygrids.cells(rId,6).setCValue('<img src="/resource/varianceImages/arrow-up.png">');
+                  return true;
+              } else if(rating < 0.90){
+                  mygrids.cells(rId,6).setCValue('<img src="/resource/varianceImages/arrow-down.png">');
+                  return true;
+              } else {
+                  mygrids.cells(rId,6).setCValue('<img src="/resource/varianceImages/isomorphic.png">');
+                  return true;
+              }*/
+          } else if (tar == '' && act != '') {
+            mygrids.cells(rId,5).setValue(null);
+            mygrids.cells(rId,6).setValue('NR');
+          } else if (tar == '' && act == '') {
+            mygrids.cells(rId,5).setValue(null);
+            mygrids.cells(rId,6).setValue(null);
+          } else if (tar != '' && act == '') {
+            mygrids.cells(rId,5).setValue(null);
+            mygrids.cells(rId,6).setValue(null);
+          }
+      }
+      hidePopup();
+      if(stage==1){
+          showPopGrid(mygrids.cells(rId,cInd).cell);
+      }
+     
+      return true;
+   }   
+   
+   
+   function callTargets(hidd1,hidd2){  
+        
+       mygrids.editStop();
+       document.getElementById(hidd1).value = mygrids.getChangedRows(true);            
+       mygrids.setSerializableColumns("true,false,true,true,true,true,false,true,true,true");
+       mygrids.xml.cell_attrs.push("Id");     
+        document.getElementById(hidd2).value =  mygrids.serialize();
+   }
+   
+  function onEdit(){
+  
+            var days= prompt("Enter Number Of Days", "");
+            if (days!= null) {
+            
+           if(!isNaN(parseFloat(days)) && isFinite(days)){
+            document.getElementById('{!$Component.targetcomp_id:targetComp:theform:closedDay}').value = days; 
+             window.location.href = window.location.href ;
+             SaveIMReportForDueDate();
+           }else{
+             alert('Please enter valid number');
+     
+           }           
+           
+            }
+ 
+ }
+ 
+ var test="Please enter valid value";
+ 
+ var  myPop3= new dhtmlXPopup({
+            mode: "right"
+        });
+        
+ function showPopGrid(ins){
+    if (myPop3.isVisible()) {
+        myPop3.hide();
+    } else {    
+        myPop3.attachHTML(test);
+        var x = getAbsoluteLeft(ins); 
+        var y = getAbsoluteTop(ins);
+        var w = ins.offsetWidth;
+        var h = ins.offsetHeight;
+        myPop3.show(x, y, w, h);
+    }
+ }
+
+
+ myPop3.attachEvent("onContentClick", function(){ myPop3.hide();});
+    function hidePopup(){
+        if(myPop3.isVisible())
+        myPop3.hide();
+ }
+ 
+ function addLoadEvent(func) {
+      var oldonload = window.onload;
+      if (typeof window.onload != 'function') {
+        window.onload = func;
+      } else {
+        window.onload = function() {
+          if (oldonload) {
+            oldonload();
+          }
+          func();
+        }
+      }
+    }
+ addLoadEvent(dispIndicatorsTargetGrid);
+
+</script> 
+
+<script>
+
+ var  myPop4= new dhtmlXPopup({
+            mode: "down"
+        });
+        var myForm4;
+        
+ function showNarative(ins){
+        
+        
+        myForm4= myPop4.attachForm([{
+            type: "block",
+            style: "margin: 10px 20px 10px 0px;",
+            list: [{
+                type: "settings",
+                position: "label-left",
+                inputWidth: 800,
+                inputHeight:200
+            }, {
+           
+                type: "input",
+                label:"" ,
+                name: "test",
+                value:document.getElementById('{!$Component.targetcomp_id:targetComp:theform:narativeValue}').value,
+                rows: 10        
+                  } ]
+            }]);
+        
+        
+        
+        
+    if (myPop4.isVisible()) {
+        myPop4.hide();
+    } else {    
+       
+        //myPop4.attachHTML(document.getElementById('{!$Component.targetcomp_id:targetComp:theform:narativeValue}').value);
+        var x = getAbsoluteLeft(ins); 
+        var y = getAbsoluteTop(ins);
+        var w = ins.offsetWidth;
+        var h = ins.offsetHeight;
+        myPop4.show(x, y,w,h);
+      
+    }
+    
+  
+    }
+
+
+function hidePopupNarative(){
+if(myPop4.isVisible())
+ myPop4.hide();
+}
+
+
+
+</script>
+
+
+
+
+
+  <script>
+
+ 
+    var myPop;
+    var myPop2;
+    var myPop3;
+    var myForm1;
+    var myForm;
+    window.dhx_globalImgPath = "{!URLFOR($Resource.dhtmlCombo, 'codebase/imgs/')}";
+    var myIds = {
+        "extended": "Please select # of weeks to extend."
+    };
+ 
+ 
+    function showPopup(inp) {
+        if (!myPop) {
+            myPop = new dhtmlXPopup({
+                mode: "right"
+            });
+         
+            myForm = myPop.attachForm([{
+                type: "block",
+                style: "margin: 10px 20px 10px 0px;",
+                list: [{
+                    type: "settings",
+                    position: "label-left",
+                    labelWidth: 80,
+                    inputWidth: 100
+                }, 
+                {           
+                    type: "combo",
+                    label: "Extend By",
+                    name: "extended",
+                    options: [{
+                                text: "2 Weeks",
+                                value: "14",
+                                selected: true                           
+                            },{
+                                text: "4 Weeks",
+                                value: "28"
+                            }, {
+                                text: "6 Weeks",
+                                value: "42"
+                            }, {
+                                text: "8 Weeks",
+                                value: "56"
+                            }]
+                             
+                      }, {
+                    type: "button",
+                    name: "proceed",
+                    value: "Save",
+                    offsetTop: 10,
+                    offsetLeft: 165
+                }]
+                }]);
+            myForm.attachEvent("onFocus", function(name) {
+                if (!myIds[name])
+                    return;
+                if (!myPop2) {
+                    var id2 = [];
+                    for (var a in myIds)
+                        id2.push(a);
+                    myPop2 = new dhtmlXPopup({
+                        form: myForm,
+                        id: id2
+                    });
+                }
+                myPop2.attachHTML("<div style='margin: 5px 10px;'>" + myIds[name] + "</div>");
+                myPop2.show(name);
+            });
+            
+            myForm.attachEvent("onBlur", function(name) {
+                if (myPop2)
+                    myPop2.hide();
+            });
+            myForm.attachEvent("onButtonClick", function(name) {
+                if (name == "proceed") {
+                //alert('extended ' +myForm.getCombo("extended").getSelectedValue());
+                 document.getElementById('{!$Component.targetcomp_id:targetComp:theform:closedDay}').value = myForm.getCombo("extended").getSelectedValue();
+                 SaveIMReportForDueDate();
+                 myPop.hide();                              
+                 return;
+                }
+                 callGoAction();
+            });
+        }
+        if (myPop.isVisible()) {
+            myPop.hide();
+        } else {
+            var x = getAbsoluteLeft(inp);
+            var y = getAbsoluteTop(inp);
+            var w = inp.offsetWidth;
+            var h = inp.offsetHeight;
+            myPop.show(x, y, w, h);
+        }
+    }
+
+    function showPopup1(inp) {
+    
+    if (!myPop) {
+            myPop = new dhtmlXPopup({
+                mode: "right"
+            });
+         
+            myForm = myPop.attachForm([{
+                type: "block",
+                style: "margin: 10px 20px 10px 0px;",
+                list: [{
+                    type: "settings",
+                    position: "label-left",
+                    labelWidth: 80,
+                    inputWidth: 100
+                },
+                {           
+                    type: "label",
+                    label: "Please provide the reason for rejection or ESC to Cancel",
+                    offsetLeft: 0
+                }, 
+                {           
+                    type: "input",
+                    name: "reason",
+                    inputWidth: 400,
+                    inputHeight: 25,
+                    value: ""
+                }, 
+                {   type: "button",
+                    name: "proceed",
+                    value: "Save",
+                    offsetTop: 10,
+                    offsetLeft: 160
+                }]
+                }]);
+                
+            myForm.attachEvent("onFocus", function(name) {
+                if (!myIds[name])
+                    return;
+                if (!myPop2) {
+                    var id2 = [];
+                    for (var a in myIds)
+                        id2.push(a);
+                    myPop2 = new dhtmlXPopup({
+                        form: myForm,
+                        id: id2
+                    });
+                }
+                myPop2.attachHTML("<div style='margin: 5px 10px;'>" + myIds[name] + "</div>");
+                myPop2.show(name);
+            });
+            
+            myForm.attachEvent("onBlur", function(name) {
+                if (myPop2)
+                    myPop2.hide();
+            });
+            
+            myForm.attachEvent("onButtonClick", function(name) {
+                if (name == "proceed") {
+                    document.getElementById('{!$Component.targetcomp_id:targetComp:theform:rejectReasonid}').value = myForm.getInput("reason").value;
+                    var value = myForm.getInput("reason").value;
+                    if(value.length == 0){
+                        myPop.show();
+                        myForm.setFocusOnFirstActive();
+                    } else {
+                        SaveReject();
+                        myPop.hide();                              
+                        return;
+                    }
+                   
+                }
+                 callGoAction();
+            });
+            
+            myPop.attachEvent("onShow", function() {
+            myForm.setFocusOnFirstActive();
+            });
+        }
+        if (myPop.isVisible()) {
+            myPop.hide();
+        } else {
+            var x = getAbsoluteLeft(inp);
+            var y = getAbsoluteTop(inp);
+            var w = inp.offsetWidth;
+            var h = inp.offsetHeight;
+            myPop.show(x, y, w, h);
+        }
+    }
+function OnPublish(hidd1,hidd2){
+    callTargets(hidd1,hidd2);
+    onPublish();
+}
+function OnInternalApproval(hidd1,hidd2){
+    callTargets(hidd1,hidd2);
+    onInternalApproval();
+}
+function OnSubmit(hidd1,hidd2){
+ 
+       
+           var conVal=  confirm('Please ensure all relevant sections are completed before submitting. \n\n     1. Narratives \n     2. Indicator Results \n     3. Notes & Attachments \n\n Do you want to continue?');    
+           if(conVal == true){
+            callTargets(hidd1,hidd2);
+            onSubmit();
+           }else {
+             //document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periods}').value=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periodvalue}').value; 
+             //callReportCancel(); 
+           }
+         
+   }
+ 
+
+
+ function OnReportChange(){
+ 
+  //alert('Inside On Reportchange');
+  
+  var repStatus = document.getElementById('{!$Component.targetcomp_id:targetComp:theform:partnerRepStatus}').value; 
+ 
+
+  // alert('repStatus '  +repStatus );
+  //if({!$Profile.Name !='Mission Partner'} ||({!$Profile.Name =='Mission Partner'} && repStatus !='Draft')){
+  if({!isMissionPartnerUser == false} ||({!isMissionPartnerUser== true} && repStatus !='Draft')){
+       mygrids.editStop(); 
+       
+      if( mygrids.getChangedRows(true) != '') {         
+           var conVal=  confirm('Do you want to continue without saving the changes?');    
+           if(conVal == true){
+            // callNoChanged();
+             document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periodvalue}').value=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periods}').value; 
+         document.getElementById('{!$Component.targetcomp_id:targetComp:theform:selectedPeriod}').value=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periods}').value; 
+             
+           }else {
+             document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periods}').value=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periodvalue}').value; 
+             //callReportCancel(); 
+           }
+         }else{
+         document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periodvalue}').value=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periods}').value; 
+         document.getElementById('{!$Component.targetcomp_id:targetComp:theform:selectedPeriod}').value=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periods}').value; 
+             
+        // callNoChanged();
+         }     
+         }else{
+            document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periodvalue}').value=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periods}').value; 
+         document.getElementById('{!$Component.targetcomp_id:targetComp:theform:selectedPeriod}').value=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:periods}').value; 
+             
+         }
+         
+       //  alert('EOF');
+   }
+ 
+    function OnTaskChange(){
+    var repStatus = document.getElementById('{!$Component.targetcomp_id:targetComp:theform:partnerRepStatus}').value; 
+ 
+ 
+  
+ // if({!$Profile.Name !='Mission Partner'} ||({!$Profile.Name =='Mission Partner'} && repStatus !='Draft')){
+ if({!isMissionPartnerUser == false} ||({!isMissionPartnerUser== true} && repStatus !='Draft')){
+       mygrids.editStop();  
+      if( mygrids.getChangedRows(true) != '') {
+           var conVal=  confirm('Do you want to continue without saving the changes?');    
+           if(conVal == true){         
+            //callNoChanged();
+            document.getElementById('{!$Component.targetcomp_id:targetComp:theform:taskvalue}').value=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:taskSelect}').value; 
+        
+           }else {
+             document.getElementById('{!$Component.targetcomp_id:targetComp:theform:taskSelect}').value=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:taskvalue}').value; 
+             //callTaskCancel();
+           }
+         }else{
+        // callNoChanged();
+         document.getElementById('{!$Component.targetcomp_id:targetComp:theform:taskvalue}').value=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:taskSelect}').value; 
+        
+         } }else{
+              document.getElementById('{!$Component.targetcomp_id:targetComp:theform:taskvalue}').value=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:taskSelect}').value; 
+        
+         }    
+   }
+ 
+ 
+ 
+    function OnEdit(){
+       
+      var isEdt=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:idEditVal}').value; 
+      if(isEdt == "false"){
+        //document.getElementById('{!$Component.targetcomp_id:targetComp:theform:idEditVal}').value=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:taskvalue}').value=true;
+        document.getElementById('{!$Component.targetcomp_id:targetComp:theform:idEditVal}').value="true";
+        }
+      else{
+        //document.getElementById('{!$Component.targetcomp_id:targetComp:theform:idEditVal}').value=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:taskvalue}').value=false;
+       document.getElementById('{!$Component.targetcomp_id:targetComp:theform:idEditVal}').value="false";
+        }
+       // alert(document.getElementById('{!$Component.targetcomp_id:targetComp:theform:idEditVal}').value);
+      return;
+   }
+ 
+   function onReject() {
+       var isRej=document.getElementById('{!$Component.targetcomp_id:targetComp:theform:idRejectVal}').value; 
+       if(isRej == "false"){
+        document.getElementById('{!$Component.targetcomp_id:targetComp:theform:idRejectVal}').value="true";
+        }
+      else{
+       document.getElementById('{!$Component.targetcomp_id:targetComp:theform:idRejectVal}').value="false";
+        }
+      alert('Reject Reason');  
+      alert(document.getElementById('{!$Component.targetcomp_id:targetComp:theform:idRejectVal}').value);
+      return;
+   }
+ 
+</script>
+<script>
+ var test;
+    var  myPop4= new dhtmlXPopup({
+        mode: "top"
+    });
+    function showPopGrid1(ins){
+    
+        if (myPop4.isVisible()) {
+            myPop4.hide();
+        } else {    
+            myPop4.attachHTML("Please click Go to refresh Indicator Results");
+            var x = getAbsoluteLeft(ins); 
+            var y = getAbsoluteTop(ins);
+            var w = ins.offsetWidth;
+            var h = ins.offsetHeight;
+            myPop4.show(x, y, w, h);
+        }
+    }
+    myPop4.attachEvent("onMouseOut", function(){ myPop4.hide();});
+    function hidePopup(){
+        if(myPop4.isVisible())
+        myPop4.hide();
+    }
+ 
+ 
+</script>
+
+
+<apex:outputPanel id="EmptyBlock"></apex:outputPanel>
+
+<apex:outputPanel id="theBlock" style="background-color:#FAFAFA;" > 
+ 
+ <apex:outputPanel rendered="{!ShowErrors =='true'}">
+    <br></br>
+    <apex:pagemessages />   
+ </apex:outputPanel>     
+    <br></br>
+
+<apex:form id="theform" target="DO_IR_Reporting_Periods" >
+
+
+
+    <apex:actionFunction name="loadInitialReportPeriod" action="{!prepResultsTree}" oncomplete="renderReload()" reRender="theBlock,block" immediate="false" />
+  <apex:actionFunction name="callGoAction" action="{!prepResultsTreeChange}"  oncomplete="renderReload()" reRender="panel2" immediate="false"/>
+ 
+   <apex:actionFunction name="SaveIMReportForDueDate" action="{!saveIMReport}"  oncomplete="renderReload()" reRender="theBlock,block" immediate="false" />
+   <apex:actionFunction name="SaveReject" action="{!changeToReject}"   oncomplete="renderReload()" reRender="panel2" immediate="false" />
+   
+   
+   
+   <apex:actionFunction name="callNoChanged"  reRender="panel2" /> 
+   <apex:actionFunction name="callReportCancel" reRender="periods" />
+   <apex:actionFunction name="callTaskCancel"  reRender="taskSelect" />
+
+<!-- <apex:actionFunction name="onSubmit" action="{!changeToSubmit}" reRender="panel2" > -->
+<apex:actionFunction name="onSubmit" action="{!doSaveTargets}" status="counterStatus3" reRender="counterStatus3,EmptyBlock" oncomplete=" callGoAction();" >
+    <apex:Param name="pAction" value="Submit" assignTo="{!periodAction}"/>
+</apex:actionFunction>
+<apex:actionFunction name="onPublish" action="{!doSaveTargets}" status="counterStatus3" reRender="counterStatus3,EmptyBlock" oncomplete=" callGoAction();" >
+    <apex:Param name="pAction" value="Publish" assignTo="{!periodAction}"/>
+</apex:actionFunction> 
+<apex:actionFunction name="onInternalApproval" action="{!doSaveTargets}" status="counterStatus3" reRender="counterStatus3,EmptyBlock" oncomplete=" callGoAction();" >
+    <apex:Param name="pAction" value="Internal Approval" assignTo="{!periodAction}"/>
+</apex:actionFunction> 
+
+  <apex:inputHidden value="{!closedDate}" id="closedDay"/>
+  <apex:inputHidden value="{!changedRowIds}" id="changedRows"/>
+  <apex:inputHidden value="{!xmlStr}" id="savedXML"/>
+  <apex:inputHidden value="{!selectedTasks}" id="taskvalue"/> 
+  <apex:inputHidden value="{!selectedPeriod}" id="periodvalue"/> 
+  <apex:inputHidden value="{!isEdit}" id="idEditVal"/>
+  <apex:inputHidden value="{!rejectReason}" id="rejectReasonid"/>
+  <apex:inputHidden value="{!repPeriod.Narrative__c}" id="narativeValue"/> 
+  <apex:inputHidden value="{!repPeriod.Status__c}" id="partnerRepStatus"/>
+
+<apex:inputHidden value="{!enteredTargets}" id="enteredTargets"/>        
+           <apex:inputHidden value="{!selectedPeriod}" id="selectedPeriod"/>
+           <apex:inputHidden value="{!closedDate}" id="closedDate"/>
+           <apex:inputHidden value="{!repPeriod.id}" id="rptPeriod"/>
+
+<apex:pageBlock mode="maindetail"  rendered="{!IF(Periods==null && ShowErrors !='true',true,false)}" >  
+   
+   
+ <p style="color:#b52828; font-weight:bold; font-size:12px; font-family:Arial, Helvetica, Sans-Serif; margin:13px;text-align: center;">Reporting Periods are not defined for selected Implementing Mechanism</p> 
+ <div id="cbBouutons"  style="width:97%;height:50px;margin: 15px auto 0px auto; text-align: center;">        
+          <apex:commandButton value=" Cancel " action="{!CancelNGo}"  reRender="theform"  />          
+      </div>
+</apex:pageBlock>
+ <apex:pageBlock mode="maindetail"  rendered="{! Periods !=null && ShowErrors !='true' && isTaskExist==true && TasksForIM.size==0}" > 
+
+ <p style="color:#b52828; font-weight:bold; font-size:12px; font-family:Arial, Helvetica, Sans-Serif; margin:13px;text-align: center;">Tasks are not defined for selected Implementing Mechanism</p> 
+ <div id="cbBouutons"  style="width:97%;height:50px;margin: 15px auto 0px auto; text-align: center;">
+    
+        
+          <apex:commandButton value=" Cancel " action="{!CancelNGo}"  reRender="theform"  />
+          
+      </div>
+</apex:pageBlock>
+
+
+ <apex:outputPanel rendered="{!reportPeriodExist && (isTaskExist == false || (isTaskExist==true && TasksForIM.size>0)) }" >
+ 
+  
+  
+   <apex:actionRegion >     
+       <apex:outputLabel style="margin:13px; font-weight:bold;font-size:12px;width=25%;" value="Reporting Period: ">    
+        <apex:selectList id="periods" style="font-family: Arial, Verdana, sans-serif; font-size:11px;"  value="{!selectedPeriod}" onchange="OnReportChange();" onmousemove="showPopGrid1(this);"   multiselect="false"  size="1"  >
+         <apex:selectOptions value="{!Periods}" ></apex:selectOptions>
+        </apex:selectList>     
+      </apex:outputLabel>     
+      <apex:outputLabel rendered="{!isTaskExist}" style="margin:13px; font-weight:bold;font-size:12px;width=25%;" value="Task: ">    
+        <apex:selectList id="taskSelect" style="font-family: Arial, Verdana, sans-serif; font-size:11px;"  value="{!selectedTasks}"  onchange="OnTaskChange();" onmousemove="showPopGrid1(this);"  multiselect="false"  size="1"  >
+          <apex:selectOptions value="{!TasksForIM}" ></apex:selectOptions>          
+        </apex:selectList>     
+      </apex:outputLabel> 
+    <!-- <apex:commandButton value=" Go"   disabled="{!isEdit==true}" action="{!prepResultsTreeChange}" oncomplete="dispIndicatorsTargetGrid1('{!xmlStr}')" reRender="theBlock"/> -->
+    </apex:actionRegion>
+   <apex:outputText >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</apex:outputText>
+ <!--  <apex:commandButton value=" Go"   disabled="{!isEdit==true}" action="{!prepResultsTreeChange}" oncomplete="dispIndicatorsTargetGrid1('{!xmlStr}')" reRender="theBlock"/> -->
+   <apex:actionStatus startText=" Processing the stuff " stopText=" Done " id="counterStatus"  >
+         <apex:facet name="start" >Processing...
+          <img src="/apexpages/devmode/img/saveStatus.gif" />
+         </apex:facet>
+         <apex:facet name="stop">
+          <apex:commandButton title="Start"  disabled="{!isEdit==true || ShowErrors == 'true'}" value="Go" action="{!prepResultsTreeChange}" oncomplete="dispIndicatorsTargetGrid1('{!xmlStr}')" status="counterStatus" rerender="counterStatus,theBlock"> </apex:commandButton>
+         </apex:facet>
+        </apex:actionStatus>
+   
+   <apex:commandButton value=" Cancel " action="{!CancelNGo}"  reRender="theform" />
+   
+ 
+ 
+   <apex:outputPanel rendered="{!selectedPeriodName != null && ShowErrors != 'true'}"> 
+   
+    <p><span  style="color: rgb(1,91,167); font-weight:bold; font-size:12px; font-family:Arial, Helvetica, Sans-Serif; margin:13px;">
+              Establish Indicator Results for Reporting Period:
+             <span  style="color:#b52828;font-weight:bold; font-size:12px; font-family:Arial, Helvetica, Sans-Serif;">{!selectedPeriodName }
+   
+    <apex:outputpanel rendered="{!selectedTaskName != null}">
+         
+         <span  style="color: rgb(1,91,167); font-weight:bold; font-size:12px; font-family:Arial, Helvetica, Sans-Serif; "> and for Task:
+         <span  style="color:#b52828;font-weight:bold; font-size:12px; font-family:Arial, Helvetica, Sans-Serif;">{!selectedTaskName }</span>
+         </span>
+          </apex:outputpanel>
+        
+    </span>
+          </span></p>
+   
+   </apex:outputPanel>
+   
+ </apex:outputPanel>
+     
+    
+     <!-- 
+ <apex:pageBlock rendered="{!IF(ShowErrors == 'true',true,false) && reportPeriodExist}">
+     <span><b><apex:messages style="width:97%;margin: 10px auto 0px auto; text-align: center;color:#b52828"/></b></span> 
+     <div id="cbBouutons"  style="width:97%;margin: 10px auto 0px auto; text-align: center; " >
+        <apex:commandButton value="OK" action="{!CancelNGo}" rendered="theform" />
+   </div>
+ </apex:pageBlock>      
+-->
+
+  <apex:outputPanel rendered="{!hasTree  && reportPeriodExist && (isTaskExist == false || (isTaskExist==true && TasksForIM.size>0))}" >  
+
+ <apex:pageBlock mode="maindetail" >  
+ 
+       <br></br>
+       
+      
+ <apex:pageBlockSection showHeader="true" title="Overview" columns="1" rendered="true" > 
+ 
+ 
+ <!-- <apex:outputPanel rendered="{!$Profile.Name == 'Mission Partner'}">-->
+ <apex:outputPanel rendered="{!isMissionPartnerUser== true}">
+  <div style="width:100%">
+    <div  style="width:72%; float:left;" align="left">
+  <apex:commandButton value="Input Narrative" onclick="OnEdit();" title="Enter Narrative"  reRender="theBlock" immediate="false" rendered="{!isEdit==false && (isMissionPartnerUser== true && repPeriod.Status__c != 'Approved') }"/>
+   <apex:commandButton action="{!saveIMRptNarative}" value="Save" title="Save" oncomplete="dispIndicatorsTargetGrid1('{!xmlStr}')" reRender="theBlock" immediate="false" rendered="{!isEdit==true && (isMissionPartnerUser == true || IsADMINUser == true)}"/>
+   <apex:commandButton value="Cancel Narrative" onclick="OnEdit();" title="Cancel Save"  oncomplete="dispIndicatorsTargetGrid1('{!xmlStr}')" reRender="theBlock" immediate="false"  rendered="{!isEdit==true && (isMissionPartnerUser== true || IsADMINUser== true)}"/>
+          
+  </div>
+    <div  style="width:28%; float:left;" align="left">
+    
+  <apex:outputLabel rendered="{!isMissionPartnerUser== true  && repPeriod.Status__c =='Open'}" style="margin:10px; font-weight:bold;font-size:12px;width=25%;" value="Action:" />
+           <apex:commandButton disabled="{!isEdit==true}" action="{!null}" value="Submit" onclick="OnSubmit('{!$Component.changedRows}','{!$Component.savedXML}');" title="Submit Reporting Period" reRender="panel2" rendered="{!(repPeriod.Status__c == 'Open' || repPeriod.Status__c == 'Rejected') && isMissionPartnerUser== true  && isEdit==false }"/>     
+  
+            <apex:commandButton disabled="{!isEdit==true}" action="{!changeToPublish}" value="Publish" onclick=" callGoAction();" title="Publish"  reRender="panel2"  rendered="{!(IsPLTMissionUser== true || IsPLTUserOnly==true  || IsADMINUser== true) &&  repPeriod.Status__c == 'Draft'}"/>
+            
+            <apex:commandButton disabled="{!isEdit==true}" action="{!changeToClose}" value="Close" onclick=" callGoAction();" title="Close" reRender="panel2" rendered="{!(IsPLTMissionUser== true || IsPLTUserOnly==true  || IsADMINUser== true) && isAORCORExist==true && (repPeriod.Status__c == 'Draft')  }"/> 
+            <apex:commandButton disabled="{!isEdit==true}" action="{!changeToDraft}" value="Draft" onclick=" callGoAction();" title="Draft" reRender="panel2" rendered="{!(IsPLTMissionUser== true || IsPLTUserOnly==true  || IsADMINUser== true) && repPeriod.Status__c == 'Publish'}"/>
+            <apex:commandButton disabled="{!isEdit==true}" action="{!changeToOpen}" value="Open" onclick=" callGoAction();" title="Open" reRender="panel2" rendered="{!(IsPLTMissionUser== true || IsPLTUserOnly==true  || IsADMINUser== true) && repPeriod.Status__c == 'Publish' && repPeriod.Targets_Established__c == true}"/>            
+            <apex:commandButton disabled="{!isEdit==true}" action="{!null}" value="Extend"  title="Extend" onclick="showPopup(this);callGoAction();" reRender="panel2" immediate="false" rendered="{!(IsPLTMissionUser== true || IsPLTUserOnly==true  || IsADMINUser== true) && repPeriod.Status__c == 'Open' }"/> 
+            <apex:commandButton disabled="{!isEdit==true}" action="{!changeToApproved}" onclick=" callGoAction();" value="Approve" title="Approve" reRender="panel2" rendered="{!(IsPLTMissionUser== true || IsPLTUserOnly==true  || IsADMINUser== true) && isAORCORExist==true && repPeriod.Status__c == 'Submitted' }"/>
+            <apex:commandButton disabled="{!isEdit==true}" action="{!null}"  onclick="showPopup1(this);callGoAction();"  value="Reject" title="Reject" reRender="panel2" immediate="false" rendered="{!(IsPLTMissionUser== true || IsPLTUserOnly==true  || IsADMINUser== true) &&  isAORCORExist==true && repPeriod.Status__c == 'Submitted'}"/> 
+        
+  </div>
+  </div>
+  </apex:outputPanel> 
+  
+  
+                        
+                        
+ <apex:outputPanel rendered="{!isMissionPartnerUser == false}">
+  <div align="right" style="margin-right: 20%;">
+  <!-- <apex:commandButton value="Narrative" onclick="OnEdit();" title="Enter Narrative"  reRender="theBlock" immediate="false" rendered="{!isEdit==false && ($Profile.Name == 'Mission Partner') }"/>
+    <apex:commandButton action="{!saveIMRptNarative}" value="Save" title="Save" oncomplete="dispIndicatorsTargetGrid1('{!xmlStr}')" reRender="theBlock" immediate="false" rendered="{!isEdit==true && ($Profile.Name == 'Mission Partner' || $Profile.Name =='System Administrator(c)')}"/>
+   <apex:commandButton value="Cancel Narrative" onclick="OnEdit();" title="Cancel Save"  oncomplete="dispIndicatorsTargetGrid1('{!xmlStr}')" reRender="theBlock" immediate="false"  rendered="{!isEdit==true && ($Profile.Name == 'Mission Partner' || $Profile.Name =='System Administrator(c)')}"/>
+        --> 
+         
+          <apex:outputLabel rendered="{!repPeriod.Status__c !='Approved' && repPeriod.Status__c !='Closed' &&  isMissionPartnerUser == false}" style="margin:10px; font-weight:bold;font-size:12px;width=25%;" value="Action:"/>
+           <apex:commandButton disabled="{!isEdit==true}" action="{!null}" value="Submit" title="Submit Reporting Period" onclick="OnSubmit('{!$Component.changedRows}','{!$Component.savedXML}');" reRender="panel2" rendered="{!(repPeriod.Status__c == 'Open' || repPeriod.Status__c == 'Rejected') && isMissionPartnerUser== true  && isEdit==false }"/> 
+               
+           <apex:commandButton disabled="{!isEdit==true}" action="{!null}" value="Publish" title="Publish"  onclick="OnPublish('{!$Component.changedRows}','{!$Component.savedXML}');" reRender="panel2"  rendered="{!(IsPLTMissionUser== true || IsPLTUserOnly==true  || IsADMINUser== true) &&  repPeriod.Status__c == 'Draft'}"/>
+           <apex:commandButton disabled="{!isEdit==true}" action="{!null}" value="Internal Approval" title="Internal Approval"  onclick="OnInternalApproval('{!$Component.changedRows}','{!$Component.savedXML}');" reRender="panel2"  rendered="{!(isAORCORExist==true  || IsADMINUser== true)&& repPeriod.Status__c == 'Draft'}"/>
+          <!-- <apex:commandButton disabled="{!isEdit==true}" action="{!changeToImported}" value="Internal Approval" title="Internal Approval" onclick=" callGoAction();" reRender="panel2" rendered="{!repPeriod.Status__c == 'Draft'}" /> -->
+           <!-- <apex:commandButton disabled="{!isEdit==true}" action="{!changeToPublish}" value="Publish" title="Publish"  onclick=" callGoAction();" reRender="panel2"  rendered="{!(IsPLTMissionUser== true || IsPLTUserOnly==true  || IsADMINUser== true) &&  repPeriod.Status__c == 'Draft'}"/> -->
+          <!--  <apex:commandButton disabled="{!isEdit==true}" action="{!changeToClose}" value="Close" title="Close" onclick=" callGoAction();" reRender="panel2" rendered="{!(IsPLTMissionUser== true || IsPLTUserOnly==true  || IsADMINUser== true) &&  isAORCORExist==true && (repPeriod.Status__c == 'Draft')  }"/> -->
+            <apex:commandButton disabled="{!isEdit==true}" action="{!changeToDraft}" value="Draft" title="Draft" onclick=" callGoAction();" reRender="panel2" rendered="{!(IsPLTMissionUser== true || IsPLTUserOnly==true  || IsADMINUser== true) && repPeriod.Status__c == 'Publish'}"/>
+           <!-- <apex:commandButton disabled="{!isEdit==true}" action="{!changeToOpen}" value="Open" title="Open" onclick=" callGoAction();" reRender="panel2" rendered="{!(IsPLTMissionUser== true || IsPLTUserOnly==true  || IsADMINUser== true) && repPeriod.Status__c == 'Publish' && repPeriod.Targets_Established__c == true}"/> -->
+           <apex:commandButton disabled="{!isEdit==true}" action="{!changeToOpen}" value="Open" title="Open" onclick=" callGoAction();" reRender="panel2" rendered="{!(IsPLTMissionUser== true || IsPLTUserOnly==true  || IsADMINUser== true) && repPeriod.Status__c == 'Publish' }"/>            
+            <apex:commandButton disabled="{!isEdit==true}" action="{!null}" value="Extend"  title="Extend"  onclick="showPopup(this);callGoAction();" reRender="panel2" immediate="false" rendered="{!(IsPLTMissionUser== true || IsPLTUserOnly==true  || IsADMINUser== true) && repPeriod.Status__c == 'Open' }"/> 
+            <apex:commandButton disabled="{!isEdit==true}" action="{!changeToApproved}" value="Approve" onclick=" callGoAction();" title="Approve" reRender="panel2" rendered="{!(IsPLTMissionUser== true || IsPLTUserOnly==true  || IsADMINUser== true) &&  isAORCORExist==true && repPeriod.Status__c == 'Submitted' }"/>
+            <apex:commandButton disabled="{!isEdit==true}" action="{!null}"  onclick="showPopup1(this);callGoAction();"  value="Reject" title="Reject" reRender="panel2" immediate="false" rendered="{!(IsPLTMissionUser== true || IsPLTUserOnly==true  || IsADMINUser== true) && isAORCORExist==true &&  repPeriod.Status__c == 'Submitted'}"/> 
+        
+         </div>   
+   </apex:outputPanel> 
+  
+   
+  <apex:pageBlockSection showHeader="false" title="Reporting Period Overview" columns="3" rendered="true" >
+            
+                       <apex:pageBlockSectionItem >   
+                             <apex:outputLabel value="Timeframe" for="theDate"/>
+                                <apex:outputPanel style=" margin:10px;">
+                                   <apex:outputField value="{!repPeriod.Start_Date__c}" id="theDate"/> -  <apex:outputField value="{!repPeriod.End_Date__c}"/>            
+                                </apex:outputPanel>                    
+                       </apex:pageBlockSectionItem> 
+                                     
+                        <apex:outputField value="{!repPeriod.Status__c}"/>                  
+                        <apex:outputField value="{!repPeriod.Close_Date__c}" />  
+            
+             </apex:pageBlockSection>
+             
+            
+        <apex:pageBlockSection showHeader="false" title="Narrative" columns="1" rendered="true" >      
+            
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Partner Narrative"/>
+                <apex:outputPanel rendered="{!isMissionPartnerUser == true  || (repPeriod.Status__c != 'Open' && isMissionPartnerUser == false)}">                      
+                      <apex:outputText value="{!repPeriod.Narrative__c}" rendered="{!isEdit==false && narative == null}" />                   
+                      <apex:outputLink value="javascript: void(0)" onmousemove="showNarative(this);" id="theLink" rendered="{!isEdit==false && narative != null}">{!narative}</apex:outputLink>
+                      <apex:inputField id="narative" style="width:90%;" value="{!repPeriod.Narrative__c}" rendered="{!isEdit==true}"/>
+                </apex:outputPanel>
+                
+            </apex:pageBlockSectionItem>         
+        
+        </apex:pageBlockSection> 
+        <apex:pageBlockSection showHeader="false" title="Reject Reason" columns="1" rendered="true" >      
+            
+            <apex:pageBlockSectionItem rendered="{!repPeriod.Reason__c != Null}">
+                <apex:outputLabel value="Reject Reason"/>
+                <apex:outputPanel >                      
+                      <apex:outputText value="{!repPeriod.Reason__c}" rendered="{!repPeriod.Reason__c != Null}" />                   
+                      <!--<apex:outputLink value="javascript: void(0)" onmousemove="showNarative(this);" id="theLink" rendered="{!repPeriod.Status__c == 'Rejected'}">{!repPeriod.Reason__c}</apex:outputLink>-->
+                </apex:outputPanel>
+                
+            </apex:pageBlockSectionItem>         
+        
+        </apex:pageBlockSection>
+                      
+    </apex:pageBlockSection>   
+  
+   <apex:pageBlock rendered="{!repPeriod.Status__c == 'Draft' && isMissionPartnerUser== true }">
+     <span><p style="color: rgb(1,91,167); font-weight:bold; font-size:12px; font-family:Arial, Helvetica, Sans-Serif; margin:13px; text-align: center;">Reporting Period is in Draft Status</p>
+     <!--<div id="cbBouutons1"  style="width:97%;margin: 10px auto 0px auto; text-align: center;">
+        <apex:commandButton value="OK" action="{!Cancel}"  rendered="true"/>
+    </div>-->
+    </span> 
+   </apex:pageBlock>
+   
+    
+     <apex:pageBlockSection title="Indicator Results"  columns="1"  rendered="{!isEdit==false && (repPeriod.Status__c != 'Draft' || isMissionPartnerUser == false)}">
+          <apex:pageBlock mode="maindetail" >      
+              <div align="center">
+             <!--  <apex:commandButton disabled="{!isEdit==true}" style="align:right" value="  Save  "  reRender="EmptyBlock" action="{!doSaveTargets}" onclick="callTargets('{!$Component.changedRows}','{!$Component.savedXML}')"   rendered="{!repPeriod.Status__c != 'Draft' || $Profile.Name != 'Mission Partner'}">
+                      <apex:Param name="buttonId" value="saveIMResult" assignTo="{!buttonId}"/>
+                  </apex:commandButton>       
+                  <apex:commandButton style="align:right" disabled="{!isEdit==true}" value=" Clear" action="{!null}"  onclick="dispIndicatorsTargetGrid1('{!xmlStr}')" reRender="EmptyBlock"  rendered="{!repPeriod.Status__c != 'Draft' || $Profile.Name != 'Mission Partner'}"/>
+           -->  
+           
+           <apex:outputLabel rendered="{!repPeriod.Status__c == 'Publish' && isMissionPartnerUser == true }" style="text-align:left;color:Red; overflow:auto; font-family:Helvetica, sans-serif; font-size:9pt; font-weight:bold;" value="Actuals can be recorded only when status is Open"/>
+      <!--
+<apex:actionStatus startText=" Processing the stuff " stopText=" Done " id="counterStatus1" rendered="{!$Profile.Name != 'Mission Partner' ||( repPeriod.Status__c != 'Publish' && $Profile.Name == 'Mission Partner' )}" >
+         <apex:facet name="start" >Processing...
+          <img src="/apexpages/devmode/img/saveStatus.gif" />
+         </apex:facet>
+         <apex:facet name="stop">
+          <apex:commandButton disabled="{!isEdit==true}" style="align:right" value="  Save  "  status="counterStatus1" reRender="counterStatus1,EmptyBlock" action="{!doSaveTargets}" onclick="callTargets('{!$Component.changedRows}','{!$Component.savedXML}')" oncomplete=" callGoAction();"  rendered="{!repPeriod.Status__c != 'Draft' || $Profile.Name != 'Mission Partner'}">
+                      <apex:Param name="buttonId" value="saveIMResult" assignTo="{!buttonId}"/>
+                  </apex:commandButton>   
+         </apex:facet>
+        </apex:actionStatus> 
+        
+    <apex:actionStatus startText=" Processing the stuff " stopText=" Done " id="counterStatus2"  rendered="{!$Profile.Name != 'Mission Partner' ||( repPeriod.Status__c != 'Publish' && $Profile.Name == 'Mission Partner' )}">
+         <apex:facet name="start" >Processing...
+          <img src="/apexpages/devmode/img/saveStatus.gif" />
+         </apex:facet>
+         <apex:facet name="stop">
+          <apex:commandButton style="align:right" disabled="{!isEdit==true}" value=" Clear" action="{!null}"  onclick="dispIndicatorsTargetGrid1('{!xmlStr}')" status="counterStatus2" reRender="counterStatus2,EmptyBlock"  rendered="{!repPeriod.Status__c != 'Draft' || $Profile.Name != 'Mission Partner'}"/>
+         </apex:facet>
+        </apex:actionStatus> 
+              -->
+               </div>
+            <div id="gridboxS" style="width:96%;height:450px;margin: 15px auto 0px auto;" > </div> 
+            
+            <div align="center">
+           <!--     <apex:commandButton disabled="{!isEdit==true}" style="align:right" value="  Save  "  reRender="theform" action="{!doSaveTargets}" onclick="callTargets('{!$Component.changedRows}','{!$Component.savedXML}')" rendered="{!repPeriod.Status__c != 'Draft' || $Profile.Name != 'Mission Partner'}">
+                      <apex:Param name="buttonId" value="saveIMResult" assignTo="{!buttonId}"/>
+                  </apex:commandButton>       
+                  <apex:commandButton style="align:right" disabled="{!isEdit==true}" value=" Clear" action="{!null}"  onclick="dispIndicatorsTargetGrid1('{!xmlStr}')" reRender="EmptyBlock"  rendered="{!repPeriod.Status__c != 'Draft' || $Profile.Name != 'Mission Partner'}"/>
+              -->
+         <br></br>
+      <!--   <apex:actionStatus startText=" Processing the stuff " stopText=" Done " id="counterStatus3" rendered="{(!isMissionPartnerUser== true repPeriod.Status__c != 'Submitted')  ||( repPeriod.Status__c != 'Publish' && isMissionPartnerUser == false )}" >
+         <apex:facet name="start" >Processing...
+          <img src="/apexpages/devmode/img/saveStatus.gif" />
+         </apex:facet>
+         {!isPLTReadOnlyUser}
+         <apex:facet name="stop">
+          <apex:commandButton disabled="{!isEdit==true}" rendered="{! isPLTReadOnlyUser == false && ( (repPeriod.Status__c != 'Draft' && repPeriod.Status__c != 'Publish') || isMissionPartnerUser == false) }" style="align:right" value="  Save  "  status="counterStatus3" reRender="counterStatus3,EmptyBlock" action="{!doSaveTargets}" oncomplete=" callGoAction();" onclick="callTargets('{!$Component.changedRows}','{!$Component.savedXML}')"   >
+                      <apex:Param name="buttonId" value="saveIMResult" assignTo="{!buttonId}"/>
+                  </apex:commandButton>   
+         </apex:facet>
+        </apex:actionStatus> -->
+        
+        
+         <apex:actionStatus startText=" Processing the stuff " stopText=" Done " id="counterStatus3" rendered="{!(isMissionPartnerUser == false && repPeriod.Status__c == 'Draft'  ) ||( (repPeriod.Status__c != 'Draft' && repPeriod.Status__c != 'Publish' && repPeriod.Status__c != 'Submitted' ) && isMissionPartnerUser== true  )}" >
+         <apex:facet name="start" >Processing...
+          <img src="/apexpages/devmode/img/saveStatus.gif" />
+         </apex:facet>
+         <apex:facet name="stop">
+          <apex:commandButton style="align:right" disabled="{!isEdit==true}" value=" Save" status="counterStatus3" reRender="counterStatus3,EmptyBlock" action="{!doSaveTargets}" oncomplete=" callGoAction();" onclick="callTargets('{!$Component.changedRows}','{!$Component.savedXML}')" >
+                      <apex:Param name="buttonId" value="saveIMResult" assignTo="{!buttonId}"/>
+                  </apex:commandButton>   
+         </apex:facet>
+        </apex:actionStatus>
+        
+    <apex:actionStatus startText=" Processing the stuff " stopText=" Done " id="counterStatus4" rendered="{!(isMissionPartnerUser == false && repPeriod.Status__c == 'Draft'  ) ||( (repPeriod.Status__c != 'Draft' && repPeriod.Status__c != 'Publish' && repPeriod.Status__c != 'Submitted' ) && isMissionPartnerUser== true  )}" >
+         <apex:facet name="start" >Processing...
+          <img src="/apexpages/devmode/img/saveStatus.gif" />
+         </apex:facet>
+         <apex:facet name="stop">
+          <apex:commandButton style="align:right" disabled="{!isEdit==true}" value=" Clear" action="{!null}"  onclick="dispIndicatorsTargetGrid1('{!xmlStr}')" status="counterStatus4" reRender="counterStatus4,EmptyBlock"  rendered="{!repPeriod.Status__c != 'Draft' || isMissionPartnerUser ==false}"/>
+         </apex:facet>
+        </apex:actionStatus>
+               
+              
+              
+               
+               
+               </div>
+     
+            </apex:pageBlock>              
+     
+        </apex:pageBlockSection> 
+         
+      
+      
+   </apex:pageBlock>   
+</apex:outputPanel>
+</apex:form>
+ <apex:relatedList subject="{!repPeriod}"  rendered="{! reportPeriodExist && (isTaskExist == false || (isTaskExist==true && TasksForIM.size>0)) && ShowErrors != 'true'}" pageSize="30"  list="NotesAndAttachments"/> 
+</apex:outputPanel>
+<!--<c:RelatedListComponent rendered="{! reportPeriodExist && (isTaskExist == false || (isTaskExist==true && TasksForIM.size>0)) && ShowErrors != 'true'}" bTitle="NOTES AND ATTACHMENTS" parentObj="{!repPeriod}"  pId="{!repPeriod.id}" parentName="Reporting_Period__c"  rowValue=""  parentWhereColName="Reporting_Period__c" relatedListName=""   childName="" fSetName=""  newActionUrl="" editActionUrl="/" parentUrl="apex/vfIMBasicDetailFactSheet?id="/> -->
+
+
+
+</apex:component>

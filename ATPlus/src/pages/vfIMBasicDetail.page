@@ -1,0 +1,284 @@
+<apex:page standardController="Implementing_Mechanism__c" extensions="clsIMEditController,ClsTabController,ClsUserProfileFinder" tabStyle="Project_Implementation__tab" id="IMPage" action="{!doAction}" sidebar="false">
+  <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+      <apex:stylesheet value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxtabbar.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxcommon.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxtabbar.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxtabbar_start.js')}" />
+
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgridcell.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/dhtmlxtreegrid.js')}" /> 
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_group.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_splt.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/excells/dhtmlxgrid_excell_link.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_selection.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_lines.js')}" /> 
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid_skins.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/skins/dhtmlxgrid_dhx_skyblue.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxcontainer.js')}" />
+
+<style>
+    div.gridbox_dhx_skyblue table.obj tr td{font-family:Tahoma; font-size:11px; border-width: 1px 1px 1px 1px; border-color : #FDFDFD #A4BED4 #A4BED4 #FDFDFD;}
+    div.gridbox_dhx_skyblue table.hdr td { Font-size:12px; font-family:Trebuchet MS;}
+    div.gridbox_dhx_skyblue table.obj tr td{ font-size:12px; font-family:Trebuchet MS;}
+    .dhx_combo_select, .gridbox_dhx_skyblue .dhx_combo_edit, .gridbox_dhx_skyblue .dhx_textarea{ font-size:12px;}
+    .bPageBlock .detailList .labelCol { width:9%; }
+    .bPageBlock .detailList .dataCol { width:25%; }
+    div.gridbox_dhx_skyblue table.obj tr td { font-family: Arial, Verdana, sans-serif; font-size:11px; }
+    div.gridbox_dhx_skyblue table.hdr td { font-family:Arial, Verdana, sans-serif; font-size:12px; }
+    body .bPageTitle { padding:0 0 0;}
+    a {color:#1797C0; font-size:11px; font-weight:bold;}
+    span ul li {   list-style: none; color: #b52828; }
+    element.style {  text-align:left;}
+    div.gridbox table.obj td.group_row { background-color: #4B627F; border-color:#FDFDFD #A4BED4 #A4BED4 #FDFDFD; border-width:1px; color: #FFFFFF}
+    .colstyle {width:45%}
+</style>
+
+
+    <apex:sectionHeader title="{!$ObjectType.Implementing_Mechanism__c.label}" subtitle="{!Implementing_Mechanism__c.name}"/>
+   
+   
+   
+ 
+   <apex:tabPanel switchType="server"  id="IMPanel"  value="{!selectedTab}"  onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"  tabClass="activeTab" inactiveTabClass="inactiveTab">
+      <apex:tab label="Implementing Mechanism" name="IMDetails"   id="tabIMdetails" style="margin-left: -1px;" styleClass="activeTabBackground">
+      <apex:pageBlock mode="maindetail" id="IMPageBlock">
+      
+      <apex:pageBlockButtons location="top" >
+        <apex:form >
+          <!-- <apex:commandButton action="/apex/vfIMIndicatorResultsPage?id={!Implementing_Mechanism__c.id}" value="IM Indicator Results" />
+           
+           <apex:commandButton action="/apex/vfIMIndicatorPage?id={!Implementing_Mechanism__c.id}" value="IM Indicators" />
+          -->
+          <!-- <apex:commandButton action="{!edit}" value="Edit" rendered="{!$Profile.Name =='PLT - Mission Profile' || $Profile.Name =='System Administrator(c)' || $Profile.Name =='STD - AIDtracker Support' || $Profile.Name =='STD - Mission Profile'}"/>
+           <apex:commandButton action="/apex/vfIMTaskLogFrameLinkage?Lid={!Implementing_Mechanism__c.id}" value="LF Linkage" rendered="{!$Profile.Name =='PLT - Mission Profile'}"/>
+            <apex:commandButton action="{!delete}" value="Delete" rendered="{!$Profile.Name =='PLT - Mission Profile' || $Profile.Name =='STD - AIDtracker Support' || $Profile.Name =='STD - Mission Profile'}"/> -->
+            
+            <apex:commandButton action="{!edit}" value="Edit" rendered="{!$ObjectType['Implementing_Mechanism__c'].updateable}"/>
+           <apex:commandButton action="/apex/vfIMTaskLogFrameLinkage?Lid={!Implementing_Mechanism__c.id}" value="LF Linkage" rendered="{!IsPLTUserOnly || isPLTMissionUser}"/>
+            <apex:commandButton action="{!delete}" value="Delete" rendered="{!$ObjectType['Implementing_Mechanism__c'].deletable}"/>
+            
+           <!-- <apex:commandButton action="/apex/vfIndicatorSetup?{!Implementing_Mechanism__c.id}" value="Setup Indicator"/> -->
+            
+          <!--  <apex:commandButton value="Assign GLAAS Award" action="{!glassAwardPage}"  rendered="{!$Profile.Name =='PLT - Mission Profile' && Implementing_Mechanism__c.Award_Id__c == null}"/> 
+            
+            <apex:commandButton value="Reassign GLAAS Award" action="{!glassAwardPage}" rendered="{!$Profile.Name =='PLT - Mission Profile' && Implementing_Mechanism__c.Award_Id__c != null}"/> 
+            
+            <apex:commandButton value="View Financial Info" action="{!financialPage}" rendered="{!Implementing_Mechanism__c.Award_Id__c != null}"/> -->
+            
+            
+            <apex:commandButton value="Assign GLAAS Award" action="{!glassAwardPage}"  rendered="{!(isPLTMissionUser || IsPLTUserOnly) && Implementing_Mechanism__c.Award_Id__c == null}"/> 
+            
+            <apex:commandButton value="Reassign GLAAS Award" action="{!glassAwardPage}" rendered="{!(isPLTMissionUser || IsPLTUserOnly) && Implementing_Mechanism__c.Award_Id__c != null}"/> 
+            
+            <apex:commandButton value="View Financial Info" action="{!financialPage}" rendered="{!Implementing_Mechanism__c.Award_Id__c != null}"/>
+            
+        <!--    <apex:commandButton action="{!URLFOR($Action.Implementing_Mechanism__c.Setup_Indicators, Id)}" value="Manage IM Indicators" rendered="{!$Profile.Name =='PLT - Mission Profile'}"/>
+            <apex:commandButton action="{!URLFOR($Action.Implementing_Mechanism__c.Create_Rep_Period, Id)}" value="Create Rep. Period" rendered="{!Implementing_Mechanism__c.Reporting_Level__c == 'Implementing Mechanism'}"/> -->
+         <!-- <apex:commandButton action="{!Create_Rep_period}" value="Create Rep. Period" rendered="{!Implementing_Mechanism__c.Reporting_Level__c == 'Implementing Mechanism' && !Implementing_Mechanism__c.Reporting_Periods_Established__c}"/> -->
+        </apex:form>
+        </apex:pageBlockButtons>
+     
+        <apex:pageBlockSection showHeader="true" title="Basic Information" columns="2" >
+         <apex:facet name="header">        
+               <span class="pbSubExtra"><span class="requiredLegend">
+               <span class="requiredExampleOuter"></span>
+               <span class="requiredText"> <img src="{!$Resource.PublicIcon}" /> = Public Fields</span> </span></span>
+               <!--<h3>Basic Information</h3> -->
+               <h3>Overview</h3>
+         </apex:facet>
+            
+            <apex:outputField value="{!Implementing_Mechanism__c.Name}"/>
+            <apex:outputField value="{!Implementing_Mechanism__c.burName__c}"/>
+            <apex:outputField value="{!Implementing_Mechanism__c.Implementing_Mechanism_Name__c}"/>
+            <apex:outputField value="{!Implementing_Mechanism__c.ouId__c}"/>
+            <apex:pageBlockSectionItem helpText="{!$ObjectType.Implementing_Mechanism__c.fields.Partner_Name__c.inlineHelpText}" rendered="{!IsPartnerUser}">
+            <apex:pageBlockSectionItem >
+                 <apex:image value="{!$Resource.PublicIcon}" /> 
+                 <apex:outputLabel value="{!$ObjectType.Implementing_Mechanism__c.fields.Partner_Name__c.label}"/>
+             </apex:pageBlockSectionItem>    
+            <apex:outputField value="{!Implementing_Mechanism__c.Partner_Name__c}" />     
+           </apex:pageBlockSectionItem>
+           <apex:outputField value="{!Implementing_Mechanism__c.offId__c}"/>
+            
+           
+            
+            <apex:outputField value="{!Implementing_Mechanism__c.Award_Number__c}"/>
+            <apex:outputField value="{!Implementing_Mechanism__c.Start_Date__c}"/>
+            <apex:outputField value="{!Implementing_Mechanism__c.End_Date__c}"/>
+            <apex:outputField value="{!Implementing_Mechanism__c.Award_Number__c}"/>
+            <!-- <apex:pageBlockSectionItem helpText="{!$ObjectType.Implementing_Mechanism__c.fields.Award_Amount__c.inlineHelpText}" rendered="{!$Profile.Name=='STD - Mission Profile'|| $Profile.Name =='STD - AIDtracker Support'}"> -->
+            <apex:pageBlockSectionItem helpText="{!$ObjectType.Implementing_Mechanism__c.fields.Award_Amount__c.inlineHelpText}" rendered="{!IsSTDUser}"> 
+                <apex:pageBlockSectionItem >
+                    <apex:image value="{!$Resource.PublicIcon}" /> 
+                    <apex:outputLabel value="{!$ObjectType.Implementing_Mechanism__c.fields.Award_Amount__c.label}"/>
+                </apex:pageBlockSectionItem>    
+                <apex:outputField value="{!Implementing_Mechanism__c.Award_Amount__c}" />    
+           </apex:pageBlockSectionItem>          
+        </apex:pageBlockSection>
+       
+       
+       <!-- *******************Award Reference Section ******************** -->
+
+     <!-- <apex:pageBlockSection showHeader="true" title="Award Reference" columns="2" id="IMPBS" rendered="{!$Profile.Name =='PLT - Mission Profile' || $Profile.Name == 'Mission Partner'}"> -->
+      <apex:pageBlockSection showHeader="true" title="Award Reference" columns="2" id="IMPBS" rendered="{!IsPLTUser || IsPartnerUser}">
+
+         <apex:outputField id="glassRef" value="{!Implementing_Mechanism__c.Award_Key__c}"/>
+         <apex:outputField value="{!Implementing_Mechanism__c.totAward__c}"/>            
+         <apex:outputField value="{!Implementing_Mechanism__c.Award_Title__c}" />      
+            
+        <apex:pageBlockSectionItem helpText="{!$ObjectType.Implementing_Mechanism__c.fields.totObl__c.inlineHelpText}">
+        <apex:pageBlockSectionItem >
+                 <apex:image value="{!$Resource.PublicIcon}" /> 
+                 <apex:outputLabel value="{!$ObjectType.Implementing_Mechanism__c.fields.totObl__c.label}"/>
+                   </apex:pageBlockSectionItem>
+            <apex:outputField value="{!Implementing_Mechanism__c.totObl__c}"/>
+             </apex:pageBlockSectionItem>    
+               
+         
+         <apex:outputField value="{!Implementing_Mechanism__c.Document__c}"/>
+         <apex:outputField value="{!Implementing_Mechanism__c.totDisb__c}"/>       
+         <apex:outputField value="{!Implementing_Mechanism__c.OrderNum__c}"/>
+         <apex:outputField value="{!Implementing_Mechanism__c.totAccr__c}"/>        
+         <apex:outputField value="{!Implementing_Mechanism__c.Last_Modification__c}"/> 
+         <apex:outputField value="{!Implementing_Mechanism__c.totExp__c}"/>         
+         <apex:outputField value="{!Implementing_Mechanism__c.Source__c}"/>
+         <apex:outputField value="{!Implementing_Mechanism__c.TotAdv__c}"/>        
+         <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+         <apex:outputField value="{!Implementing_Mechanism__c.TotMortgage__c}"/>       
+        
+        </apex:pageBlockSection>
+
+<!-- ******************* COR/AOR ******************** -->
+
+       <!-- <apex:pageBlockSection showHeader="true" title="COR/AOR" columns="2" rendered="{!$Profile.Name =='PLT - Mission Profile' || $Profile.Name == 'Mission Partner'}"> -->
+       <apex:pageBlockSection showHeader="true" title="COR/AOR" columns="2" rendered="{!IsPLTUser || IsPartnerUser}"> 
+        <apex:outputField value="{!Implementing_Mechanism__c.COR__c}"/>
+        <apex:outputField value="{!Implementing_Mechanism__c.AOR__c}"/>
+        <apex:outputField value="{!Implementing_Mechanism__c.Alternate_COR__c}"/>
+        <apex:outputField value="{!Implementing_Mechanism__c.Alternate_AOR__c}"/>
+        
+        </apex:pageBlockSection>
+
+<!-- ******************* Partner Accessibility ******************** -->        
+       <!-- <apex:pageBlockSection showHeader="true" title="Partner Accessibility" columns="2" rendered="{!$Profile.Name =='PLT - Mission Profile' || $Profile.Name == 'Mission Partner'}"> -->
+        <apex:pageBlockSection showHeader="true" title="Partner Accessibility" columns="2" rendered="{!IsPLTUser || IsPartnerUser}">
+        
+
+
+     
+<apex:pageBlockSectionItem helpText="{!$ObjectType.Implementing_Mechanism__c.fields.Partner_Name__c.inlineHelpText}">          
+            <apex:pageBlockSectionItem >
+                 <apex:image value="{!$Resource.PublicIcon}" /> 
+                <apex:outputLabel value="{!$ObjectType.Implementing_Mechanism__c.fields.Partner_Name__c.label}"/>
+             </apex:pageBlockSectionItem>    
+            <apex:outputField value="{!Implementing_Mechanism__c.Partner_Name__c}" />     
+           </apex:pageBlockSectionItem>      
+        
+        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+        <apex:outputField value="{!Implementing_Mechanism__c.Partner_User_1__c}"/>
+        <apex:outputField value="{!Implementing_Mechanism__c.Partner_User_2__c}"/>                  
+        <apex:outputField value="{!Implementing_Mechanism__c.Partner_User_3__c}"/>
+        <apex:outputField value="{!Implementing_Mechanism__c.Partner_User_4__c}"/>
+                                        
+        </apex:pageBlockSection>
+        
+  <!-- ******************* Partner Report Information ******************** -->      
+        
+       <!-- <apex:pageBlockSection showHeader="true" title="Partner Report Information" columns="2" rendered="{!$Profile.Name =='PLT - Mission Profile' }"> -->
+         <apex:pageBlockSection showHeader="true" title="Partner Report Information" columns="2" rendered="{!IsPLTUser }">
+            <apex:outputField value="{!Implementing_Mechanism__c.Reporting_Frequency__c}"/>
+            <apex:outputField value="{!Implementing_Mechanism__c.Reporting_Level__c}"/>
+        </apex:pageBlockSection>
+        
+<!-- ******************* System Information to be displayed only to SysAdmins******************* -->   
+       
+       <!-- <apex:pageBlockSection showHeader="true" title="System Information" columns="2" id="SysHeadSection" rendered="{!$Profile.Name =='System Administrator(c)'}"> -->
+           <apex:pageBlockSection showHeader="true" title="System Information" columns="2" id="SysHeadSection" rendered="{!IsAdminUser}">
+       
+            <apex:outputField value="{!Implementing_Mechanism__c.CreatedById}"/>
+            <apex:outputField value="{!Implementing_Mechanism__c.LastModifiedById}"/>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Owner"/>
+                <apex:outputPanel >
+                    <apex:outputField value="{!Implementing_Mechanism__c.OwnerId}"/>&nbsp;
+                    <apex:outputLink value="{!URLFOR($Action.Implementing_Mechanism__c.ChangeOwner,Implementing_Mechanism__c.id)}">[Change]</apex:outputLink>
+                </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem />
+        </apex:pageBlockSection>
+          </apex:pageBlock>
+           <apex:relatedList pageSize="20"  list="ImpMechs_Projects__r"/>
+            <apex:relatedList pageSize="20"  list="Sub_Awards__r"/>
+             <apex:relatedList pageSize="20"  list="Activities__r"/>
+          <apex:relatedList pageSize="20"  list="NotesAndAttachments"/> 
+         
+      </apex:tab>
+   
+   <!--   
+      <apex:tab label="Project Link" name="IM-Project" 
+                id="tabProjectIM" rendered="{!IF($Profile.Name <> 'Mission Partner' , true , false)}">
+         <apex:relatedList pageSize="20" title="" list="ImpMechs_Projects__r"/>
+      </apex:tab>
+      
+      <apex:tab label="Sub-Awardees" name="SubAwards" 
+                id="tabSub-Awardees">
+        <apex:relatedList pageSize="20" title="" list="Sub_Awards__r"/>
+      </apex:tab>
+      
+      <apex:tab label="Tasks" name="Task" 
+                id="tabTask">
+         <apex:relatedList pageSize="20" title="" list="Activities__r"/>
+      </apex:tab>
+      -->
+       <apex:tab label="IM Indicators" name="IM Indicators" 
+                id="tabIMIndicators"  rendered="{!IF($Profile.Name <> 'Mission Partner' , true , false)}" styleClass="activeTabBackground">
+       <!--   <apex:relatedList pageSize="20" title="" list="OrgUnit_Indicators__r"/> -->
+         <c:Manage_Indicators />
+      </apex:tab>
+      
+      
+       <apex:tab label="IM Indicator Data" name="Reporting Period"   id="tabRptPeriods" styleClass="activeTabBackground">
+                <!-- <apex:relatedList pageSize="20" title="" list="Reporting_Periods__r"/>  -->
+              
+                <c:IMIndicatorResultComponent id="targetcomp_id"/> 
+              <!--   <apex:include pageName="vfIMIndicatorResultsDetail"/> -->
+      </apex:tab>
+
+      
+      
+     <!-- <apex:tab label="Notes and Attachments" 
+                name="NotesAndAttachments" 
+               id="tabNoteAtt">
+         <apex:relatedList pageSize="20" title="" list="NotesAndAttachments"/>
+      </apex:tab> -->
+   </apex:tabPanel>
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['IMPage:IMPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {  
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+ 
+</script>
+</apex:page>

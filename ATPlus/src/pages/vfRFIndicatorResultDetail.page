@@ -1,0 +1,98 @@
+<apex:page standardController="RF_Indicator_Result__c" tabStyle="Data_Admin__tab" extensions="ClsUserProfileFinder,ClsTabController" id="RFIndicatorResultPage" sidebar="false" action="{!doAction}">
+ <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+        
+        <apex:sectionHeader title="{!$ObjectType.RF_Indicator_Result__c.label}" subtitle="{!RF_Indicator_Result__c.name}"/>
+ 
+   <apex:tabPanel switchType="client"  id="RFIndicatorResultPanel"  value="{!selectedTab}" onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+      <apex:tab label="Overview" name="RFIndicatorResultDetails"  id="tabRFIndicatorResultdetails" styleClass="activeTabBackground">
+      <apex:pageBlock mode="maindetail" id="RFIndicatorResultPageBlock">      
+          <apex:pageBlockButtons >
+                <apex:form >
+                        <apex:commandButton action="{!edit}" value="Edit"/>
+                        <apex:commandButton action="{!delete}" value="Delete"/>
+                </apex:form>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection showHeader="true" title="Basic Information" columns="2">
+                        <apex:outputField value="{!RF_Indicator_Result__c.ouName__c}"/>
+                        <apex:outputField value="{!RF_Indicator_Result__c.RF_Reporting_Period_Id__c}"/>
+                        <apex:outputField value="{!RF_Indicator_Result__c.Goal_Name__c}"/>
+                        <apex:outputField value="{!RF_Indicator_Result__c.Fiscal_Period__c}"/>
+                        <apex:outputField value="{!RF_Indicator_Result__c.DO_Title__c}"/>
+                        <apex:outputField value="{!RF_Indicator_Result__c.Fiscal_Year__c}"/>
+                        <apex:outputField value="{!RF_Indicator_Result__c.IR_Title__c}"/>
+                        <apex:outputField value="{!RF_Indicator_Result__c.Status__c}"/>
+                        <apex:outputField value="{!RF_Indicator_Result__c.Sub_IR_Title__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!RF_Indicator_Result__c.Organization_Indicator_Id__c}"/>
+                        <apex:pageBlockSectionItem />
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Indicator Results" columns="2">
+                        <apex:outputField value="{!RF_Indicator_Result__c.Name}"/>
+                        <apex:outputField value="{!RF_Indicator_Result__c.Baseline__c}"/>
+                        <apex:outputField value="{!RF_Indicator_Result__c.IndName__c}"/>
+                        <apex:outputField value="{!RF_Indicator_Result__c.Target__c}"/>
+                        <apex:outputField value="{!RF_Indicator_Result__c.Note_Comments__c}"/>
+                        <apex:outputField value="{!RF_Indicator_Result__c.Actual__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!RF_Indicator_Result__c.Variance__c}"/>
+                </apex:pageBlockSection>
+                
+                <!-- ******************* System Information to be displayed only to SysAdmins******************* -->
+                
+                <!-- <apex:pageBlockSection showHeader="true" title="System Information" columns="2"  id="SysHeadSection" rendered="{!$Profile.Name =='System Administrator(c)'}"> -->
+                <apex:pageBlockSection showHeader="true" title="System Information" columns="2"  id="SysHeadSection" rendered="{!IsADMINUser}">
+                        <apex:outputField value="{!RF_Indicator_Result__c.CreatedById}"/>
+                        <apex:outputField value="{!RF_Indicator_Result__c.LastModifiedById}"/>
+                        <apex:outputField value="{!RF_Indicator_Result__c.RecordTypeId}"/>
+                        <apex:pageBlockSectionItem />
+                </apex:pageBlockSection>         
+                
+         </apex:pageBlock>      
+      </apex:tab>
+     
+   </apex:tabPanel>
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['RFIndicatorResultPage:RFIndicatorResultPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+    
+ function addLoadEvent(func) {   
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+
+function hideHeadSesction() {
+ twistSection(document.getElementById('RFIndicatorResultPage:RFIndicatorResultPageBlock:SysHeadSection').childNodes[0].childNodes[0]);
+}
+
+addLoadEvent(hideHeadSesction);    
+</script>
+</apex:page>

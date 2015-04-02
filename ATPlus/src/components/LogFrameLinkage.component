@@ -1,0 +1,196 @@
+<apex:component controller="ClsLogFrameLinkage">
+      <!--  <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'RF-Linkage-Style.css')}"/> -->
+        <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'LF-Linkage-Style.css')}"/>
+     <!--   <apex:stylesheet value="https://fonts.googleapis.com/css?family=Lato:300,400,700" />
+        <apex:includeScript value="{!URLFOR($Resource.ResultsFramework, 'scripts/jquery.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.ResultsFramework, 'scripts/dropdown.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.ResultsFramework, 'scripts/modernizr.custom.79639.js')}"/>            
+        <noscript><apex:stylesheet value="{!URLFOR($Resource.ResultsFramework, 'css/noJS.css')}"/></noscript>   -->    
+        
+        <script>
+            $(document).ready(function() {
+             //   $(".content").hide();                
+                
+                $(".row").click(function() {                    
+                    if(!$(".row").hasClass('project')){  
+                       // alert('Inside Results Call');                       
+                        getResults($(this).attr('id'));
+                    }    
+                    if($(".row").hasClass('active')) {
+                        $(".row").removeClass('active');
+                        $(this).addClass('active');
+                    } else($(this).addClass('active'));
+                            
+                    });
+                    
+              //      $(".parentR").click(function() {  
+              //          var myPos = $(this).css("background-position");
+              //          myPos = myPos.split(" ");           
+              //          if (myPos[1] == "0%"){
+              //              $(this).css('background-position', 'center bottom');
+              //          } else {
+              //              $(this).css('background-position', 'center top');
+              //          }    
+                     //   alert('Message form r');          
+                     //   $(this).toggleClass('parentRToggle');
+              //          $($(this).parents("div")[2]).children('.content').toggle();
+                        
+                        
+               //     });
+               //     $(".parentRToggle").click(function() { 
+               //         alert('Message form t');         
+               //         $(this).toggleClass('parentR');
+               //         $($(this).parents("div")[2]).children('.content').toggle();
+               //         
+                        
+               //     });
+                    
+                    
+                    $(".active").click(function() {
+                        $(this).removeClass('active');
+                    });
+                
+               //     $(".row").hover(function() {
+               //        // alert($(this).find('.toggles').attr("class"));                                            
+               //         $(this).find('.toggles').stop(true, true).fadeIn();
+               //     }, function(){
+               //         $(this).find('.toggles').stop(true, true).fadeOut();
+               //     });
+                    
+                
+               //     $(".goal-wrapper .content:first").show();
+               //     $(".goal-wrapper .parentR:first").css('background-position', 'center bottom');
+               //     $(".purpose-wrapper .content:first").show();
+               //     $(".purpose-wrapper .parentR:first").css('background-position', 'center bottom');
+               //     $(".subpurpose-wrapper .content:first").show();
+               //     $(".subpurpose-wrapper .parentR:first").css('background-position', 'center bottom');
+            });
+        </script>
+    
+    <apex:outputPanel rendered="{!NOT(recMap[proj.Id].hasChildren)}">
+        <div id="linkageContainer">  
+            <div id="accordion-menus">
+                <apex:image url="{!URLFOR($Resource.FactSheets, 'images/nolf.png')}" />
+            </div>
+        </div>   
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!recMap[proj.Id].hasChildren}">
+    <div id="linkageContainer">        
+        <div id="accordion-menus">
+            <apex:repeat value="{!projectLGoalMap[proj.Id]}" var="gd" rendered="{!recMap[proj.Id].hasChildren}"> 
+            <div class="goal-wrapper" >    
+                <div class="row goal" id="{!gd.Id}"> 
+                    <div class="title"><p>GOAL</p></div>
+                    <div class="details"><p>{!gd.LF_Goal_Name__c}</p></div>                
+                   <!-- <div class="toggles blue">
+                        <apex:outputLink title="Create Purpose" rendered="{!NOT(recMap[gd.Id].hasChildren)}" value="/a0w/e?CF00NJ0000000fmAV={!gd.Name}&CF00NJ0000000fmAV_lkid={!gd.Id}&retURL={!$CurrentPage.URL}"><div class="new"></div></apex:outputLink>                        
+                        <apex:outputLink title="Edit Goal" value="/a0x/e?id={!gd.Id}&retURL={!$CurrentPage.URL}"><div class="edit"></div></apex:outputLink>
+                        <apex:outputLink title="View Goal" value="/apex/vfLFGoalDetail?id={!gd.Id}"><div class="mag"></div></apex:outputLink>
+                        <div class="parentR"></div> 
+                    </div> -->
+                </div><!-- end row goal -->
+                <div class="contentRF">
+              <!--  <apex:repeat value="{!goalDoMap[goal.Id]}" var="dm1" rendered="{!(NOT(ISNULL(goalDoMap)))}" > -->
+                <apex:repeat value="{!goalPurposeMap[gd.Id]}" var="dm1" rendered="{!recMap[gd.Id].hasChildren}" >
+                <div class="purpose-wrapper">                
+                    <div class="row pupose" id="{!dm1.Id}">                        
+                        <div class="title"><p>PURPOSE</p></div>
+                        <div class="details"><p>{!dm1.LF_Purpose_Name__c}</p></div>
+                    <!--    <div class="toggles teal">
+                            <apex:outputLink title="Create SubPurpose" value="/a0t/e?CF00NJ0000000faei={!dm1.Name}&CF00NJ0000000faei_lkid={!dm1.Id}&retURL={!$CurrentPage.URL}"><div class="new"></div></apex:outputLink>                        
+                            <apex:outputLink title="Edit Purpose" value="/a0w/e?id={!dm1.Id}&retURL={!$CurrentPage.URL}"><div class="edit"></div></apex:outputLink>
+                            <apex:outputLink title="View Purpose" value="/apex/vfLFPurposeDetail?id={!dm1.Id}"><div class="mag"></div></apex:outputLink>
+                            <div class="parentR"></div>
+                        </div> -->
+                    </div> <!--end row do -->
+                    <div class="contentRF">
+                     <!--   <apex:repeat value="{!doIrMap[dm1.Id]}" var="dm2" rendered="{!(NOT(ISNULL(doIrMap)))}"> -->
+                        <apex:repeat value="{!purposeSubPurposeOutputMap[dm1.Id]}" var="dm5" rendered="{!recMap[dm1.Id].hasChildSiblings}">
+                        <div class="outputP-wrapper">                            
+                            <div class="row outputP" id="{!dm5.Id}">                                        
+                                <div class="title"><p>OUTPUT</p></div>
+                                <div class="details"><p>{!dm5.LF_Output_Name__c}</p></div>
+                          <!--      <div class="toggles yellow">
+                                    <apex:outputLink title="Create Input" value="/a0v/e?CF00NJ0000000fVes={!dm5.Name}&CF00NJ0000000fVes_lkid={!dm5.Id}&retURL={!$CurrentPage.URL}"><div class="new"></div></apex:outputLink>
+                                    <apex:outputLink title="Edit Output" value="/a0u/e?id={!dm5.Id}&retURL={!$CurrentPage.URL}"><div class="edit"></div></apex:outputLink>
+                                    <apex:outputLink title="View Output" value="/apex/vfLFOutputDetail?id={!dm5.Id}"><div class="mag"></div></apex:outputLink>
+                                    <div class="parentR"></div>
+                                </div>   -->
+                            </div> <!--end row sir -->  
+                            <div class="contentRF">
+                                 <!--  <apex:repeat value="{!irSirMap[dm2.Id]}" var="dm3" rendered="{!(NOT(ISNULL(irSirMap)))}"> -->
+                                <apex:repeat value="{!outputInputMap[dm5.Id]}" var="dm6" rendered="{!recMap[dm5.Id].hasChildren}">
+                                <div class="input-wrapper">                            
+                                    <div class="row input" id="{!dm6.Id}">                                        
+                                        <div class="title"><p>INPUT</p></div>
+                                        <div class="details"><p>{!dm6.LF_Input_Name__c}</p></div>
+                                <!--        <div class="toggles orange">
+                                            <apex:outputLink title="Edit Input" value="/a0v/e?id={!dm6.Id}&retURL={!$CurrentPage.URL}"><div class="edit"></div></apex:outputLink>
+                                            <apex:outputLink title="View Input" value="/apex/vfLFInputDetail?id={!dm6.Id}"><div class="mag"></div></apex:outputLink>
+                                        </div>   -->
+                                    </div> <!--end row sir -->                          
+                                </div><!--end sir-wrapper-->
+                                </apex:repeat>                                                         
+                            </div><!--end IR Content -->                        
+                        </div><!--end sir-wrapper-->
+                        </apex:repeat>  
+                     
+                     
+                     
+                                            
+                        <apex:repeat value="{!purposeSubPurposeMap[dm1.Id]}" var="dm2" rendered="{!recMap[dm1.Id].hasChildren}"> 
+                        <div class="subpurpose-wrapper">                            
+                            <div class="row ir" id="{!dm2.Id}">                                
+                                <div class="title"><p>SUBPURPOSE</p></div>
+                                <div class="details"><p>{!dm2.LF_SubPurpose_Name__c}</p></div>
+                            <!--    <div class="toggles green">
+                                    <apex:outputLink title="Create Output" value="/a0u/e?CF00NJ0000000fVeJ={!dm2.Name}&CF00NJ0000000fVeJ_lkid={!dm2.Id}&retURL={!$CurrentPage.URL}"><div class="new"></div></apex:outputLink>
+                                    <apex:outputLink title="Edit SubPurpose" value="/a0t/e?id={!dm2.Id}&retURL={!$CurrentPage.URL}"><div class="edit"></div></apex:outputLink>
+                                    <apex:outputLink title="View SubPurpose" value="/apex/vfLFSubPurposeDetail?id={!dm2.Id}"><div class="mag"></div></apex:outputLink>
+                                    <div class="parentR"></div>
+                                </div> -->
+                            </div> <!--end row ir -->
+                            <div class="contentRF">
+                              <!--  <apex:repeat value="{!irSirMap[dm2.Id]}" var="dm3" rendered="{!(NOT(ISNULL(irSirMap)))}"> -->
+                                <apex:repeat value="{!purposeSubPurposeOutputMap[dm2.Id]}" var="dm3" rendered="{!recMap[dm2.Id].hasChildren}">
+                                <div class="output-wrapper">                            
+                                    <div class="row output" id="{!dm3.Id}">                                        
+                                        <div class="title"><p>OUTPUT</p></div>
+                                        <div class="details"><p>{!dm3.LF_Output_Name__c}</p></div>
+                                    <!--    <div class="toggles yellow">
+                                            <apex:outputLink title="Create Input" value="/a0v/e?CF00NJ0000000fVes={!dm3.Name}&CF00NJ0000000fVes_lkid={!dm3.Id}&retURL={!$CurrentPage.URL}"><div class="new"></div></apex:outputLink>
+                                            <apex:outputLink title="Edit Output" value="/a0u/e?id={!dm3.Id}&retURL={!$CurrentPage.URL}"><div class="edit"></div></apex:outputLink>
+                                            <apex:outputLink title="View Output" value="/apex/vfLFOutputDetail?id={!dm3.Id}"><div class="mag"></div></apex:outputLink>
+                                            <div class="parentR"></div> 
+                                        </div>   -->
+                                    </div> <!--end row sir -->  
+                                    <div class="contentRF">
+                                         <!--  <apex:repeat value="{!irSirMap[dm2.Id]}" var="dm3" rendered="{!(NOT(ISNULL(irSirMap)))}"> -->
+                                        <apex:repeat value="{!outputInputMap[dm3.Id]}" var="dm4" rendered="{!recMap[dm3.Id].hasChildren}">
+                                        <div class="input-wrapper">                            
+                                            <div class="row input" id="{!dm4.Id}">                                        
+                                                <div class="title"><p>INPUT</p></div>
+                                                <div class="details"><p>{!dm4.LF_Input_Name__c}</p></div>
+                                            <!--    <div class="toggles orange">
+                                                    <apex:outputLink title="Edit Input" value="/a0v/e?id={!dm4.Id}&retURL={!$CurrentPage.URL}"><div class="edit"></div></apex:outputLink>
+                                                    <apex:outputLink title="View Input" value="/apex/vfLFInputDetail?id={!dm4.Id}"><div class="mag"></div></apex:outputLink>
+                                                </div>   -->
+                                            </div> <!--end row sir -->                          
+                                        </div><!--end sir-wrapper-->
+                                        </apex:repeat>                                                         
+                                    </div><!--end IR Content -->                        
+                                </div><!--end sir-wrapper-->
+                                </apex:repeat>                                                         
+                            </div><!--end IR Content -->                                
+                        </div><!-- end ir-wrapper -->
+                        </apex:repeat>                          
+                    </div> <!-- end do content -->
+                </div> <!-- end do wrapper -->                
+                 </apex:repeat>
+              </div> <!-- end goal content -->                   
+            </div><!-- end goal-wrapper-->
+            </apex:repeat>          
+        </div> <!-- end accordion menus -->       
+    </div><!-- end container -->    
+   </apex:outputPanel>
+</apex:component>

@@ -1,0 +1,668 @@
+<apex:page StandardController="Project_Location__c" extensions="GeocodingWizardController" tabStyle="Project_Location__c">
+  <style>
+  .noshow, img.closeIcon {
+  display: none;
+  }
+  
+  </style>
+    <apex:sectionHeader title="New Location" subtitle="Step 2 of 2"/>
+
+  <!--   <apex:stylesheet value="https://serverapi.arcgisonline.com/jsapi/arcgis/2.7/js/dojo/dijit/themes/tundra/tundra.css"/>
+    <apex:includeScript value="https://serverapi.arcgisonline.com/jsapi/arcgis/?v=2.7"/>   --> 
+    <apex:includeScript value="{!URLFOR($Resource.USAIDTrackerStatic, 'USAIDTrackerStatic.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.Dojo161, 'dojo.js')}"/>
+    <apex:includeScript value="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false" />
+
+    <apex:form id="form">
+    
+        <apex:actionFunction action="{!doLocation}" name="jsLocation" rerender="infoSection, errorMessages">
+            <apex:param name="Latitude" assignTo="{!Latitude}" value="" />
+            <apex:param name="Longitude" assignTo="{!Longitude}" value="" /> 
+            <apex:param name="Country" assignTo="{!Country}" value="" />
+            <apex:param name="State" assignTo="{!State}" value="" />
+            <apex:param name="Region" assignTo="{!Region}" value="" />
+            <apex:param name="City" assignTo="{!City}" value="" />
+            <apex:param name="Location_Name" assignTo="{!Location_Name}" value="" />
+            <apex:param name="Extent" assignTo="{!Extent}" value="" />
+        </apex:actionFunction>  
+          
+        <apex:pageBlock title="Location Edit" id="pageBlock">
+            <apex:pageBlockButtons >
+                    <apex:commandButton action="{!step1}" value="Previous" styleClass="btn"/>
+                    <apex:commandButton action="{!save}" value="Save" styleClass="btn"/>
+                    <apex:commandButton action="{!saveAndNew}" value="Save & New" styleClass="btn"/>
+                    <apex:commandButton action="{!cancel}" value="Cancel" styleClass="btn"/>
+            </apex:pageBlockButtons>
+            <apex:pageMessages id="errorMessages"/> 
+            <apex:pageBlockSection title="Basic Information" id="infoSection">
+                <apex:panelGrid columns="2"> 
+                    <apex:outputLabel value="Location Name" for="locationName" style="font-weight:bold;padding:10px;"/>
+                    <apex:inputField id="locationName" value="{!location.Name}"/>
+                    <apex:outputLabel value="Address" for="locationAddress" style="font-weight:bold;padding:10px;"/>
+                    <apex:inputField id="locationAddress" value="{!location.address__c}"/>
+                    <apex:outputLabel value="City" for="locationCity" style="font-weight:bold;padding:10px;"/>
+                    <apex:inputField id="locationCity" value="{!location.City__c}"/>
+                   <apex:outputLabel value="Admin 2 Boundary Name" for="locationRegion" style="font-weight:bold;padding:10px;"/>
+                    <apex:inputField id="locationRegion" value="{!location.admin2BndryName__c}"/>
+                  <!--   <apex:outputLabel value="Province" for="locationProvince" style="font-weight:bold"/>
+                    <apex:inputField id="locationProvince" value="{!location.Activity_Location_Province__c}"/>  --> 
+                    <apex:outputLabel value="Admin 1 Boundary Name" for="locationState" style="font-weight:bold;padding:10px;" rendered="{!true ||displayAdminCountry}" />
+                    <apex:inputField id="locationState" value="{!location.admin1BndryId__c}" required="false"/> 
+                    <apex:outputLabel value="Country" for="locationCountry" style="font-weight:bold;padding:10px;" rendered="{!true || displayAdminCountry}" />
+                    <apex:outputField id="locationCountry" value="{!location.cntryId__c}" />
+                    <apex:inputField id="locationCountryHidden" value="{!location.cntryId__c}" styleClass="noshow" /> 
+                </apex:panelGrid> 
+                <apex:panelGrid columns="2"> 
+                    <apex:outputLabel value="Latitude" for="latitude" style="font-weight:bold;padding:10px;"/>
+                    <apex:inputField id="latitude" value="{!location.Latitude__c}" />
+                    <apex:outputLabel value="Longitude" for="longitude" style="font-weight:bold;padding:10px;"/>
+                    <apex:inputField id="longitude" value="{!location.Longitude__c}"/>
+                    <apex:outputLabel value="Precision/Extent" for="locationPrecision" style="font-weight:bold;padding:10px;"/>
+                    <apex:inputField id="locationPrecision" value="{!location.Precision_Extent__c}" /> 
+                    <apex:outputLabel value="Additional Info" for="locationInfo" style="font-weight:bold;padding:10px;"/>
+                    <apex:inputField id="locationInfo" value="{!location.Additional_Location_Information__c}" />                     
+                </apex:panelGrid> 
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Map" id="mapSection">
+                <apex:panelGrid >
+                    <div dojotype="dijit.layout.BorderContainer" design="headline" gutters="false" style="width: 100%; height: 100%; margin: 0;"> 
+                        <div id="map" dojotype="dijit.layout.ContentPane" region="center" style="width:440px; height:400px;position:relative;overflow:hidden;"></div> 
+                    </div>                        
+                </apex:panelGrid> 
+                <apex:panelGrid id="searchForm" width="100%" >
+                    <input type="hidden" id="performSearch" value="{!autoSearch}"/>
+                    <input type="text" id="place" size="60" value="{!addressOrName}"/> 
+                    <input type="button" onclick="locate()" value="Search"/>
+                    <img src= "{!URLFOR($Resource.CTResources, 'loader.gif')}" alt="Loading" style="display: none;" id="loader" align="right" />
+                    <table id="resultsTable" style="width:100%;overflow:auto;"></table>
+                    <div id='_searchResults'></div>
+                </apex:panelGrid>     
+            </apex:pageBlockSection>
+        </apex:pageBlock> 
+        
+    </apex:form>  
+
+
+    <!-- Places Locator and Map -->
+    <script type="text/javascript" charset="utf-8">
+       // dojo.require("esri.tasks.locator");
+        //dojo.require("dijit.layout.BorderContainer");
+        //dojo.require("dijit.layout.ContentPane");
+       // dojo.require("esri.map");
+       // dojo.require("esri.graphic");
+
+/*        var map, symbol, graphicLayer;
+          
+        function init() {
+             var initExtent = new esri.geometry.Extent({"xmin":-23011948.55241597,"ymin":-15654257.82779998,"xmax":23011703.422415968,"ymax":15654348.957799979,"spatialReference":{"wkid":4326}});    //{"xmin":-18095833.418683976,"ymin":-8943125.39279998,"xmax":18065607.418683976,"ymax":22365481.39279998,"spatialReference":{"wkid":102100}});
+            map = new esri.Map("map",{extent:initExtent});
+          
+            //Add the world street map layer to the map. View the ArcGIS Online site for services http://arcgisonline/home/search.html?t=content&f=typekeywords:service    
+            var basemap = new esri.layers.ArcGISTiledMapServiceLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer");
+            map.addLayer(basemap);          
+            
+            //Graphic layer for location point
+            graphicLayer = new esri.layers.GraphicsLayer();
+            map.addLayer(graphicLayer);
+
+            //Initialize symbology
+            symbol = new esri.symbol.SimpleMarkerSymbol().setColor(new dojo.Color([255,0,0]));
+                            
+            dojo.connect(map, 'onLoad', function(theMap) {
+                //resize the map when the browser resizes
+                dojo.connect(dijit.byId('map'), 'resize', map,map.resize);
+            });
+                       
+            //Graphic layer for polygons
+            polygonLayer = new esri.layers.GraphicsLayer();
+            map.addLayer(polygonLayer);
+            
+            //create polygons
+           var p;
+            var newsymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
+             new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
+             new dojo.Color([255,0,0]), 1),new dojo.Color([255,255,0,0.45]));
+             
+            for(p in USAIDProjectPolygons) {
+                if (dojo.isFunction(p)) {
+                    return;            
+                }
+                
+                var polygon = new esri.geometry.Polygon({"rings":USAIDProjectPolygons[p].paths, 
+                                                         "spatialReference":{"wkid":4326 }});
+                var newgraphic = new esri.Graphic(esri.geometry.geographicToWebMercator(polygon), newsymbol);
+                //polygonLayer.add(newgraphic);
+                USAIDProjectPolygons[p].polygon = polygon;
+            } 
+        }
+*/      
+
+
+ 
+        dojo.addOnLoad(initialize);
+
+        var map, geocoder;
+        
+        function initialize() {
+            geocoder = new google.maps.Geocoder();
+            
+            var mapOptions = {
+              center: new google.maps.LatLng(10, 20),
+              zoom: 1,
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+            }; 
+            
+            map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+            //create polygons
+            var p;            
+            for(p in USAIDProjectPolygons) {
+                if (dojo.isFunction(p)) {
+                    return;            
+                }
+                var allpaths = [];
+                var polyArray = USAIDProjectPolygons[p].paths;              
+                for (var i = 0; i < polyArray.length; i++) {
+                    var coords = [];
+                    var polys = polyArray[i];
+                    for (var j = 0; j < polys.length; j++) {
+                        coords.push(new google.maps.LatLng(polys[j][1], polys[j][0]));
+                    }
+                    allpaths.push(coords);
+                }
+                var polygon = new google.maps.Polygon({"paths":allpaths});
+                USAIDProjectPolygons[p].polygon = polygon;
+            } 
+        }
+
+
+ /*       var CONST = {
+            ipv4 : /\b(?:\d{1,3}\.){3}\d{1,3}\b/,
+            latitude : /(^\+?([1-8])?\d(\.\d+)?$)|(^-90$)|(^-(([1-8])?\d(\.\d+)?$))/,
+            longitude : /(^\+?1[0-7]\d(\.\d+)?$)|(^\+?([1-9])?\d(\.\d+)?$)|(^-180$)|(^-1[1-7]\d(\.\d+)?$)|(^-[1-9]\d(\.\d+)?$)|(^\-\d(\.\d+)?$)/
+        }
+            
+        var North = {!North};
+        var South = {!South};
+        var East = {!East};
+        var West = {!West};
+*/
+        //create geocoder (new locator object)
+        //var locator = new esri.tasks.Locator("https://tasks.arcgisonline.com/ArcGIS/rest/services/Locators/ESRI_Places_World/GeocodeServer");
+        //var reverseLocator = new esri.tasks.Locator("https://tasks.arcgis.com/ArcGIS/rest/services/WorldLocator/GeocodeServer/reverseGeocode");
+        
+            function locate() {
+                var terms = dojo.byId("place").value;
+                googleLocateGeolocationsFromAddress(terms);
+            }
+/*            var t;
+            function locateGeolocationsFromAddress(address) {
+                showLoader();
+                var deferred = locator.addressToLocations({'SingleLine': address}, ["*"]);
+                deferred.then(function(addressCandidate) {
+                                    showData(addressCandidate);                                   
+                                }, 
+                                function(error) {//err callback
+                                    showData({"error" : error});
+                                });
+            }
+*/
+            function googleLocateGeolocationsFromAddress(address) {
+                showLoader();                
+                geocoder.geocode({'address': address}, googleShowData);
+            }
+            
+            var rowTemplate = "<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>";
+            
+            function googleShowData(results, status) {
+console.log(results);
+                var table = dojo.byId('resultsTable');
+                dojo.empty(table);
+                if (status == google.maps.GeocoderStatus.ZERO_RESULTS || results.length === 0) {
+                    var s = "<tr style='vertical-align:top'><td>Please refine your search, no location found with that name.</td></tr>"; 
+                    dojo.place(s, table, "last");
+                    hideLoader();
+                    return;
+                }
+                /*
+                if (status == google.maps.GeocoderStatus.UNKNOWN_ERROR) { 
+                    var s = "<tr style='vertical-align:top'><td>An error prevented us from running your search. Please try again, and contact your System Administrator if the problem persists.</td></tr>"; 
+                    console.log('Geocode was not successful for the following reason: ' + status)
+                    dojo.place(s, table, "last");
+                    hideLoader();
+                    return;                        
+                }
+                */
+                if (status != google.maps.GeocoderStatus.OK) { 
+                    var s = "<tr style='vertical-align:top'><td>An error prevented us from running your search. Please try again, and contact your System Administrator if the problem persists.</td></tr>"; 
+                    console.log('Geocode was not successful for the following reason: ' + status)
+                    dojo.place(s, table, "last");
+                    hideLoader();
+                    return;                        
+                }
+                
+                var theadinnerHTML = " <tr id=\"header\">\
+                <th width=\"25%\">Name</th>\
+                <th width=\"20%\">City</th>\
+                <th width=\"25%\">Admin 1 Boundary</th>\
+                <th width=\"22%\">Country</th>\
+                <th width=\"5%\"></th>\
+                </tr>";
+                dojo.place(theadinnerHTML, table, "last");
+
+                dojo.forEach(results, function(d, index) {
+                    var ndata = googleNormalizeData(d);
+                    ndata.country = ndata.country || '{!geoCountryName}';
+                    if (!ndata.country) return;//TODO              
+                    if (ndata.country !== '{!geoCountryName}') return;      
+                    var trinnerHTML = dojo.replace(rowTemplate, [ndata.address, 
+                                                              ndata.city, 
+                                                              ndata.state, 
+                                                              ndata.country, 
+                                                              googleCreateSelectButton(ndata)
+                    ]);
+                    dojo.place(trinnerHTML, table, "last");       
+                });
+                var ss = dojo.query(".selectBtnClass", table);
+                if (!ss || ss.length === 0) {
+                    dojo.empty(table);
+                    var sss = "<tr style='vertical-align:top'><td>Please refine your search, no location found with that name.</td></tr>"; 
+                    dojo.place(sss, table, "last");
+                }
+                hideLoader(); 
+            }
+            
+            function googleNormalizeData(input) {
+                var output = {};
+                if(input.geometry.location_type === 'ROOFTOP') {
+                    output.extent = '1 - Exact';
+                } else if(input.geometry.location_type === 'RANGE_INTERPOLATED') {
+                    output.extent = '2 - Near Exact'
+                }
+                if (input.address_components) {//TODO 
+
+                    dojo.forEach(input.address_components, function(component, index) {
+                        if(component.types.length === 0) {
+                            output.address = component.long_name || component.short_name;
+                            if(output.extent === undefined)
+                                    output.extent = '2 - Near Exact';
+                        } else {
+                            if((output.address == undefined || output.address === null) && (component.types[0] === 'point_of_interest' || component.types[0] === 'colloquial_area')) {
+                                output.address = component.long_name || component.short_name;
+                                if(output.extent === undefined)
+                                    output.extent = '2 - Near Exact';
+                            }
+                            if(component.types[0] === 'locality' || component.types[0] === 'sublocality' || component.types[0] === 'neightborhood') {
+                                output.city = component.long_name || component.short_name;
+                                if(output.extent === undefined)
+                                    output.extent = '2 - Near Exact';
+                            }
+                            if(component.types[0] === 'administrative_area_level_2' || component.types[0] === 'administrative_area_level_3' || component.types[0] === 'locality') {
+                                output.region = component.long_name || component.short_name;
+                                if(output.extent === undefined)
+                                    output.extent = '3 - Second Order Admin';
+                            }                       
+                            if(component.types[0] === 'administrative_area_level_1' || component.types[0] === 'administrative_area_level_2') {
+                                output.state = component.long_name || component.short_name;
+                                if(output.extent === undefined)
+                                    output.extent = '4 - First Order Admin';
+                            }
+                            if(component.types[0] === 'country') {
+                                output.country = component.long_name || component.short_name;
+                                if(output.extent === undefined)
+                                    output.extent = '11 - National';
+                            }
+                        }   
+      
+                    });
+                    
+                    if(output.city === undefined) {
+                        output.city = '';
+                    }
+                    if(output.region === undefined) {
+                        output.region = '';
+                    }
+                    if(output.state === undefined) {
+                        output.state = '';
+                    }
+                    if(output.country === undefined) {
+                        output.country = '';
+                    }
+                    
+                    if(output.address === undefined && output.city !== '') {
+                        output.address = output.city;
+                    } else if(output.address === undefined && output.region !== '') {
+                        output.address = output.region;
+                    } else if(output.address === undefined && output.state !== '') {
+                        output.address = output.state;
+                    } else if(output.address === undefined && output.country !== '') {
+                        output.address = output.country;
+                    }
+                    
+                    output.lat = input.geometry.location.lat();
+                    output.lon = input.geometry.location.lng();
+                    
+                    //
+                    output.city = removeAllSpecialChars(output.city);
+                    output.address = removeAllSpecialChars(output.address);
+                    output.state = removeAllSpecialChars(output.state);
+                    output.region = removeAllSpecialChars(output.region);
+                }
+                return output;
+            }
+            function removeAllSpecialChars(input) {
+                if (input) {
+                    var re = /[`|\'|\"]/gi;
+                    input = input.replace(re, '');
+                }
+                return input || '';
+            }
+            //var googleSelectButtonTemplate = "<div title=\"{title}\" onclick=\"googleOnSelect({lat}, {lon}, '{country}', '{state}', '{region}', '{city}', '{name}')\" style=\"display:block;text-align:center;cursor:pointer;font: 0.975em Arial, Helvetica, Geneva, sans-serif;border-radius:5px;background:#f0f0f0;height: 16px;width: 45px;border: 1px solid rgba(33, 68, 72, 0.59);\">Select</div>";
+            var googleSelectButtonTemplate = "<div class='selectBtnClass' title=\"{title}\" onclick=\"googleOnSelect({lat}, {lon}, '{country}', '{state}', '{region}', '{city}', '{name}', '{extent}')\" style=\"text-align:center;cursor:pointer;border-radius:5px;height:16px;width:45px;font-style:italic;text-decoration:underline;\">Select</div>";
+            
+            function googleCreateSelectButton(data) {
+                    var html = dojo.replace(googleSelectButtonTemplate, {
+                        title: data.lat + "," + data.lon,
+                        lat: data.lat,
+                        lon: data.lon,
+                        country: data.country,
+                        state: data.state,
+                        region: data.region,
+                        city: data.city,
+                        name: data.address,
+                        extent: data.extent
+                    });
+                    return html;
+            }  
+            function showLoader() {
+                dojo.byId("loader").style.display = 'block';
+                dojo.byId("resultsTable").style.display = 'none';
+            } 
+            
+            function hideLoader() {
+                dojo.byId("loader").style.display = 'none';
+                dojo.byId("resultsTable").style.display = 'block';
+            }
+            
+            function enterKey(evt) {
+                if (evt.keyCode == 13) locate();
+            }
+             
+/*            var selectButtonTemplate = "<div title=\"{title}\" onclick=\"googleOnSelect({lat}, {lon}, '{country}', '{state}', '{region}', '{city}', '{name}')\" style=\"cursor:pointer\">Select</div>";
+            function createSelectButton(data) {
+                    var html = dojo.replace(selectButtonTemplate, {
+                        title: data.lat + "," + data.lon,
+                        lat: data.lat,
+                        lon: data.lon,
+                        country: data.country,
+                        state: data.state,
+                        region: data.region,
+                        city: data.city,
+                        name: data.address
+                    });
+                    return html;
+            }
+*/            
+            function googleOnSelect(lat,lon,country,state,region,city, name,extent) {
+                var loc = null;
+                try {
+                    showLoader();                               
+
+                    var point = new google.maps.LatLng(lat,lon);
+                   
+                    // Center Map on Selected location  
+                    map.setCenter(point);
+                    map.setZoom(8);
+                    var marker = new google.maps.Marker({
+                        map: map,
+                        position: point
+                    });
+
+                    var p, c;
+                    for (p in USAIDProjectPolygons) {
+                        c = USAIDProjectPolygons[p].polygon;
+                        if (google.maps.geometry.poly.containsLocation(point, c) === true) {
+                            loc = p;
+                            break;
+                        }
+                    }
+
+                    if(loc === null) {
+                        var lat_1 = parseFloat(lat) + parseFloat("0.005");
+                        var lon_1 = parseFloat(lon) + parseFloat("0.005");;
+                        var lat_2 = parseFloat(lat) - parseFloat("0.005");;
+                        var lon_2 = parseFloat(lon) - parseFloat("0.005");;
+                     
+                        var point_1 = new google.maps.LatLng(lat,lon_1);
+                        var point_2 = new google.maps.LatLng(lat,lon_2);
+                        var point_3 = new google.maps.LatLng(lat_1,lon);
+                        var point_4 = new google.maps.LatLng(lat_2,lon);
+                       
+                        var pol, a;
+                        for (pol in USAIDProjectPolygons) {
+                            a = USAIDProjectPolygons[pol].polygon;
+                            if (google.maps.geometry.poly.containsLocation(point_1, a) === true) {
+                                loc = pol;
+                                break;
+                            } else if (google.maps.geometry.poly.containsLocation(point_2, a) === true) {
+                                loc = pol;
+                                break;
+                            } else if (google.maps.geometry.poly.containsLocation(point_3, a) === true) {
+                                loc = pol;
+                                break;
+                            } else if (google.maps.geometry.poly.containsLocation(point_4, a) === true) {
+                                loc = pol;
+                                break;
+                            }
+                        }
+                    } 
+                                       
+                    if(loc != null) {
+                        var provinceCountry = loc.split(","); 
+                        if (provinceCountry.length === 2) {
+                            state = dojo.trim(provinceCountry[0]);
+                            country = dojo.trim(provinceCountry[1]);
+                        }                   
+                    } else {
+                        state = city || region || name || ''; 
+                        country = '{!geoCountryName}'; 
+                    } 
+                    hideLoader();
+                    jsLocation(lat,lon,country,state,region,city, name,extent);
+                } catch (err){
+                    hideLoader();
+                }//TODO: handle err
+            }
+/*   
+            function onSelect(lat,lon,country,state,region,city, name) {
+                var loc = null;
+                try {
+                    showLoader();
+                    if(country == "AF" || country == "AFG") { country = "Afghanistan"; }    
+                    if(country == "BD" || country == "BGD") { country = "Bangladesh"; }
+                    if(country == "CD" || country == "COD") { country = "Democratic Republic of the Congo"; }
+                    if(country == "DO" || country == "DOM") { country = "Dominican Republic"; }
+                    if(country == "EG" || country == "EGY") { country = "Egypt"; }
+                    if(country == "SV" || country == "SLV") { country = "El Salvador"; }
+                    if(country == "ET" || country == "ETH") { country = "Ethiopia"; }
+                    if(country == "GH" || country == "GHA") { country = "Ghana"; }
+                    if(country == "GT" || country == "GTM") { country = "Guatemala";}
+                    if(country == "HT" || country == "HTI") { country = "Haiti"; }    
+                    if(country == "IN" || country == "IND") { country = "India"; }
+                    if(country == "ID" || country == "IDN") { country = "Indonesia"; }
+                    if(country == "IQ" || country == "IRQ") { country = "Iraq"; }
+                    if(country == "KE" || country == "KEN") { country = "Kenya"; }
+                    if(country == "LB" || country == "LBN") { country = "Lebanon"; }
+                    if(country == "LR" || country == "LBR") { country = "Liberia"; }
+                    if(country == "MZ" || country == "MOZ") { country = "Mozambique"; }
+                    if(country == "NG" || country == "NGA") { country = "Nigeria";}
+                    if(country == "PK" || country == "PAK") { country = "Pakistan"; }
+                    if(country == "PH" || country == "PHL") { country = "Philippines"; }
+                    if(country == "RW" || country == "RWA") { country = "Rwanda";}
+                    if(country == "SN" || country == "SEN") { country = "Senegal"; }    
+                    if(country == "SD" || country == "SDN") { country = "South Sudan"; } //SUDAN CODES
+                    if(country == "TZ" || country == "TZA") { country = "Tanzania"; }
+                    if(country == "TL" || country == "TP") { country = "Timor-Leste"; }
+                    if(country == "UG" || country == "UGA") { country = "Uganda"; }
+                    if(country == "IL" || country == "ISR" || country == "PL") { country = "WB Gaza"; }
+                    if(country == "MA" || country == "MAR") { country = "Morocco"; }
+                    if(country == "AO" || country == "AGO") { country = "Angola"; }
+                    if(country == "NP" || country == "NPL") { country = "Nepal"; }
+                    if(country == "RU" || country == "RUS") { country = "Russia"; }
+                    if(country == "RR" || country == "SRB") { country = "Serbia"; }
+                    if(country == "EC" || country == "ECU") { country = "Ecuador"; }
+                    if(country == "GE" || country == "GEO") { country = "Georgia"; }
+                    if(country == "PE" || country == "PER") { country = "Peru"; }
+                    if(country == "MX" || country == "MEX") { country = "Mexico"; }
+                    if(country == "ZA" || country == "ZAF") { country = "South Africa"; }
+                    if(country == "ME" || country == "MNE") { country = "Montenegro"; }
+                    if(country == "ZW" || country == "ZWE") { country = "Zimbabwe"; }
+                                        
+                    var lo = lon.toFixed(5);
+                    var la = lat.toFixed(5);
+
+                    var point = new esri.geometry.Point(lo, la, new esri.SpatialReference({ wkid: 4326 }));
+                    var newpoint = esri.geometry.geographicToWebMercator (point);
+                    var graphic = new esri.Graphic(newpoint, symbol);
+                    graphicLayer.add(graphic);
+
+                    if(newpoint !== undefined){ map.centerAndZoom(newpoint, 8); }
+                    
+                    var p, c;
+                    for (p in USAIDProjectPolygons) {
+                        c = USAIDProjectPolygons[p].polygon;
+                       if (c.contains(point)) {
+                            loc = p;
+                            break;
+                        }
+                    } 
+                    
+                    if(loc === null) {
+                        var lat_1 = parseFloat(la) + parseFloat("0.005");
+                        var lon_1 = parseFloat(lo) + parseFloat("0.005");;
+                        var lat_2 = parseFloat(la) - parseFloat("0.005");;
+                        var lon_2 = parseFloat(lo) - parseFloat("0.005");;
+                     
+                        var point_1 = new esri.geometry.Point(lo, lat_1, new esri.SpatialReference({ wkid: 4326 }));
+                        var point_2 = new esri.geometry.Point(lon_1, la, new esri.SpatialReference({ wkid: 4326 }));
+                        var point_3 = new esri.geometry.Point(lo, lat_2, new esri.SpatialReference({ wkid: 4326 }));
+                        var point_4 = new esri.geometry.Point(lon_2, la, new esri.SpatialReference({ wkid: 4326 }));
+
+                        var pol, a;
+                        for (pol in USAIDProjectPolygons) {
+                            a = USAIDProjectPolygons[pol].polygon;
+                            if (a.contains(point_1)) {
+                                loc = pol;
+                                break;
+                            } else if (a.contains(point_2)) {
+                                loc = pol;
+                                break;
+                            } else if (a.contains(point_3)) {
+                                loc = pol;
+                                break;
+                            } else if (a.contains(point_4)) {
+                                loc = pol;
+                                break;
+                            }
+                        }
+                    } 
+                                       
+                    if(loc != null) {
+                        var provinceCountry = loc.split(","); 
+                        if (provinceCountry.length === 2) {
+                            state = dojo.trim(provinceCountry[0]);
+                            country = dojo.trim(provinceCountry[1]);
+                        }                   
+                    } else {
+                        state = '';  
+                    }
+                    jsLocation(lat,lon,country,state,region,city, name);
+                } catch (err){}//TODO: handle err
+            }
+*/                                
+            
+/*            function showData(data) {
+                //console.log("showing data");
+                var table = dojo.byId('resultsTable');
+                dojo.empty(table);
+                if (!dojo.isArray(data)) { 
+                    if (data.error || data.timeout) {
+                        var s = "<tr style='vertical-align:top'><td>An error prevented us from running your search. Please try again, and contact your System Administrator if the problem persists.</td></tr>"; 
+                        dojo.place(s, table, "last");
+                        hideLoader();
+                        return;                        
+                    } else {
+                        data = new Array(data);
+                    }
+                }
+                if (data.length === 0) {
+                    var s = "<tr style='vertical-align:top'><td>Please refine your search, no location found with that name.</td></tr>"; 
+                    dojo.place(s, table, "last");
+                    hideLoader();
+                    return;
+                }
+                var theadinnerHTML = " <tr id=\"header\">\
+                <th width=\"25%\">Name</th>\
+                <th width=\"19%\">City</th>\
+                <th width=\"24%\">Admin Boundary 1</th>\
+                <th width=\"19%\">Country</th>\
+                <th width=\"8%\">Score</th>\
+                <th width=\"5%\"></th>\
+                </tr>";
+                dojo.place(theadinnerHTML, table, "last");
+
+                dojo.forEach(data, function(d, index) {
+                    var ndata = normalizeData(d);
+                    if (!ndata.country) return;//TODO
+                    
+                    var trinnerHTML = dojo.replace(rowTemplate, [ndata.address, 
+                                                              ndata.city, 
+                                                              ndata.state, 
+                                                              ndata.country, 
+                                                              ndata.score,
+                                                              createSelectButton(ndata)
+                    ]);
+                    dojo.place(trinnerHTML, table, "last");       
+                });
+                hideLoader(); 
+            }
+            
+            function normalizeData(input) {
+                var output = {};
+                if (input.attributes) {//TODO 
+                    output.address = input.address || "";
+                    output.city = input.attributes.City || input.attributes.County || "";
+                    output.region = input.attributes.County || input.attributes.City || "";
+                    output.state = input.attributes.State || input.attributes.County || "";
+                    output.country = input.attributes.Cntry_Abbr || input.attributes.Country;
+                    output.score = input.score || 50 ;
+                    output.lat = input.location.y;
+                    output.lon = input.location.x;
+                    output.type = input.attributes.Type;
+                    output.rank = input.attributes.Rank;
+                } else if (input.address){
+                    output.address = input.address.Name || input.address.City || input.address.Street || "";
+                    output.city = input.address.City || input.address.County || "";
+                    output.region = input.address.County || input.address.City || "";
+                    output.state = input.address.State || input.address.County || "";
+                    output.country = input.address.Country;
+                    output.score = input.score || 50 ;
+                    output.lat = input.location.y;
+                    output.lon = input.location.x;
+                }
+                return output;
+            }
+*/
+            dojo.ready(function() {
+                if (dojo.byId("performSearch").value === "true") {                
+                    setTimeout(function() {locate();}, 2000);   
+                } else {
+                    var table = dojo.byId('resultsTable');
+                    dojo.empty(table);
+                    var s = "<tr style='vertical-align:top'><td>Please type in a name or address and click Search button to search the location.</td></tr>"; 
+                    dojo.place(s, table, "last");
+                }
+            });
+    </script>        
+    
+</apex:page>

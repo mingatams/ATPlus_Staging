@@ -1,0 +1,19 @@
+<apex:page sidebar="false" standardController="AAPlanDetail__c" extensions="AAPlanDetailDeleteController" standardStylesheets="false" docType="html-5.0"  tabStyle="AA_Plans__tab">
+    <apex:StyleSheet value="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/cupertino/jquery-ui.min.css" />
+	<c:styles />
+    <apex:outputPanel rendered="{!id == NULL}">This page requires an A&amp;A Action Detail ID</apex:outputPanel>
+    <apex:form rendered="{!id != NULL}">
+        <apex:pageBlock title="Delete {!AAPlanDetail__c.AandAPlan__r.OperatingUnit__r.Name} - {!AAPlanDetail__c.AandAPlan__r.Name} - {!AAPlanDetail__c.AwardTitle__c}?" >
+            <apex:pageBlockSection columns="1">
+                <apex:pageBlockSectionItem helpText="Please input a reason for deleting this record.">
+                    <apex:outputLabel id="lblDeleteRecordText" for="txtDeleteReason" value="Reason" ></apex:outputLabel>
+                    <apex:outputPanel id="divReqInput" styleClass="requiredInput" layout="block" >
+                        <apex:outputPanel id="divReqBlock" styleClass="requiredBlock" layout="block" />
+                        <apex:inputTextarea styleClass="requiredInput" id="txtDeleteReason" rows="4" cols="70" required="true" value="{!AAPlanDetail__c.Delete_Reason__c}" />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:commandButton action="{!deletex}" value="Delete?" />
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

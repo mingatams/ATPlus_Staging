@@ -1,0 +1,73 @@
+<apex:page controller="MissionUsersReport" sidebar="false" >
+    <apex:form id="theForm">
+     <!-- <apex:actionFunction action="{!FilterMissionUsers}" name="filterUserRecords" reRender="userResultsTable" />  -->
+      
+      <apex:pageBlock title="Mission Users Report" rendered="{!NOT(isAdmin)}">
+        <apex:pageBlockTable value="{!missionUsers}" var="u">
+        <apex:column style="width:15%" headerValue="Last Name" value="{!u.LastName}"/> 
+        <apex:column style="width:15%" headerValue="First Name" value="{!u.FirstName}"/>
+        <apex:column style="width:15%" headerValue="Last Name" value="{!u.userName}"/> 
+        <apex:column style="width:15%" headerValue="Role Name" value="{!u.roleName}"/>        
+        <apex:column style="width:15%" headerValue="Profile Name" value="{!u.profileName}"/>
+        <apex:column style="width:15%" headerValue="Last Login" value="{!u.lastlogin}"/> 
+        <apex:column style="width:10%" headerValue="Active" >
+            <apex:inputCheckbox value="{!u.isActive}" disabled="true" rendered="{!u.isActive}" /> 
+        </apex:column>
+        </apex:pageBlockTable> 
+      </apex:pageBlock>
+      
+      <apex:pageBlock title="Mission Users Report" rendered="{!isAdmin}" id="userResults">
+          
+          <apex:outputPanel id="userResultsTable" >
+              <apex:outputLabel value="Organization:" />
+              <apex:selectList value="{!selectedUserRole}" multiselect="false" size="1">
+                  <apex:selectOptions value="{!Roles}" />
+                  <apex:actionSupport event="onchange" 
+                                    action="{!FilterMissionUsers}" 
+                                    rerender="theForm" />
+              </apex:selectList>
+              <apex:outputLabel value="Last Login:" />
+              <apex:selectList value="{!selectedLoginFilter}" multiselect="false" size="1">
+                  <apex:selectOptions value="{!Loginfilters}" />
+                  <apex:actionSupport event="onchange" 
+                                    action="{!FilterMissionUsers}" 
+                                    rerender="theForm" />
+              </apex:selectList>
+              <apex:outputLabel value="User Count:" />
+              <apex:outputText value="{!totalUserCount}" />
+              
+                            
+            <!--  <apex:commandButton id="pdfButton" value="Export PDF"  onclick="window.open('/apex/MissionUsersReportPDF');"/> -->
+              
+              
+              <table>
+                  <tr bgcolor="#726E6D">                 
+                  
+                  <th width="15%">Last Name</th>
+                  <th width="15%">First Name</th>
+                  <th width="20%">User Name</th>
+                  <th width="20%">Profile Name</th>
+                  <th width="20%">Last Login</th>
+                  <th width="10%">Active</th>
+                  </tr>
+              <apex:repeat value="{!uniqueRoles}" var="rName">
+                    <tr bgcolor="#B6B6B4">
+                        <td colspan="3"><apex:outputText value="{!rName}"/></td> 
+                        <td colspan="3" align="right"><apex:outputLabel value="User Count:" /><apex:outputText value="{!userCountByRole[rName]}"/></td>
+                    </tr>
+                  <apex:repeat value="{!missionUsersByRole[rName]}" var="ur">
+                      <tr>
+                          <td width="15%"><apex:outputText value="{!ur.LastName}"/></td>
+                          <td width="15%"><apex:outputText value="{!ur.FirstNAme}"/></td>
+                          <td width="20%"><apex:outputText value="{!ur.userName}"/></td>
+                          <td width="20%"><apex:outputText value="{!ur.profileName}"/></td>
+                          <td width="20%"><apex:outputText value="{!ur.lastlogin}"/></td>
+                          <td width="10%"><apex:inputCheckbox value="{!ur.isActive}" disabled="true" rendered="{!ur.isActive}" /></td>
+                      </tr>
+                  </apex:repeat>    
+              </apex:repeat>
+              </table>
+        </apex:outputPanel>      
+      </apex:pageBlock>
+    </apex:form>    
+</apex:page>

@@ -1,0 +1,10 @@
+<apex:page sideBar="false"  showchat="false" showheader="false"  >
+
+<!--tabstyle="Emails__tab" -->
+<html>
+<div style="z-index:2;position:relative;font-size:Large;font-weight:bolder;text-align:left">
+
+<apex:iframe id="RP-Email"  src="/6AC?src=7" scrolling="true" height="500" frameborder="0"/>
+</div>
+</html>
+</apex:page>

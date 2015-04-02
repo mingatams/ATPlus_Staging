@@ -1,0 +1,2 @@
+<apex:page standardController="AAPlanDetail__c" extensions="PageRedirectController" action="{!redirectAAPlanDetailEdit}">
+</apex:page>

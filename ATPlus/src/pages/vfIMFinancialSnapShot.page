@@ -1,0 +1,967 @@
+<apex:page standardcontroller="Implementing_Mechanism__c"
+    extensions="ClsIMFinancialSnapShotController,ClsTabController"
+    showHeader="true" sidebar="false">
+
+    <apex:includeScript value="{!$Resource.JQuery172_js}" />
+    <apex:includeScript value="{!$Resource.Highcharts_js}" />
+    <apex:includeScript value="{!$Resource.Highcharts_export_js}" />
+    <script type="text/javascript">      
+     //var asOfDateStr = "{!Implementing_Mechanism__c.As_of_Date__c}" ;
+     
+     var asOfDateStr = "{!asOfDate}" ;
+     var asOfDate1 = new Date(asOfDateStr);     
+     var asOfDate = new Date(asOfDate1.getTime()+(24*60*60*1000));     
+     var asOfYear = asOfDate.getFullYear();
+     var asOfMonth = asOfDate.getMonth() + 1;
+     var asOfMonthStr;
+     var asOfDayStr;
+     var asOfDay = asOfDate.getDate();     
+     if (asOfDay < 10) {asOfDayStr = "0" +asOfDay;}else {asOfDayStr=asOfDay}
+     if (asOfMonth < 10) {asOfMonthStr = "0" +asOfMonth;} else {asOfMonthStr=asOfMonth;}     
+     var formatAsOfDateStr;
+     if (!isNaN(asOfMonth)){
+        formatAsOfDateStr = 'As Of - ' + asOfMonthStr+"/"+asOfDayStr+"/"+asOfYear;
+     } else {
+        formatAsOfDateStr = "";
+     }  
+     
+     
+    $(document).ready(function() { 
+        //alert("Window inner Width::" +$(document).width());
+        //alert("Window App Header Width::" +$("#AppBodyHeader").width());
+        //alert("Window Tab Container Width::" +screen.width); 
+        //alert("Window off Width::" +window.document.body.offsetWidth);
+        //alert("Window client Width::" +window.document.body.clientWidth);
+        //var charWidth = Math.round(window.innerWidth/3);
+        //var charWidth = Math.round(document.getElementById("AppBodyHeader").clientWidth * 0.30 );
+        var charWidth = Math.round($("#AppBodyHeader").width() * 0.309 );
+        //var charWidth = Math.round(screen.width / 3 );
+        //alert("Page Width::" +charWidth);
+        var iArrayAct ;
+        var iArrayProj;
+        var iArrayCat ;
+        
+        
+           iArrayAct = {!ActualValues};
+           iArrayProj = {!ProjectedValues};
+           iArrayCat = {!Xcategories};
+           iArrayOblig = {!ObligationValues};
+        
+        var awdamt = parseFloat("{!Implementing_Mechanism__c.totAward__c}");
+        var oblamt = parseFloat("{!Implementing_Mechanism__c.totObl__c}");
+        var disbamt = parseFloat("{!Implementing_Mechanism__c.totDisb__c}");
+        var accrlsamt = parseFloat("{!Implementing_Mechanism__c.totAccr__c}");
+        var expendamt = parseFloat("{!Implementing_Mechanism__c.totExp__c}");
+        var currpipeline = parseFloat("{!Implementing_Mechanism__c.totPline__c}");
+        
+        
+        
+        if (isNaN(awdamt)) {
+            awdamt = 0;
+        }
+        
+        if (isNaN(oblamt )) {
+            oblamt = 0;
+        }
+        
+        if (isNaN(disbamt)) {
+            disbamt = 0;
+        }
+        
+        if (isNaN(accrlsamt)) {
+            accrlsamt = 0;
+        }
+        
+        if (isNaN(expendamt)) {
+            expendamt = 0;
+        }
+        
+        if (isNaN(currpipeline)) {
+            currpipeline = 0;
+        }
+         
+     
+        var chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'chart_div3',
+                type: 'column',                               
+                width: charWidth,
+                height:350,
+                marginBottom: 20,
+                marginTop: 100             
+        
+            },
+            
+            title: {
+                text: ''
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {         
+                categories: [],
+                labels:{
+                    enabled:false
+                }  
+            },
+            yAxis: {
+                min: 0,
+                labels: {
+                    formatter: function() {
+                        return '$'+this.value/1000000 +'M'; 
+                    }
+                },
+                title: {
+                    text: ''
+                }
+            },
+            legend: {
+                enabled: true,
+                width: 300,
+                floating: true,
+                border:0, 
+                borderRadius: 0, 
+                borderWidth: 0,   
+                align: 'right',
+                verticalAlign: 'top',
+                symbolPadding: 5,
+                symbolWidth: 10,                
+                itemWidth: 150,
+                itemMarginBottom: 5,
+                itemStyle: {
+                    color: '#000000',
+                    fontSize:'09',
+                    fontFamily: 'Arial, Helvetica, sans-serif'                    
+                },
+                labelFormatter: function() {
+                    return this.name
+                }                              
+            },
+            tooltip: {
+                enabled:false
+            },
+            plotOptions: {
+                series:{
+                    enableMouseTracking: false,
+                    allowPointSelect: false,
+                    legendItemClick: function () {
+                            return false; 
+                    }
+                },
+                column: {                    
+                    borderWidth: 0,
+                    events:{
+                        legendItemClick: function () {
+                            return false; 
+                        }
+                    }                                        
+                }
+            },
+            series: [{
+                 name: 'Total Obligation',  
+                 data: [oblamt] 
+               },{
+                 name: 'Total Disbursement',  
+                 data: [disbamt] 
+               },{
+                 name: 'Accruals Current Quarter',  
+                 data: [accrlsamt] 
+               },{
+             //    name: 'Total Expenditures',  
+             //    data: [expendamt] 
+             //  },{
+                 name: 'Unliquidated Balance',  
+                 data: [currpipeline] 
+               }],  
+            
+            credits: {
+                enabled:false
+            },
+            exporting: {
+                enabled:false
+            }
+        }, function(chart) { // on complete
+     
+            chart.renderer.text(formatAsOfDateStr, charWidth-10, 300)
+            .attr({
+                rotation: -90
+            })
+            .css({
+                color: '#625D5D',
+                fontSize: '16px'
+            })
+            .add();
+        
+        }); 
+        
+        
+        var chart = new Highcharts.Chart({
+        chart: {
+            renderTo: 'chart_div2',
+            //ignoreHiddenSeries: true,
+            type: 'line',
+            zoomType: 'x',
+            width:charWidth,
+                height:350,
+                marginBottom: 20,
+                marginTop: 40
+        },
+        title: {
+           text: ''
+        },
+        subtitle: {
+           text: ''
+        },
+        xAxis: {
+           categories: iArrayCat,
+           tickmarkPlacement: 'on',
+           showLastLabel: true,
+           labels:{               
+               step: 4,
+               rotation: 0,
+               style: {                   
+                    font: 'normal 09px Arial, Helvetica, sans-serif'
+                }
+           }
+        },
+        yAxis: {
+            min: 0,
+            labels: {
+                formatter: function() {
+                    return '$'+this.value/1000000 +'M'; 
+                }
+            },
+            title: {
+                text: ''
+            }   
+        },
+        legend: {
+            enabled:true,
+            floating: true,
+            width: 300,
+            border:0, 
+            borderRadius: 0, 
+            borderWidth: 0,
+            align: 'right',
+            verticalAlign: 'top',
+            symbolPadding: 5,
+            symbolWidth: 10,                
+            itemWidth: 150,
+            itemMarginBottom: 5,
+            itemStyle: {
+               color: '#000000',
+               fontSize:'09',
+               fontFamily: 'Arial, Helvetica, sans-serif'                    
+            },
+            labelFormatter: function() {
+               return this.name
+            }                          
+        },
+        plotOptions: {
+        },
+        series: [{
+            name: 'Actuals:',
+            marker:{
+                symbol: 'square'
+            },
+            data: iArrayAct        
+        },{
+            name: 'Projected:',
+            marker:{
+                symbol: 'diamond'
+            },
+            data: iArrayProj        
+        }
+
+        ],
+        credits: {
+           enabled:false
+        },
+        exporting: {
+            enabled:false
+        }
+    }, function(chart) { // on complete
+     
+            chart.renderer.text(formatAsOfDateStr, charWidth-10, 300)
+            .attr({
+                rotation: -90
+            })
+            .css({
+                color: '#625D5D',
+                fontSize: '16px'
+            })
+            .add();
+    });
+    
+    
+/*   var chart = new Highcharts.Chart({
+        chart: {
+            renderTo: 'chart_div4',
+            //ignoreHiddenSeries: true,
+            type: 'line',
+            zoomType: 'x',
+            width:400,
+                height:350,
+                marginBottom: 20,
+                marginTop: 40
+        },
+        title: {
+           text: ''
+        },
+        subtitle: {
+           text: ''
+        },
+        xAxis: {
+           categories: iArrayCat,
+           tickmarkPlacement: 'on',
+           showLastLabel: true,
+           labels:{               
+               step: 4,
+               rotation: 0,
+               style: {                   
+                    font: 'normal 09px Arial, Helvetica, sans-serif'
+                }
+           }
+        },
+        yAxis: {
+            min: 0,
+            labels: {
+                formatter: function() {
+                    return '$'+this.value/1000000 +'M'; 
+                }
+            },
+            title: {
+                text: ''
+            }   
+        },
+        legend: {
+            enabled:true,
+            floating: true,
+            width: 300,
+            border:0, 
+            borderRadius: 0, 
+            borderWidth: 0,
+            align: 'right',
+            verticalAlign: 'top',
+            symbolPadding: 5,
+            symbolWidth: 10,                
+            itemWidth: 150,
+            itemMarginBottom: 5,
+            itemStyle: {
+               color: '#000000',
+               fontSize:'09',
+               fontFamily: 'Arial, Helvetica, sans-serif'                    
+            },
+            labelFormatter: function() {
+               return this.name
+            }                          
+        },
+        plotOptions: {
+        },
+        series: [{
+            name: 'Obligation:',
+            marker:{
+                symbol: 'square'
+            },
+            data: iArrayOblig        
+        },{
+            name: 'Disbursements:',
+            marker:{
+                symbol: 'diamond'
+            },
+            data: iArrayAct        
+        }
+
+        ],
+        credits: {
+           enabled:false
+        },
+        exporting: {
+            enabled:false
+        }
+    }, function(chart) { // on complete
+     
+            chart.renderer.text(formatAsOfDateStr, 350, 300)
+            .attr({
+                rotation: -90
+            })
+            .css({
+                color: '#625D5D',
+                fontSize: '16px'
+            })
+            .add();
+    });  */
+    
+    
+    var stopDegree1 = ((180 * percentDays) / 100) - 180;
+    var radians1 = Math.PI / 180;
+    //var outerRadius = 175;
+    //var innerRadius = 110;
+    //var centerX1 = 187, centerY1 = 300, innerR1 = 110, outerR1 = 175;
+    var centerX1 = Math.round(charWidth / 2), centerY1 = 300, innerR1 = Math.round(charWidth * 0.2676), outerR1 = Math.round(innerR1 + (innerR1 * 0.4257));
+    var outerRadius = Math.round(innerR1 + (innerR1 * 0.5257));
+    var innerRadius = Math.round(charWidth * 0.2676);
+    
+    var fouterX1, fouterY1, fouterX2, fouterY2, finnerX1, finnerY1, finnerX2, finnerY2;
+    var souterX1, souterY1, souterX2, souterY2, sinnerX1, sinnerY1, sinnerX2, sinnerY2;   
+    
+    if (stopDegree1 > 0){
+        stopDegree1 = 0;
+    }
+    
+    /* alert('Stop Degree:' +stopDegree1); */
+    fouterX1 = centerX1 + outerRadius * Math.cos((180) * radians1);
+    fouterY1 = centerY1 + outerRadius * Math.sin((180) * radians1);
+    fouterX2 = centerX1 + outerRadius * Math.cos((0) * radians1);
+    fouterY2 = centerY1 + outerRadius * Math.sin((0) * radians1);
+    finnerX1 = centerX1 + innerRadius * Math.cos((0) * radians1);
+    finnerY1 = centerY1 + innerRadius * Math.sin((0) * radians1);
+    finnerX2 = centerX1 + innerRadius * Math.cos((180) * radians1);
+    finnerY2 = centerY1 + innerRadius * Math.sin((180) * radians1);
+    
+    souterX1 = centerX1 + outerRadius * Math.cos((180) * radians1);
+    souterY1 = centerY1 + outerRadius * Math.sin((180) * radians1);
+    souterX2 = centerX1 + outerRadius * Math.cos((stopDegree1) * radians1);
+    souterY2 = centerY1 + outerRadius * Math.sin((stopDegree1) * radians1);
+    sinnerX1 = centerX1 + innerRadius * Math.cos((stopDegree1) * radians1);
+    sinnerY1 = centerY1 + innerRadius * Math.sin((stopDegree1) * radians1);
+    sinnerX2 = centerX1 + innerRadius * Math.cos((180) * radians1);
+    sinnerY2 = centerY1 + innerRadius * Math.sin((180) * radians1); 
+    
+ /* alert ('First : Outer X1 :' +Math.round(fouterX1) +'Outer Y1 :' +Math.round(fouterY1)+'Outer X2 :' +Math.round(fouterX2)+'Outer Y2 :' +Math.round(fouterY2));
+    alert ('First : Inner X1 :' +Math.round(finnerX1) +'Inner Y1 :' +Math.round(finnerY1)+'Inner X2 :' +Math.round(finnerX2)+'Inner Y2 :' +Math.round(finnerY2));
+    
+   alert ('Second : Outer X1 :' +souterX1 +'Outer Y1 :' +souterY1+'Outer X2 :' +souterX2+'Outer Y2 :' +souterY2);
+    alert ('Second : Inner X1 :' +sinnerX1 +'Inner Y1 :' +sinnerY1+'Inner X2 :' +sinnerX2+'Inner Y2 :' +sinnerY2); */
+    
+    var percentX, percentY;
+    if (stopDegree1 < -135){        
+        percentX = centerX1 + (innerRadius - 10) * Math.cos((stopDegree1) * radians1);
+        percentY = centerY1 + (innerRadius - 10) * Math.sin((stopDegree1) * radians1);
+    } else if(stopDegree1 < -90 && stopDegree1 >= -135 ) {      
+        percentX = centerX1 + (innerRadius -15) * Math.cos((stopDegree1) * radians1);
+        percentY = centerY1 + (innerRadius -10) * Math.sin((stopDegree1) * radians1);
+    } else if (stopDegree1 < -45 && stopDegree1 >= -90){        
+        percentX = centerX1 + (innerRadius -20) * Math.cos((stopDegree1) * radians1);
+        percentY = centerY1 + (innerRadius -10) * Math.sin((stopDegree1) * radians1);
+    } else if (stopDegree1 < 0 && stopDegree1 >= -45){      
+        percentX = centerX1 + (innerRadius -30) * Math.cos((stopDegree1) * radians1);
+        percentY = centerY1 + (innerRadius -10) * Math.sin((stopDegree1) * radians1);
+    }
+    
+    var chart = new Highcharts.Chart({
+        chart: {
+            renderTo: 'chart_div1',
+            width:charWidth,
+            height:350
+        },
+        title: {
+           text: ''
+        },
+        subtitle: {
+           text: ''
+        },
+        credits: {
+           enabled:false
+        },
+        exporting: {
+            enabled:false
+        }    
+      }, function(chart) {          
+            var renderer = chart.renderer;    
+            renderer.path(['M', Math.round(fouterX1), Math.round(fouterY1),'A',outerRadius,outerRadius,0,0,1,Math.round(fouterX2),Math.round(fouterY2), 'L', Math.round(finnerX1), Math.round(finnerY1),'A', innerRadius,innerRadius,0,0,0,Math.round(finnerX2),Math.round(finnerY2)])
+                    .attr({
+                        'stroke-width': 1,
+                        stroke: '#DDDDDD',
+                        fill:"#DDDDDD"
+                    })
+                    .add();
+            
+            renderer.path(['M', souterX1, souterY1,'A',outerRadius,outerRadius,0,0,1,souterX2,souterY2, 'L', sinnerX1, sinnerY1,'A', innerRadius,innerRadius,0,0,0,sinnerX2,sinnerY2])
+                    .attr({
+                        'stroke-width': 1,
+                        stroke: '#002A6C',
+                        fill:"#002A6C"
+                    })
+                    .add();         
+            
+            renderer.text(formatAsOfDateStr, charWidth-10, 250)
+                    .attr({
+                        rotation: -90
+                    })
+                    .css({
+                        
+                        fontSize: '16px'
+                    })
+                    .add();
+            renderer.text(sYear,fouterX1 +20, fouterY1+20)
+                    .attr({             
+                    })
+                    .css({                
+                        fontSize: '09px'
+                    })
+                    .add();
+            renderer.text(eYear,finnerX1 +20, finnerY1+20)
+                    .attr({             
+                    })
+                    .css({                      
+                        fontSize: '09px'
+                    })
+                    .add();
+            renderer.text(Math.round(percentDays)+'%',percentX, percentY)
+                    .attr({             
+                    })
+                    .css({                      
+                        fontSize: '09px'
+                    })
+                    .add();     
+            
+            renderer.text(totMonthsStr1,100, 40)
+                    .attr({             
+                    })
+                    .css({                      
+                        fontSize: '09px'
+                    })
+                    .add();        
+          });    
+   });    
+// }); 
+ 
+ function toUSD(number) {
+    var number = number.toString(), 
+    dollars = number.split('.')[0];
+   // cents = (number.split('.')[1] || '') +'00';
+    dollars = dollars.split('').reverse().join('')
+            .replace(/(\d{3}(?!$))/g, '$1,')
+            .split('').reverse().join('');
+    return '$' + dollars  //+ '.' + cents.slice(0, 2);
+}
+
+
+
+
+
+Date.daysBetween = function( date1, date2 ) {
+    var sdate1=new Date(date1);
+    var edate1=new Date(date2);
+    //Get 1 day in milliseconds
+    var one_day=1000*60*60*24;
+    // Convert both dates to milliseconds
+    var date1_ms = sdate1.getTime();
+    var date2_ms = edate1.getTime();
+    // Calculate the difference in milliseconds
+    var difference_ms = date2_ms - date1_ms;
+    // Convert back to days and return
+    return Math.round(difference_ms/one_day); 
+}
+    
+
+var sDate = "{!Implementing_Mechanism__c.Start_Date__c}" ;
+var eDate = "{!Implementing_Mechanism__c.End_Date__c}" ;   
+
+var sd = new Date(sDate);
+var ed = new Date(eDate);
+
+
+var sYear = sd.getFullYear();
+var eYear = ed.getFullYear();
+
+var totMonths = "{!Implementing_Mechanism__c.totMthsContract__c}";
+var totElapMonths = "{!Implementing_Mechanism__c.totMthsElapsed__c}";
+var totMonthsStr = 'Total Months in Contract:\t' + Math.round(totMonths)  + '\n' +'Total Months Elapsed:\t' +Math.round(totElapMonths);
+var totMonthsStr1 = 'Total Months in Award:\t' + Math.round(totMonths)  + '<br>' +'Total Months Elapsed:\t' +Math.round(totElapMonths);
+ 
+var curr_year = new Date().getFullYear();
+var totaldaysDiff=Date.daysBetween(sDate,eDate);
+var completedDays;
+
+completedDays = Date.daysBetween(sDate,new Date().toString());
+
+var percentDays;
+if (totaldaysDiff> 0 ){
+    percentDays = (completedDays / totaldaysDiff) * 100;
+} else {
+    percentDays = 0;
+}    
+    
+var stopDegree = ((180 * percentDays) / 100) - 180;
+
+if (stopDegree > 0){
+    stopDegree = 0;
+}
+var outerX1, outerY1,outerX2, outerY2,innerX1, innerY1, innerX2, innerY2; 
+
+//$(window).resize(function() {
+  //alert('Inside the Resize');  
+//  window.location.reload(true);
+//});
+
+</script>
+
+<style>
+.boldLabel {
+    font-weight: bold;
+}
+
+.pbSubheader {
+    //background-color: #ffC000 !important;
+    background-color: #d6e0e8 !important;
+    border-color: none !important;
+    color: #000000 !important;
+    //color:#ffffff !important;
+}
+</style>
+
+
+
+ 
+<apex:form styleClass="activeTabBackground">
+    <!--<apex:sectionHeader subtitle="{!sTitle}" title="Implementing Mechanism"/> -->
+    <apex:sectionHeader subtitle="{!sTitle}" title="{!Implementing_Mechanism__c.Name}"/>
+    <div style="height:5px; background:#1797C0;"></div> <br></br>
+<apex:outputText style="font-size:12px;font-weight:bold;" value="{!navigationLink}" escape="false"> </apex:outputText> 
+ <br></br>
+  <br></br>
+        <apex:pageBlock rendered="{!IF(obligationAmt == 0,true,false)}">
+            <div>
+                <p style="text-align: center; color: red; font-size: 20px;">Financial
+                        Data is currently not available for this Implementing Mechanism.
+                        Please check after 22:00 EST.
+                </p>
+               
+            </div>
+             <div id="cbBouutons"  style="width:97%;height:50px;margin: 15px auto 0px auto; text-align: center;">
+                 <apex:commandButton action="{!cancel}"  value="Cancel" rendered="true"/>
+            </div>
+        </apex:pageBlock>
+        
+        <apex:pageBlock rendered="{!IF(obligationAmt != 0,true,false)}">
+            <apex:pageBlockButtons location="both">                
+                <apex:commandButton action="{!cancel}"  value="Cancel" rendered="true"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection collapsible="false" columns="2" title="A. OVERVIEW">                
+              <!--  <apex:facet name="header">        
+               <span class="pbSubExtra"><span class="requiredLegend">
+               <span class="requiredExampleOuter"></span>
+               <span class=""> <img src="{!$Resource.PublicIcon}" /> = Public Fields</span> </span></span>
+               <h3>A. BASIC INFORMATION</h3>
+               </apex:facet>
+         -->
+                
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputText value="OrgUnit Name"/ >
+                    <apex:outputText value="{!IF(ISNULL(Implementing_Mechanism__c.ouName__c),'Not Available',Implementing_Mechanism__c.ouName__c)}" /> 
+                </apex:pageBlockSectionItem>
+                    
+                <apex:pageBlockSectionItem >
+                    <apex:outputText value="Start Date"/ >
+                        <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                            <apex:param value="{!Implementing_Mechanism__c.Start_Date__c}" />
+                        </apex:outputText>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputText value="Implementing Mechanism Number"/ >
+                        <apex:outputText value="{!Implementing_Mechanism__c.Name}" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputText value="End Date"/ >
+                        <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                            <apex:param value="{!Implementing_Mechanism__c.End_Date__c}" />
+                        </apex:outputText>
+                </apex:pageBlockSectionItem>
+               
+                 <apex:pageBlockSectionItem >
+                    <apex:outputText value="Implementing Mechanism Name"/ >
+                        <apex:outputText value="{!Implementing_Mechanism__c.Implementing_Mechanism_Name__c}" />
+                </apex:pageBlockSectionItem>
+                <!-- <apex:pageBlockSectionItem >
+                    <apex:outputText value="Primary Partner"/ >
+                        <apex:outputText value="{!IF(ISNULL(Implementing_Mechanism__c.Partner_Id__r.Name),'Not Available',Implementing_Mechanism__c.Partner_Id__r.Name)}" />
+                </apex:pageBlockSectionItem> -->
+                
+                
+                <apex:pageBlockSectionItem >
+            <apex:pageBlockSectionItem >
+                 <!--<apex:image value="{!$Resource.PublicIcon}" /> -->
+                 <apex:outputLabel value="Primary Partner"/>
+             </apex:pageBlockSectionItem>    
+            <apex:outputText value="{!IF(ISNULL(Implementing_Mechanism__c.Partner_Id__r.Name),'Not Available',Implementing_Mechanism__c.Partner_Id__r.Name)}" />    
+           </apex:pageBlockSectionItem> 
+                
+                
+                
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputText value="Total Months in the Contract"/ >
+                        <apex:outputText value="{0,number,###,###}">
+                            <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.totMthsContract__c),0,Implementing_Mechanism__c.totMthsContract__c)}" />
+                        </apex:outputText>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                      <apex:outputText value="Award Key"/ >
+                      <apex:outputText value="{!IF(ISNULL(Implementing_Mechanism__c.Award_Key__c),'Not Available',Implementing_Mechanism__c.Award_Key__c)}" />
+                </apex:pageBlockSectionItem>
+                    
+                <apex:pageBlockSectionItem >
+                    <apex:outputText value="Total Months Elapsed" />
+                    <apex:outputText value="{0,number,###,###}">
+                        <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.totMthsElapsed__c),0,Implementing_Mechanism__c.totMthsElapsed__c)}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Award Number"/ >
+                            <apex:outputText value="{!IF(ISNULL(Implementing_Mechanism__c.Document__c),'Not Available',Implementing_Mechanism__c.Document__c)}" />
+                    </apex:pageBlockSectionItem>                   
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Contract/Grant"/ >
+                            <apex:outputText value="{!IF(ISNULL(Implementing_Mechanism__c.Contract_Grant__c),'Not Available',Implementing_Mechanism__c.Contract_Grant__c)}" />
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Order Number"/ >
+                            <apex:outputText value="{!IF(ISNULL(Implementing_Mechanism__c.OrderNum__c),'Not Available',Implementing_Mechanism__c.OrderNum__c)}" />
+                    </apex:pageBlockSectionItem>
+
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Last Modification"/ >
+                            <apex:outputText value="{!IF(ISNULL(Implementing_Mechanism__c.Last_Modification__c),'Not Available',Implementing_Mechanism__c.Last_Modification__c)}" />
+                    </apex:pageBlockSectionItem>
+
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Award Type"/ >
+                            <apex:outputText value="{!IF(ISNULL(Implementing_Mechanism__c.Award_Type__c),'Not Available',Implementing_Mechanism__c.Award_Type__c)}" />
+                    </apex:pageBlockSectionItem>
+
+                </apex:pageBlockSection>
+
+
+
+                <apex:pageBlockSection collapsible="false" columns="2" title="B. FINANCIAL INFORMATION">
+               <!--     <apex:pageBlockSectionItem >
+                        <apex:outputText value="Total Estimated Cost"/ >
+                            <apex:outputText value="{0,number,$###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.totAward__c),0,ROUND(Implementing_Mechanism__c.totAward__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem> -->
+                    
+                    
+                     <apex:pageBlockSectionItem >
+            <apex:pageBlockSectionItem >
+                <!-- <apex:image value="{!$Resource.PublicIcon}" /> -->
+                 <apex:outputLabel value="Total Estimated Cost"/>
+             </apex:pageBlockSectionItem>    
+               <apex:outputText value="{0,number,$###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.totAward__c),0,ROUND(Implementing_Mechanism__c.totAward__c,0))}" />
+                            </apex:outputText>
+           </apex:pageBlockSectionItem> 
+                    
+                    
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="% Obligation to Award Amount"/ >
+                            <apex:outputText value="{!Implementing_Mechanism__c.pcObl2Award__c}" />
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Total Obligation Amount"/ >
+                            <apex:outputText value="{0,number,$###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.totObl__c),0,ROUND(Implementing_Mechanism__c.totObl__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="% Total Pipeline to Obligation"/ >
+                            <apex:outputText value="{!Implementing_Mechanism__c.pcUnliqBal2Obl__c}" />
+                    </apex:pageBlockSectionItem>
+                    
+                   <!-- <apex:pageBlockSectionItem >
+                        <apex:outputText value="% Total Expenditures to Award Amount"/ >
+                            <apex:outputText value="{!Implementing_Mechanism__c.pcExp2Award__c}" />
+                    </apex:pageBlockSectionItem> -->
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Total Disbursements"/ >
+                            <apex:outputText value="{0,number,$###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.totDisb__c),0,ROUND(Implementing_Mechanism__c.totDisb__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                    <!-- <apex:pageBlockSectionItem >
+                        <apex:outputText value="% Total Expenditures to Obligation"/ >
+                            <apex:outputText value="{!Implementing_Mechanism__c.pcExp2Obl__c}" />
+                    </apex:pageBlockSectionItem> -->
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Total Accruals"/ >
+                            <apex:outputText value="{0,number,$###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.totAccr__c),0,ROUND(Implementing_Mechanism__c.totAccr__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                   <!-- <apex:pageBlockSectionItem >
+                        <apex:outputText value="Total Expenditures"/ >
+                        <apex:outputText value="{0,number,$###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.totExp__c),0,ROUND(Implementing_Mechanism__c.totExp__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem> -->
+                    
+                    
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Unliquidated Balance"/ >
+                            <apex:outputText value="{0,number,$###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.totPline__c),0,ROUND(Implementing_Mechanism__c.totPline__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="" />
+                        <apex:outputText value="" />
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Total Fund Cite Obligation"/>
+                            <apex:outputText value="{0,number,$###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.FundCite_Obligation__c),0,ROUND(Implementing_Mechanism__c.FundCite_Obligation__c,0))}" />
+                           </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection collapsible="false" columns="2" title="C. DISBURSEMENT">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Disbursements (Previous 2 Qtrs)"/ >
+                            <apex:outputText value="{0,number,$###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.DisbP2Qtr__c),0,ROUND(Implementing_Mechanism__c.DisbP2Qtr__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Disbursements (Previous Qtr"/ >
+                            <apex:outputText value="{0,number,$###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.DisbP1Qtr__c),0,ROUND(Implementing_Mechanism__c.DisbP1Qtr__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Disbursements (Previous 2 Months)"/ >
+                            <apex:outputText value="{0,number,$###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.DisbP2Mth__c),0,ROUND(Implementing_Mechanism__c.DisbP2Mth__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Disbursements (Previous 1 Month)"/ >
+                            <apex:outputText value="{0,number,$###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.DisbP1Mth__c),0,ROUND(Implementing_Mechanism__c.DisbP1Mth__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection collapsible="false" columns="2" title="D. EXPENDITURE RATE">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Expenditure Rate (Historical)"/ >
+                            <apex:outputText value="{0,number,$###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.ERateHist__c),0,ROUND(Implementing_Mechanism__c.ERateHist__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Expenditure Rate (Previous 2 Quarters)"/ >
+                            <apex:outputText value="{0,number,$###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.ERateP2Qtr__c),0,ROUND(Implementing_Mechanism__c.ERateP2Qtr__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Expenditure Rate (Previous Quarter)"/ >
+                            <apex:outputText value="{0,number,$###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.ERateP1Qtr__c),0,ROUND(Implementing_Mechanism__c.ERateP1Qtr__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Expenditure Rate (Previous 2 Months)"/ >
+                            <apex:outputText value="{0,number,$###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.ERateP2Mth__c),0,ROUND(Implementing_Mechanism__c.ERateP2Mth__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Expenditure Rate (Previous Month)"/ >
+                            <apex:outputText value="{0,number,$###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.ERateP1Mth__c),0,ROUND(Implementing_Mechanism__c.ERateP1Mth__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection collapsible="false" columns="2"
+                    title="E. UNLIQUIDATED BALANCE - # Months of Unliquidated Balance (Unliquidated Balance/Avg Expenditure Rate)">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Unliquidated Balance Months (Historical)"/ >
+                            <apex:outputText value="{0,number,###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.UnliqBalMthHist__c),0,ROUND(Implementing_Mechanism__c.UnliqBalMthHist__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Unliquidated Balance Months (Previous 2 Qtrs)"/ >
+                            <apex:outputText value="{0,number,###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.UnliqBalMthP2Qtr__c),0,ROUND(Implementing_Mechanism__c.UnliqBalMthP2Qtr__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Unliquidated Balance Months (Previous Qtr)"/ >
+                            <apex:outputText value="{0,number,###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.UnliqBalMthP1Qtr__c),0,ROUND(Implementing_Mechanism__c.UnliqBalMthP1Qtr__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Unliquidated Balance Months (Previous 2 Months)"/ >
+                            <apex:outputText value="{0,number,###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.UnliqBalMthP2Mth__c),0,ROUND(Implementing_Mechanism__c.UnliqBalMthP2Mth__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Unliquidated Balance Months (Previous Month)"/ >
+                            <apex:outputText value="{0,number,###,###}">
+                                <apex:param value="{!IF(ISNULL(Implementing_Mechanism__c.UnliqBalMthP1Mth__c),0,ROUND(Implementing_Mechanism__c.UnliqBalMthP1Mth__c,0))}" />
+                            </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection collapsible="false" columns="1" title="F. AWARD SNAPSHOT">
+                  <!--    <apex:pageBlockSectionItem > -->
+                      <div style="width: 100%;">
+                        <div id="chart_div3" style="height: 350px; margin-left: 0px; float: left;">
+                        </div>
+                  <!--   </apex:pageBlockSectionItem> 
+                    <apex:pageBlockSectionItem > -->
+
+                        <div id="chart_div1" style="height: 350px; margin-left: 5px; float: left;">
+                        </div>
+
+                 <!--   </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem > -->
+                        <div id="chart_div2" style="height: 350px; margin-left: 5px; float: left;">
+                        </div>
+                      </div>  
+                <!--    </apex:pageBlockSectionItem> -->
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection collapsible="false" columns="1">
+                   <!-- <apex:pageBlockSectionItem > -->
+                       <div style="width: 100%;">
+                        <div style="width: 31%; height: 35px; margin-left: 0px; float: left;">
+                            <p style="text-align: center; font-family: Arial; font-size: 14px; font-weight: bold; text-transform: uppercase;">FINANCIAL
+                                SNAPSHOT</P>
+                        </div>
+                  <!--  </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem > -->
+                        <div style="width: 31%; height: 35px; margin-left: 5px; float: left;">
+                            <p style="text-align: center; font-family: Arial; font-size: 14px; font-weight: bold; text-transform: uppercase;">TIME
+                                ELAPSED</P>
+                        </div>
+                   <!-- </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem > -->
+                        <div style="width: 31%; height: 35px; margin-left: 5px; float: left;">
+                            <p style="text-align: center; font-family: Arial; font-size: 14px; font-weight: bold; text-transform: uppercase;">EXPENDITURE
+                                RATE</P>
+                        </div>
+                       </div> 
+                   <!--  </apex:pageBlockSectionItem> -->
+                </apex:pageBlockSection>                
+            </apex:pageBlock>
+    </apex:form>
+</apex:page>

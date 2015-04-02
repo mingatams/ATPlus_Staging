@@ -1,0 +1,478 @@
+<apex:page cache="true" expires="600" title="USAID Portfolio Map" showHeader="false" standardStyleSheets="false">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" version="XHTML+RDFa 1.0" dir="ltr"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:dc="http://purl.org/dc/terms/"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:og="http://ogp.me/ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:sioc="http://rdfs.org/sioc/ns#"
+  xmlns:sioct="http://rdfs.org/sioc/types#"
+  xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+
+<head profile="http://www.w3.org/1999/xhtml/vocab">
+<!-- <base href="{!URLFOR($Resource.WebsiteWIP)}/" target="_blank" />
+<base href="http://www.usaid.gov/" />-->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/images/favicon.ico" type="image/vnd.microsoft.icon" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+
+<title>USAID Portfolio Map</title>
+
+<style type="text/css" media="all">
+@import url("http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/css/system.base.css");
+@import url("http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/css/system.theme.css");
+</style>
+
+<style type="text/css" media="all">
+@import url("http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/css/alpha-reset.css?m2owbc");
+@import url("http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/css/alpha-mobile.css?m2owbc");
+@import url("http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/css/alpha-alpha.css?m2owbc");
+@import url("http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/css/formalize.css?m2owbc");
+@import url("http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/css/omega-branding.css?m2owbc");
+</style>
+
+
+
+<!--[if lte IE 7]>
+<link type="text/css" rel="stylesheet" href="http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/css/ie-lte-7.css?m2owbc" media="all" />
+<![endif]-->
+
+
+<style type="text/css" media="all">
+@import url("http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/css/global.css");
+</style>
+
+<style type="text/css" media="all">
+@import url("http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/css/usaid-alpha-default.css");
+@import url("http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/css/usaid-alpha-default-normal.css");
+@import url("http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/css/alpha-default-normal-24.css");
+</style>
+
+
+<link href='http://fonts.googleapis.com/css?family=Abel' rel='stylesheet' type='text/css' /> 
+
+<script type="text/javascript" src="http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/js/jquery.js"></script>
+<script type="text/javascript" src="http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/js/jquery.once.js"></script>
+<script type="text/javascript" src="http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/js/drupal.js"></script>
+
+
+<script type="text/javascript" src="http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/js/usaid.js"></script>
+<script type="text/javascript" src="http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/js/jquery.formalize.js"></script>
+
+
+</head>
+<body class="html not-front not-logged-in page-node page-node- page-node-857 node-type-page context-who-we-are one-sidebar sidebar-first">
+  <div id="skip-link">
+    <a href="#main-content" class="element-invisible element-focusable">Skip to main content</a>
+  </div>
+    <div class="page clearfix" id="page">
+      <div id="section-header" class="section section-header">
+  <div id="zone-branding-wrapper" class="zone-wrapper zone-branding-wrapper clearfix">  
+  <div id="zone-branding" class="zone zone-branding clearfix container-24">
+    <div class="grid-24 region region-branding" id="region-branding">
+  <div class="region-inner region-branding-inner">
+    <div class="branding-data clearfix">
+            <div class="logo-img">
+        <a href="http://www.usaid.gov/" rel="home" title="U.S. Agency for International Development"><img src="http://map.usaid.gov{!URLFOR($Resource.WebsiteWIP)}/images/logo.png" alt="U.S. Agency for International Development" id="logo" /></a>      </div>
+                        <div class="site-name-slogan element-invisible">
+                        <h2 class="site-title"><a href="http://www.usaid.gov/" title="Home">U.S. Agency for International Development</a></h2>
+                              </div>
+          </div>
+    <div class="block block-menu block-menu-administrators-menu block-menu-menu-administrators-menu odd block-without-title" id="block-menu-menu-administrators-menu">
+  <div class="block-inner clearfix">
+                
+    <div class="content clearfix">
+      <ul class="menu"><li class="first last leaf"><a href="http://www.usaid.gov/who-we-are/organization/leadership-listing" title="">USAID Leadership</a></li>
+</ul>    </div>
+  </div>
+</div>
+  </div>
+</div>  </div>
+</div><div id="zone-menu-wrapper" class="zone-wrapper zone-menu-wrapper clearfix">  
+<div class="zone zone-menu clearfix container-24" id="zone-menu">
+    <div id="region-menu" class="grid-24 region region-menu">
+  <div class="region-inner region-menu-inner">
+        
+<div class="wrapper-menu-block">
+<div id="block-menu-block-2" class="block block-menu-block block-2 block-menu-block-2 odd block-without-title">
+  <div class="block-inner clearfix">
+                
+    <div class="content clearfix">
+      <div class="menu-block-wrapper menu-block-2 menu-name-main-menu parent-mlid-0 menu-level-1">
+  <ul class="menu menu-top" style="width: auto;"><li class="first expanded active-trail menu-mlid-1128" style="width: auto; position: relative;"><a href="http://www.usaid.gov/who-we-are" style="width: auto;">Who We Are</a><ul class="menu" style="width: 210px; left: 0px;"><li class="mobile_nav" style="width: auto; position: relative;"><a title="back" href="#" class="btn_back">back</a><a href="http://www.usaid.gov/who-we-are" title="Who We Are" style="width: auto;">Who We Are</a></li><li class="parent-mlid-1519 item-index-1 parent-title-who-we-are parent" style="width: 177px; position: absolute;"><div class="view view-menu-content view-id-menu_content view-display-id-block view-dom-id-dadbccbdbda2a6456f4c3c2e773b87f7">
+        
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first views-row-last">
+      
+  <div class="views-field views-field-field-menu-image">        <div class="field-content"><a href="http://www.usaid.gov/who-we-are" style="width: auto;"><img title="Who We Are" alt="Who We Are" src="http://www.usaid.gov/sites/default/files/styles/177x193_menu_image/public/menu-content/11LM-Dadaab.JPG" typeof="foaf:Image" /></a></div>  </div>  
+  <div class="views-field views-field-field-menu-content-link-1 parent-slide">        <div class="field-content">About USAID<span class="parent-slide-link"><a href="http://www.usaid.gov/who-we-are" style="width: auto;">Who We Are</a></span></div>  </div>  </div>
+    </div>
+  
+  
+  
+  
+  
+  
+</div></li><li class="first leaf has-children menu-mlid-1519" style="width: auto; position: relative;"><a href="http://www.usaid.gov/who-we-are/usaid-history" style="width: auto;">USAID History</a></li>
+<li class="leaf menu-mlid-1527" style="width: auto; position: relative;"><a href="http://www.usaid.gov/who-we-are/agency-policy" style="width: auto;">Operational Policy</a></li>
+<li class="leaf has-children active-trail menu-mlid-1557" style="width: auto; position: relative;"><a class="active-trail" href="http://www.usaid.gov/who-we-are/organization" style="width: auto;">Organization</a></li>
+<li class="last leaf menu-mlid-2448" style="width: auto; position: relative;"><a title="" href="http://www.usaid.gov/who-we-are/resource-portal" style="width: auto;">Resource Portal</a></li>
+</ul></li>
+<li class="expanded menu-mlid-1141" style="width: auto; position: relative;"><a href="http://www.usaid.gov/what-we-do" style="width: auto;">What We Do</a><ul class="menu" style="width: 210px; left: 0px;"><li class="mobile_nav" style="width: auto; position: relative;"><a title="back" href="#" class="btn_back">back</a><a href="http://www.usaid.gov/what-we-do" title="What We Do" style="width: auto;">What We Do</a></li><li class="parent-mlid-1149 item-index-2 parent-title-what-we-do parent" style="width: 177px; position: absolute;"><div class="view view-menu-content view-id-menu_content view-display-id-block view-dom-id-7985e33a969a9306d5fefcffb5098c97">
+        
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first views-row-last">
+      
+  <div class="views-field views-field-field-menu-image">        <div class="field-content"><a href="http://www.usaid.gov/what-we-do" style="width: auto;"><img title="What We Do" alt="What We Do" src="http://www.usaid.gov/sites/default/files/styles/177x193_menu_image/public/menu-content/Copy%20of%20Mali_2002_004_FFW_WFP-Ramin_Rafirasme.jpg" typeof="foaf:Image" /></a></div>  </div>  
+  <div class="views-field views-field-field-menu-content-link-1 parent-slide">        <div class="field-content">Areas of Focus<span class="parent-slide-link"><a href="http://www.usaid.gov/what-we-do" style="width: auto;">What We Do</a></span></div>  </div>  </div>
+    </div>
+  
+  
+  
+  
+  
+  
+</div></li><li class="first leaf has-children menu-mlid-1149" style="width: auto; position: relative;"><a href="http://www.usaid.gov/what-we-do/agriculture-and-food-security" style="width: auto;">Agriculture and Food Security</a></li>
+<li class="leaf has-children menu-mlid-1152" style="width: auto; position: relative;"><a href="http://www.usaid.gov/what-we-do/democracy-human-rights-and-governance" style="width: auto;">Democracy, Human Rights and Governance</a></li>
+<li class="leaf has-children menu-mlid-1146" style="width: auto; position: relative;"><a href="http://www.usaid.gov/what-we-do/economic-growth-and-trade" style="width: auto;">Economic Growth and Trade</a></li>
+<li class="leaf has-children menu-mlid-1148" style="width: auto; position: relative;"><a title="Education is critical to broad-based economic growth and poverty reduction. Individual earnings increase by 10 percent for each year of school completed.  Education has a multiplier effect, contributing to greater outcomes in other areas such as health and democracy and governance." href="http://www.usaid.gov/what-we-do/education" style="width: auto;">Education</a></li>
+<li class="leaf has-children menu-mlid-1147" style="width: auto; position: relative;"><a href="http://www.usaid.gov/what-we-do/environment-and-global-climate-change" style="width: auto;">Environment and Global Climate Change</a></li>
+<li class="leaf has-children menu-mlid-1151" style="width: auto; position: relative;"><a href="http://www.usaid.gov/what-we-do/gender-equality-and-womens-empowerment" style="width: auto;">Gender Equality and Women's Empowerment</a></li>
+<li class="leaf has-children menu-mlid-1155" style="width: auto; position: relative;"><a href="http://www.usaid.gov/what-we-do/global-health" style="width: auto;">Global Health</a></li>
+<li class="leaf has-children menu-mlid-1154" style="width: auto; position: relative;"><a href="http://www.usaid.gov/what-we-do/science-technolog-and-innovation" style="width: auto;">Science, Technology and Innovation</a></li>
+<li class="leaf has-children menu-mlid-1150" style="width: auto; position: relative;"><a href="http://www.usaid.gov/what-we-do/water-and-sanitation" style="width: auto;">Water and Sanitation</a></li>
+<li class="last leaf has-children menu-mlid-1153" style="width: auto; position: relative;"><a href="http://www.usaid.gov/what-we-do/working-crises-and-conflict" style="width: auto;">Working in Crises and Conflict</a></li>
+</ul></li>
+<li class="expanded menu-mlid-1142" style="width: auto; position: relative;"><a class="active-trail" href="http://www.usaid.gov/where-we-work" style="width: auto;">Where We Work</a><ul class="menu" style="width: 210px; left: 0px;"><li class="mobile_nav" style="width: auto; position: relative;"><a title="back" href="#" class="btn_back">back</a><a href="http://www.usaid.gov/where-we-work" title="Where We Work" style="width: auto;">Where We Work</a></li><li class="parent-mlid-2220 item-index-3 parent-title-where-we-work parent" style="width: 177px; position: absolute;"><div class="view view-menu-content view-id-menu_content view-display-id-block view-dom-id-e06269487a08529248a6b1347610e50e">
+        
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first views-row-last">
+      
+  <div class="views-field views-field-field-menu-image">        <div class="field-content"><a href="http://www.usaid.gov/where-we-work" style="width: auto;"><img title="Where We Work Map" alt="Where We Work Map" src="http://www.usaid.gov/sites/default/files/styles/177x193_menu_image/public/menu-content/usaid_wherewework_1.jpg" typeof="foaf:Image" /></a></div>  </div>  
+  <div class="views-field views-field-field-menu-content-link-1 parent-slide">        <div class="field-content">A Global Presence<span class="parent-slide-link"><a href="http://www.usaid.gov/where-we-work" style="width: auto;">Where We Work</a></span></div>  </div>  </div>
+    </div>
+  
+  
+  
+  
+  
+  
+</div></li><li class="first leaf menu-mlid-2220" style="width: auto; position: relative;"><a title="" href="http://map.usaid.gov" style="width: auto;">Interactive Map</a></li>
+<li class="leaf has-children menu-mlid-5346" style="width: auto; position: relative; "><a href="http://www.usaid.gov/where-we-work/afghanistan-and-pakistan" style="width: auto; ">Afghanistan and Pakistan</a></li>
+<li class="leaf has-children menu-mlid-1156" style="width: auto; position: relative;"><a title="USAID in Africa" href="http://www.usaid.gov/where-we-work/africa" style="width: auto;">Africa</a></li>
+<li class="leaf has-children menu-mlid-1157" style="width: auto; position: relative;"><a href="http://www.usaid.gov/where-we-work/asia" style="width: auto;">Asia</a></li>
+<li class="leaf has-children menu-mlid-1159" style="width: auto; position: relative;"><a href="http://www.usaid.gov/where-we-work/europe-and-eurasia" style="width: auto;">Europe and Eurasia</a></li>
+<li class="leaf has-children menu-mlid-1160" style="width: auto; position: relative;"><a href="http://www.usaid.gov/where-we-work/latin-american-and-caribbean" style="width: auto;">Latin America and the Caribbean</a></li>
+<li class="last leaf has-children menu-mlid-1158" style="width: auto; position: relative;"><a href="http://www.usaid.gov/where-we-work/middle-east" style="width: auto;">Middle East</a></li>
+</ul></li>
+<li class="expanded menu-mlid-1143" style="width: auto; position: relative;"><a href="http://www.usaid.gov/results-and-data" style="width: auto;">Results &amp; Data</a><ul class="menu" style="width: 210px; left: 0px;"><li class="mobile_nav" style="width: auto; position: relative;"><a title="back" href="#" class="btn_back">back</a><a href="http://www.usaid.gov/results-and-data" title="Results &amp; Data" style="width: auto;">Results &amp; Data</a></li><li class="parent-mlid-1502 item-index-4 parent-title-results--data parent" style="width: 177px; position: absolute;"><div class="view view-menu-content view-id-menu_content view-display-id-block view-dom-id-1436575c56d874fda3a639fb6e42d44f">
+        
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first views-row-last">
+      
+  <div class="views-field views-field-field-menu-image">        <div class="field-content"><a href="http://www.usaid.gov/results-and-data" style="width: auto;"><img title="Results and Data" alt="Results and Data" src="http://www.usaid.gov/sites/default/files/styles/177x193_menu_image/public/menu-content/usaid_1%25.jpg" typeof="foaf:Image" /></a></div>  </div>  
+  <div class="views-field views-field-field-menu-content-link-1 parent-slide">        <div class="field-content">The Value of Foreign Aid<span class="parent-slide-link"><a href="http://www.usaid.gov/results-and-data" style="width: auto;">Results and Data</a></span></div>  </div>  </div>
+    </div>
+  
+  
+  
+  
+  
+  
+</div></li><li class="first leaf has-children menu-mlid-1502" style="width: auto; position: relative;"><a href="http://www.usaid.gov/results-and-data/planning" style="width: auto;">Planning</a></li>
+<li class="leaf has-children menu-mlid-2616" style="width: auto; position: relative;"><a href="http://www.usaid.gov/results-and-data/progress-data" style="width: auto;">Progress &amp; Data</a></li>
+<li class="leaf has-children menu-mlid-1501" style="width: auto; position: relative;"><a href="http://www.usaid.gov/results-and-data/budget-spending" style="width: auto;">Budget &amp; Spending</a></li>
+<li class="leaf has-children menu-mlid-3539" style="width: auto; position: relative;"><a href="http://www.usaid.gov/results-and-data/information-resources" style="width: auto;">Information Resources</a></li>
+<li class="leaf menu-mlid-3573" style="width: auto; position: relative;"><a href="http://www.usaid.gov/results-and-data/mobile-apps" style="width: auto;">Mobile Apps</a></li>
+<li class="leaf menu-mlid-2196" style="width: auto; position: relative;"><a title="" href="http://www.usaid.gov/results-data/success-stories" style="width: auto;">Transforming Lives</a></li>
+<li class="last leaf has-children menu-mlid-3568" style="width: auto; position: relative;"><a href="http://www.usaid.gov/results-and-data/highlights" style="width: auto;">Key Accomplishments</a></li>
+</ul></li>
+<li class="expanded menu-mlid-1144" style="width: auto; position: relative;"><a title="" href="http://www.usaid.gov/news-information" style="width: auto;">News &amp; Information</a><ul class="menu" style="width: 210px; left: 0px;"><li class="mobile_nav" style="width: auto; position: relative;"><a title="back" href="#" class="btn_back">back</a><a href="http://www.usaid.gov/news-information" title="News &amp; Information" style="width: auto;">News &amp; Information</a></li><li class="parent-mlid-1211 item-index-5 parent-title-news--information parent" style="width: 177px; position: absolute;"><div class="view view-menu-content view-id-menu_content view-display-id-block view-dom-id-626283bdc9807c78012eb6bb519801df">
+        
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first views-row-last">
+      
+  <div class="views-field views-field-field-menu-image">        <div class="field-content"><a href="http://www.usaid.gov/news-information" style="width: auto;"><img title="News and Information" alt="News and Information" src="http://www.usaid.gov/sites/default/files/styles/177x193_menu_image/public/menu-content/March%20FrontLines%20Cover%20Image.jpg" typeof="foaf:Image" /></a></div>  </div>  
+  <div class="views-field views-field-field-menu-content-link-1 parent-slide">        <div class="field-content">Latest News at USAID<span class="parent-slide-link"><a href="http://www.usaid.gov/news-information" style="width: auto;">News and Information</a></span></div>  </div>  </div>
+    </div>
+  
+  
+  
+  
+  
+  
+</div></li><li class="first leaf menu-mlid-1211" style="width: auto; position: relative;"><a title="" href="http://www.usaid.gov/news-information/press-releases" style="width: auto;">Press Releases</a></li>
+<li class="leaf menu-mlid-1213" style="width: auto; position: relative;"><a title="" href="http://www.usaid.gov/news-information/congressional-testimony" style="width: auto;">Congressional Testimony</a></li>
+<li class="leaf menu-mlid-1212" style="width: auto; position: relative;"><a title="" href="http://www.usaid.gov/news-information/speeches-testimony" style="width: auto;">Speeches</a></li>
+<li class="leaf menu-mlid-1556" style="width: auto; position: relative;"><a title="" href="http://blog.usaid.gov" style="width: auto;">The Impact Blog</a></li>
+<li class="leaf menu-mlid-2114" style="width: auto; position: relative;"><a title="" href="http://www.usaid.gov/news-information/fact-sheets" style="width: auto;">Fact Sheets</a></li>
+<li class="leaf menu-mlid-1524" style="width: auto; position: relative;"><a href="http://www.usaid.gov/news-information/events-development-calendar/events" style="width: auto;">Events</a></li>
+<li class="last leaf menu-mlid-3610" style="width: auto; position: relative;"><a title="" href="http://transition.usaid.gov/press/frontlines" style="width: auto;">FrontLines Magazine</a></li>
+</ul></li>
+<li class="last expanded menu-mlid-1145" style="width: auto; position: relative;"><a href="http://www.usaid.gov/work-usaid" style="width: auto;">Work with USAID</a><ul class="menu" style="width: 210px; left: 0px;"><li class="mobile_nav" style="width: auto; position: relative;"><a title="back" href="#" class="btn_back">back</a><a href="http://www.usaid.gov/work-usaid" title="Work with USAID" style="width: auto;">Work with USAID</a></li><li class="parent-mlid-1520 item-index-6 parent-title-work-with-usaid parent" style="width: 177px; position: absolute;"><div class="view view-menu-content view-id-menu_content view-display-id-block view-dom-id-fce327ba9abf5096c3c9e16a0ac79b42">
+        
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first views-row-last">
+      
+  <div class="views-field views-field-field-menu-image">        <div class="field-content"><a href="http://www.usaid.gov/work-usaid" style="width: auto;"><img title="Work with USAID" alt="Work with USAID" src="http://www.usaid.gov/sites/default/files/styles/177x193_menu_image/public/menu-content/WATER_006.jpg" typeof="foaf:Image" /></a></div>  </div>  
+  <div class="views-field views-field-field-menu-content-link-1 parent-slide">        <div class="field-content">Get Involved<span class="parent-slide-link"><a href="http://www.usaid.gov/work-usaid" style="width: auto;">Work with USAID</a></span></div>  </div>  </div>
+    </div>
+  
+ 
+  
+  
+  
+  
+</div></li><li class="first leaf has-children menu-mlid-1520" style="width: auto; position: relative;"><a href="http://www.usaid.gov/work-usaid/partnership-opportunities" style="width: auto;">Partnership Opportunities</a></li>
+<li class="leaf has-children menu-mlid-2226" style="width: auto; position: relative;"><a href="http://www.usaid.gov/work-usaid/business-funding/grant-programs/get-grant-or-contract" style="width: auto;">Get a Grant or Contract</a></li>
+<li class="leaf has-children menu-mlid-3509" style="width: auto; position: relative;"><a href="http://www.usaid.gov/work-usaid/branding" style="width: auto;">Branding</a></li>
+<li class="last leaf has-children menu-mlid-2387" style="width: auto; position: relative;"><a href="http://www.usaid.gov/work-usaid/careers" style="width: auto;">Careers</a></li>
+</ul></li>
+</ul></div>
+    </div>
+  </div>
+</div>
+</div>
+  </div>
+</div>
+  </div>
+</div></div>    
+      <div id="section-content" class="section section-content">
+  <div id="zone-content-wrapper" class="zone-wrapper zone-content-wrapper clearfix">  
+  <div id="zone-content" class="zone zone-content clearfix container-24">    
+    <div id="region-content" class="grid-24 region region-content alpha omega">
+        
+<iframe src="http://map.usaid.gov/Map?l={!URLENCODE($CurrentPage.parameters.l)}&w={!URLENCODE($CurrentPage.parameters.w)}&{!NOW()}" frameborder="0" scrolling="auto" width="960" height="655" marginwidth="0" marginheight="0" ></iframe>    
+          
+          
+          
+    </div><!-- end region content -->
+  </div><!-- end zone content -->
+  </div><!-- end zone content wrapper -->
+      </div><!-- end section content -->
+          
+<div class="section section-footer" id="section-footer" style="display:none">
+  <div class="zone-wrapper zone-floating-footer-wrapper clearfix closed" id="zone-floating-footer-wrapper">  
+  <div class="zone zone-floating-footer clearfix container-24" id="zone-floating-footer">
+    <div id="region-floating-footer-first" class="grid-24 region region-floating-footer-first">
+  <div class="region-inner region-floating-footer-first-inner">
+    
+<div class="wrapper-block">
+<div id="block-block-3" class="block block-block block-3 block-block-3 odd block-without-title">
+  <div class="block-inner clearfix">
+                
+    <div class="content clearfix">
+      <div id="floatfootleft">
+  <div class="floatfootitem join">
+    <a href="http://www.usaid.gov/work-usaid/careers">
+      <h2>Join</h2>
+      <p>Find out about career opportunities at USAID</p>
+    </a>
+  </div>
+  <div class="floatfootitem act">
+    <a href="http://action.usaid.gov/">
+      <h2>Act</h2>
+      <p>Learn how you can get involved and lend a hand.</p>
+    </a>
+  </div>
+  <div class="floatfootitem comment">
+    <a href="http://www.usaid.gov/comment">
+      <h2>Comment</h2>
+      <p>Make a general inquiry or suggest an improvement.</p>
+    </a>
+  </div>
+  <div class="floatfootitem connect">
+    <h2 style="display: none;">Connect</h2>
+    <div class="floatfootsocial">
+      <div class="facebook">
+        <a title="Facebook" href="http://www.facebook.com/USAID.News" class="ext" target="_blank">
+          Facebook
+          <b></b>
+       </a>
+        
+      </div>
+      <div class="twitter">
+        <a title="Twitter" href="http://twitter.com/#!/usaid" class="ext" target="_blank">
+          Twitter
+          <b></b>
+       </a>
+      </div>
+      <div class="rss">
+        <a title="RSS" href="http://www.usaid.gov/stayconnected">
+          RSS
+          <b></b>
+       </a>        
+      </div>
+      <div class="linkedin">
+        <a title="LinkedIn" href="http://www.linkedin.com/groups?gid=118430" class="ext" target="_blank">
+          LinkedIn
+          <b></b>
+        </a>
+      </div>
+      <div class="youtube">
+        <a title="YouTube" href="http://www.youtube.com/usaidvideo" class="ext" target="_blank">
+           YouTube
+          <b></b>
+        </a>
+      </div>
+      <div class="stayconnected">
+        <a title="Stay Connected" href="http://www.usaid.gov/stayconnected">
+           Stay Connected
+          <b></b>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="floatfootitem search">
+    <h2 style="display: none;">Search</h2>
+    <form accept-charset="UTF-8" id="google-appliance-block-form" method="post" action="/"><div><div class="container-inline">
+      <h2 class="element-invisible" style="display: none;">Search Google Appliance</h2>
+    <div class="form-item form-type-textfield form-item-search-keys">
+  <label for="edit-search-keys" class="element-invisible">Enter the terms you wish to search for. </label>
+ <input type="text" class="form-text" maxlength="128" size="15" value="" name="search_keys" id="edit-search-keys"></input>
+</div>
+<div id="edit-actions" class="form-actions form-wrapper"><input type="submit" class="form-submit" value="Search" name="op" id="edit-submit"></input></div><input type="hidden" value="form-lq2oEF1IHgNTYOxCZRo38ozs3ajzWtapaz1Yj27BLA4" name="form_build_id"></input>
+<input type="hidden" value="google_appliance_block_form" name="form_id"></input>
+  
+</div>
+</div></form>  </div>
+ </div>
+    </div>
+  </div>
+</div>
+</div>
+  </div>
+</div>  </div>
+</div><div class="zone-wrapper zone-footer-wrapper clearfix" id="zone-footer-wrapper">  
+  <div class="zone zone-footer clearfix container-24" id="zone-footer">
+    <div id="region-footer-first" class="grid-6 region region-footer-first">
+  <div class="region-inner region-footer-first-inner">
+    
+<div class="wrapper-menu-block">
+<div id="block-menu-block-9" class="block block-menu-block block-9 block-menu-block-9 odd block-without-title">
+  <div class="block-inner clearfix">
+                
+    <div class="content clearfix">
+      <div class="menu-block-wrapper menu-block-9 menu-name-menu-utility-menu parent-mlid-0 menu-level-1">
+  <ul class="menu"><li class="first leaf has-children menu-mlid-2918"><a title="" href="http://www.usaid.gov/comment">Contact Us</a></li>
+<li class="leaf menu-mlid-1263"><a href="http://www.usaid.gov/compliance">Compliance</a></li>
+<li class="leaf menu-mlid-1270"><a href="http://www.usaid.gov/forms">Forms</a></li>
+<li class="leaf menu-mlid-1264"><a href="http://www.usaid.gov/privacy-policy">Privacy Policy</a></li>
+<li class="leaf menu-mlid-1265"><a href="http://www.usaid.gov/egov">EGOV</a></li>
+<li class="leaf menu-mlid-1266"><a title="" href="http://www.usaid.gov/foia-requests">FOIA</a></li>
+<li class="leaf menu-mlid-1267"><a href="http://www.usaid.gov/no-fear-act">No Fear Act</a></li>
+<li class="leaf menu-mlid-1500"><a href="http://www.usaid.gov/accessibility">Accessibility</a></li>
+<li class="leaf menu-mlid-1269"><a href="http://www.usaid.gov/open-government">Open Government</a></li>
+<li class="last leaf menu-mlid-3206"><a title="" href="http://transition.usaid.gov/oig">Inspector General</a></li>
+</ul></div>
+    </div>
+  </div>
+</div>
+</div>
+  </div>
+</div><div id="region-footer-second" class="grid-18 region region-footer-second">
+  <div class="region-inner region-footer-second-inner">
+    
+<div class="wrapper-menu-block">
+<div id="block-menu-block-4" class="block block-menu-block block-4 block-menu-block-4 odd block-without-title">
+  <div class="block-inner clearfix">
+                
+    <div class="content clearfix">
+      <div class="menu-block-wrapper menu-block-4 menu-name-main-menu parent-mlid-0 menu-level-1">
+  <ul class="menu menu-top"><li class="first expanded active-trail menu-mlid-1128"><a class="active-trail" href="http://www.usaid.gov/who-we-are">Who We Are</a><ul class="menu"><li class="first leaf has-children menu-mlid-1519"><a href="http://www.usaid.gov/who-we-are/usaid-history">USAID History</a></li>
+<li class="leaf menu-mlid-1527"><a href="http://www.usaid.gov/who-we-are/agency-policy">Operational Policy</a></li>
+<li class="leaf has-children active-trail menu-mlid-1557"><a class="active-trail" href="http://www.usaid.gov/who-we-are/organization">Organization</a></li>
+<li class="last leaf menu-mlid-2448"><a title="" href="http://www.usaid.gov/who-we-are/resource-portal">Resource Portal</a></li>
+</ul></li>
+<li class="expanded menu-mlid-1141"><a href="http://www.usaid.gov/what-we-do">What We Do</a><ul class="menu"><li class="first leaf has-children menu-mlid-1149"><a href="http://www.usaid.gov/what-we-do/agriculture-and-food-security">Agriculture and Food Security</a></li>
+<li class="leaf has-children menu-mlid-1152"><a href="http://www.usaid.gov/what-we-do/democracy-human-rights-and-governance">Democracy, Human Rights and Governance</a></li>
+<li class="leaf has-children menu-mlid-1146"><a href="http://www.usaid.gov/what-we-do/economic-growth-and-trade">Economic Growth and Trade</a></li>
+<li class="leaf has-children menu-mlid-1148"><a title="Education is critical to broad-based economic growth and poverty reduction. Individual earnings increase by 10 percent for each year of school completed.  Education has a multiplier effect, contributing to greater outcomes in other areas such as health and democracy and governance." href="http://www.usaid.gov/what-we-do/education">Education</a></li>
+<li class="leaf has-children menu-mlid-1147"><a href="http://www.usaid.gov/what-we-do/environment-and-global-climate-change">Environment and Global Climate Change</a></li>
+<li class="leaf has-children menu-mlid-1151"><a href="http://www.usaid.gov/what-we-do/gender-equality-and-womens-empowerment">Gender Equality and Women's Empowerment</a></li>
+<li class="leaf has-children menu-mlid-1155"><a href="http://www.usaid.gov/what-we-do/global-health">Global Health</a></li>
+<li class="leaf has-children menu-mlid-1154"><a href="http://www.usaid.gov/what-we-do/science-technolog-and-innovation">Science, Technology and Innovation</a></li>
+<li class="leaf has-children menu-mlid-1150"><a href="http://www.usaid.gov/what-we-do/water-and-sanitation">Water and Sanitation</a></li>
+<li class="last leaf has-children menu-mlid-1153"><a href="http://www.usaid.gov/what-we-do/working-crises-and-conflict">Working in Crises and Conflict</a></li>
+</ul></li>
+<li class="expanded menu-mlid-1142"><a href="http://www.usaid.gov/where-we-work">Where We Work</a><ul class="menu"><li class="first leaf menu-mlid-2220"><a title="" href="http://map.usaid.gov">Interactive Map</a></li>
+<li class="leaf has-children menu-mlid-5346"><a href="http://www.usaid.gov/where-we-work/afghanistan-and-pakistan">Afghanistan and Pakistan</a></li>
+<li class="leaf has-children menu-mlid-1156"><a title="USAID in Africa" href="http://www.usaid.gov/where-we-work/africa">Africa</a></li>
+<li class="leaf has-children menu-mlid-1157"><a href="http://www.usaid.gov/where-we-work/asia">Asia</a></li>
+<li class="leaf has-children menu-mlid-1159"><a href="http://www.usaid.gov/where-we-work/europe-and-eurasia">Europe and Eurasia</a></li>
+<li class="leaf has-children menu-mlid-1160"><a href="http://www.usaid.gov/where-we-work/latin-american-and-caribbean">Latin America and the Caribbean</a></li>
+<li class="last leaf has-children menu-mlid-1158"><a href="http://www.usaid.gov/where-we-work/middle-east">Middle East</a></li>
+</ul></li>
+<li class="expanded menu-mlid-1143"><a href="http://www.usaid.gov/results-and-data">Results &amp; Data</a><ul class="menu"><li class="first leaf has-children menu-mlid-1502"><a href="http://www.usaid.gov/results-and-data/planning">Planning</a></li>
+<li class="leaf has-children menu-mlid-2616"><a href="http://www.usaid.gov/results-and-data/progress-data">Progress &amp; Data</a></li>
+<li class="leaf has-children menu-mlid-1501"><a href="http://www.usaid.gov/results-and-data/budget-spending">Budget &amp; Spending</a></li>
+<li class="leaf has-children menu-mlid-3539"><a href="http://www.usaid.gov/results-and-data/information-resources">Information Resources</a></li>
+<li class="leaf menu-mlid-3573"><a href="http://www.usaid.gov/results-and-data/mobile-apps">Mobile Apps</a></li>
+<li class="leaf menu-mlid-2196"><a title="" href="http://www.usaid.gov/results-data/success-stories">Transforming Lives</a></li>
+<li class="last leaf has-children menu-mlid-3568"><a href="http://www.usaid.gov/results-and-data/highlights">Key Accomplishments</a></li>
+</ul></li>
+<li class="expanded menu-mlid-1144"><a title="" href="http://www.usaid.gov/news-information">News &amp; Information</a><ul class="menu"><li class="first leaf menu-mlid-1211"><a title="" href="http://www.usaid.gov/news-information/press-releases">Press Releases</a></li>
+<li class="leaf menu-mlid-1213"><a title="" href="http://www.usaid.gov/news-information/congressional-testimony">Congressional Testimony</a></li>
+<li class="leaf menu-mlid-1212"><a title="" href="http://www.usaid.gov/news-information/speeches-testimony">Speeches</a></li>
+<li class="leaf menu-mlid-1556"><a title="" href="http://blog.usaid.gov">The Impact Blog</a></li>
+<li class="leaf menu-mlid-2114"><a title="" href="http://www.usaid.gov/news-information/fact-sheets">Fact Sheets</a></li>
+<li class="leaf menu-mlid-1524"><a href="http://www.usaid.gov/news-information/events-development-calendar/events">Events</a></li>
+<li class="last leaf menu-mlid-3610"><a title="" href="http://transition.usaid.gov/press/frontlines">FrontLines Magazine</a></li>
+</ul></li>
+<li class="last expanded menu-mlid-1145"><a href="http://www.usaid.gov/work-usaid">Work with USAID</a><ul class="menu"><li class="first leaf has-children menu-mlid-1520"><a href="http://www.usaid.gov/work-usaid/partnership-opportunities">Partnership Opportunities</a></li>
+<li class="leaf has-children menu-mlid-2226"><a href="http://www.usaid.gov/work-usaid/business-funding/grant-programs/get-grant-or-contract">Get a Grant or Contract</a></li>
+<li class="leaf has-children menu-mlid-3509"><a href="http://www.usaid.gov/work-usaid/branding">Branding</a></li>
+<li class="last leaf has-children menu-mlid-2387"><a href="http://www.usaid.gov/work-usaid/careers">Careers</a></li>
+</ul></li>
+</ul></div>
+    </div>
+  </div>
+</div>
+</div>
+  </div>
+</div>  
+</div>
+</div>
+</div>
+    </div>
+<script>
+    var mobiles = [
+        "midp","240x320","blackberry","netfront","nokia","panasonic",
+        "portalmmm","sharp","sie-","sonyericsson","symbian",
+        "windows ce","benq","mda","mot-","opera mini",
+        "philips","pocket pc","sagem","samsung","sda",
+        "sgh-","vodafone","xda","palm","iphone",
+        "ipod","ipad","android"
+    ];
+    function isMobile() {
+        var uagent = navigator.userAgent.toLowerCase();
+        var list = this.mobiles;
+        for (var d=0; d < list.length; d++) {
+            if (uagent.indexOf(list[d])!==-1) {
+                return true;
+            }
+        }
+        return false;
+    }
+    if (!isMobile()) {
+        document.getElementById("section-footer").style.display = "";
+    }
+
+</script>    
+  </body>
+</html>
+</apex:page>

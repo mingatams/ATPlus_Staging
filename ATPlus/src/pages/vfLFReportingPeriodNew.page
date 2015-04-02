@@ -1,0 +1,41 @@
+<apex:page standardController="LF_Reporting_Period__c" tabStyle="LF_Reporting_Period__c" extensions="ClsReportingPeriodExtension" sidebar="false">
+    
+    <apex:sectionHeader title="{!$ObjectType.LF_Reporting_Period__c.label}" subtitle="{!LF_Reporting_Period__c.name}"/>
+    <apex:form >
+    <apex:pageBlock title="{!$ObjectType.LF_Reporting_Period__c.label} Edit">
+        <apex:pageBlockButtons >
+                <apex:commandButton action="{!save}" value="Save"/>
+                <apex:commandButton action="{!cancel}" value="Cancel"/>
+        </apex:pageBlockButtons>
+     
+        
+        <apex:pageBlockSection showHeader="true" title="Project LogFrame" columns="1" >  
+            <apex:inputField value="{!LF_Reporting_Period__c.LF_Goal_Id__c}" rendered="{!showLevel == 1}" />
+            <apex:inputField value="{!LF_Reporting_Period__c.LF_Purpose_Id__c}" rendered="{!showLevel == 2}" />
+            <apex:inputField value="{!LF_Reporting_Period__c.LF_SubPurpose_Id__c}" rendered="{!showLevel == 3}"/>
+            <apex:inputField value="{!LF_Reporting_Period__c.LF_Output_Id__c}" rendered="{!showLevel == 4}"/>
+            <apex:inputField value="{!LF_Reporting_Period__c.LF_Input_Id__c}" rendered="{!showLevel == 5}"/>                                                              
+        </apex:pageBlockSection>
+        
+        
+        
+        <apex:pageBlockSection showHeader="true" title="Basic Information" columns="2">       
+            
+            <apex:inputField value="{!LF_Reporting_Period__c.Start_Date__c}"/>
+            <apex:inputField value="{!LF_Reporting_Period__c.Fiscal_Period__c}"/>           
+            <apex:inputField value="{!LF_Reporting_Period__c.End_Date__c}"/>
+            <apex:inputField value="{!LF_Reporting_Period__c.Fiscal_Year__c}"/>
+            <apex:inputField value="{!LF_Reporting_Period__c.Status__c}"/>
+          
+        </apex:pageBlockSection>
+        <apex:pageBlockSection showHeader="true" title="Descriptive Information" columns="1">
+           <!-- <apex:inputField value="{!LF_Reporting_Period__c.Narrative_Status__c}" /> 
+            <apex:inputField value="{!LF_Reporting_Period__c.Narrative__c}" />  -->
+            <apex:inputTextArea rows="10" cols="150" value="{!LF_Reporting_Period__c.Narrative__c}"  />           
+        </apex:pageBlockSection> 
+             
+       
+                
+        </apex:pageBlock>
+         </apex:form> 
+</apex:page>

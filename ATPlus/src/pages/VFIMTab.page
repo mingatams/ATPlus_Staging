@@ -1,0 +1,22 @@
+<apex:page controller="ClsUserProfileFinder" tabStyle="Project_Implementation__tab" sidebar="false">
+
+<apex:enhancedList type="Implementing_Mechanism__c" listId="00Bd0000004WDuG" height="500" rowsPerPage="50" 
+            id="IMUserList" customizable="False" rendered="{! IsPLTUser == true || isMissionPartnerUser == true }"  />
+            
+<apex:enhancedList type="Implementing_Mechanism__c" listId="00Bd0000004WDuG" height="500" rowsPerPage="50"
+        id="IMAdminList" customizable="true" rendered="{!IF(IsADMINUser  == true , true , false)}"  />
+        
+<apex:enhancedList type="Implementing_Mechanism__c" listId="00Bd0000004XLFt" height="500" rowsPerPage="100"
+        id="IMSTDUserList" customizable="False" rendered="{!IF(IsSTDUser == true , true , false)}"  />
+
+<!--
+<apex:enhancedList type="Implementing_Mechanism__c" listId="00Bd0000004WDuG" height="500" rowsPerPage="50" 
+            id="IMUserList" customizable="False" rendered="{!$Profile.Name == 'PLT - Mission Profile' || $Profile.Name == 'Mission Partner'}"  />
+            
+<apex:enhancedList type="Implementing_Mechanism__c" listId="00Bd0000004WDuG" height="500" rowsPerPage="50"
+        id="IMAdminList" customizable="true" rendered="{!IF($Profile.Name == 'System Administrator(c)' , true , false)}"  />
+        
+<apex:enhancedList type="Implementing_Mechanism__c" listId="00Bd0000004XLFt" height="500" rowsPerPage="100"
+        id="IMSTDUserList" customizable="False" rendered="{!IF($Profile.Name <> 'PLT - Mission Profile' && $Profile.Name <>'System Administrator(c)' && $Profile.Name <> 'Mission Partner' , true , false)}"  />
+-->
+</apex:page>

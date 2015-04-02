@@ -1,0 +1,140 @@
+<apex:page standardController="DO__c" tabStyle="Results_Framework__tab" sidebar="false" extensions="ClsUserProfileFinder,ClsTabController,ClsDeleteControllerExt" id="RFDOPage" action="{!doAction}">
+ 
+ <head> 
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'project-style.css')}"/>        
+        <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/modernizr.custom.79639.js')}"/>        
+        <noscript><apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'css/noJS.css')}"/></noscript>        
+ </head>
+ 
+ <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+        
+    <apex:sectionHeader title="{!$ObjectType.DO__c.label}" subtitle="{!DO__c.name}"/>
+ 
+ <div style="height:5px; background:#1797C0;"></div> <br></br>
+<apex:outputText style="font-size:12px;font-weight:bold;" value="{!navigationLink}" escape="false"> </apex:outputText> 
+ <br></br>
+  <br></br>
+   <apex:outputPanel rendered="{!HasErrorMessages}">               
+     <apex:pagemessages />        
+  </apex:outputPanel> 
+   <apex:tabPanel switchType="server"  id="RFDOPanel"  value="{!selectedTab}" onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+      <apex:tab label="Development Objective" name="RFDODetails"  id="tabRFDOdetails" styleClass="activeTabBackground">
+      <apex:pageBlock mode="maindetail" id="RFDOPageBlock">
+      
+      <apex:pageBlockButtons >
+                <apex:form >
+                        <apex:commandButton action="{!edit}" value="Edit" rendered="{!$ObjectType['DO__c'].updateable}"/>
+                         <!-- <apex:commandButton action="{!delete}" value="Delete"/> -->                 
+                                         
+               
+            <apex:commandLink reRender="" styleClass="btn" rendered="{!$ObjectType['DO__c'].deletable}" style="text-decoration:none;" action="{!customDelete}" value="Delete" onclick="return window.confirm('Are you sure?');">
+                    <apex:param name="deleUrl" id="deleUrl" assignTo="{!deleUrl}" value="/apex/vfRFGoalDetail?id={!DO__c.CDCS_Goal__r.id}"/>
+                </apex:commandLink>
+                        <apex:commandButton action="{!URLFOR($Action.DO__c.Overall_Results_Framework,DO__c.id)}" value="View Results Framework" title="Shows a framework chart including the Goal, all DOs and all IRs."/>
+                        <apex:commandButton action="{!URLFOR($Action.DO__c.D_O_Results_Framework,DO__c.id)}" value="DO Results Framework" title="Shows a detailed framework chart of the selected or related DO with corresponding IRs and Sub-IRs."/>
+                        
+                </apex:form>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection showHeader="true" title="Overview" columns="1">
+                       <apex:outputField value="{!DO__c.ouName__c}"/>
+                        <apex:outputField label="Goal Name" value="{!DO__c.CDCS_Goal__c}"/>
+                        
+                      <!--  <apex:outputField value="{!DO__c.Goal_Name__c}"/> -->
+                       
+                        <apex:outputField value="{!DO__c.Name}"/>
+                       
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Descriptive Information" columns="1">
+                        <apex:outputField value="{!DO__c.DO_Title__c}"/>
+                        <apex:outputField value="{!DO__c.DO_Narrative__c}"/>
+                </apex:pageBlockSection>
+                
+                <!--
+                <apex:pageBlockSection showHeader="true" title="Indicator Reporting" columns="2">
+                        <apex:outputField value="{!DO__c.Indicators_Established__c}"/>
+                        <apex:outputField value="{!DO__c.Reporting_Periods_Established__c}"/>
+                </apex:pageBlockSection>
+                -->
+                
+                <!-- <apex:pageBlockSection showHeader="true" title="System Information" columns="2" rendered="{!$Profile.Name =='System Administrator(c)'}"> -->
+                <apex:pageBlockSection showHeader="true" title="System Information" columns="2" rendered="{!IsADMINUser}">
+                        <apex:outputField value="{!DO__c.CreatedById}"/>
+                        <apex:outputField value="{!DO__c.LastModifiedById}"/>
+                        <apex:pageBlockSectionItem >
+                                <apex:outputLabel value="Development Objective Owner"/>
+                                <apex:outputPanel >
+                                        <apex:outputField value="{!DO__c.OwnerId}"/>&nbsp;
+                                        <apex:outputLink value="{!URLFOR($Action.DO__c.ChangeOwner,DO__c.id)}">[Change]</apex:outputLink>
+                                </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem />
+                </apex:pageBlockSection>
+                
+         </apex:pageBlock>
+         <apex:relatedList pageSize="20" title="Intermediate Results" list="Intermediate_Results1__r"/>        
+        <apex:relatedList pageSize="20" title="Notes And Attachments" list="NotesAndAttachments"/>
+         <c:HistoryRelatedListComponent recLimit="50" ObjName="{!DO__c}"/>
+      </apex:tab>
+      
+      
+      <apex:tab label="DO Indicators" name="DO_OrgUnit_Indicators" 
+                id="tabRFDOOrgIndicators" styleClass="activeTabBackground">
+        <!-- <apex:relatedList pageSize="20" title="" list="OrgUnit_Indicators__r"/> -->
+        <c:Manage_Indicators />  
+      </apex:tab>
+      
+        <apex:tab label="DO Indicator Data" name="DO_Reporting_Periods"  immediate="true"      id="tabRFDOReportingPeriod"  styleClass="activeTabBackground">
+        <!-- <apex:relatedList pageSize="20" title="" list="RF_Reporting_Periods__r"/> -->    
+         <c:ManageTargets id="targetcomp_id" />   
+      </apex:tab>
+     
+     
+   </apex:tabPanel>
+   
+   
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['RFDOPage:RFDOPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+    
+ function addLoadEvent(func) {   
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+
+function hideHeadSesction() {
+ twistSection(document.getElementById('RFDOPage:RFDOPageBlock:SysHeadSection').childNodes[0].childNodes[0]);
+}
+
+addLoadEvent(hideHeadSesction);    
+</script>
+</apex:page>

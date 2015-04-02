@@ -1,0 +1,510 @@
+<apex:page standardController="OrgUnit_Indicator__c" extensions="ClsIndicatorFactSheetControllerExt" standardStylesheets="false" sidebar="false">  
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>AIDtracker | Indicator Details</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'Indicators-style.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/modernizr.custom.79639.js')}"/>        
+    <noscript><apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'css/noJS.css')}"/></noscript>     
+    
+    <script type="text/javascript">
+            $(document).ready(function(){
+                $('.row, .rowOdd').click(function(e){
+                  var position = $(this).position();
+                  alert('I am in Row click::'+e.pageX +','+e.pageY);
+                  $("#indicatorResultsBar").show(20);
+                  $("#indicatorResultsBar ").offset({left:position.left+$(this).width(),top:position.top+$(this).height()/2});
+                });
+            });
+            
+            function DropDown(el) {
+                this.dd = el;
+                this.placeholder = this.dd.children('span');
+                this.opts = this.dd.find('ul.dropdown > li');
+                this.val = '';
+                this.index = -1;
+                this.initEvents();
+            }
+            DropDown.prototype = {
+                initEvents : function() {
+                    var obj = this;
+
+                    obj.dd.on('click', function(event){
+                        $(this).toggleClass('active');
+                        return false;
+                    });
+
+                    obj.opts.on('click',function(){
+                        var opt = $(this);
+                        obj.val = opt.text();
+                        obj.index = opt.index();
+                        obj.placeholder.text(obj.val);
+                    });
+                },
+                getValue : function() {
+                    return this.val;
+                },
+                getIndex : function() {
+                    return this.index;
+                }
+            }
+
+            $(function() {
+
+                var dd = new DropDown( $('#dd') );
+
+                $(document).click(function() {
+                    // all dropdowns
+                    $('.wrapper-dropdown-3').removeClass('active');
+                });
+
+            });
+
+    </script>
+</head>
+
+<body>
+<apex:form >
+<div id="container">
+
+    <!------ HEADER SECTION (ABOVE MAP) ------>
+    <header>
+        <div id="left">
+            <h2><apex:outputText value="{!OrgUnit_Indicator__c.indCode__c}"></apex:outputText>&nbsp;<apex:outputText value="{!OrgUnit_Indicator__c.indName__c}"></apex:outputText></h2>
+            <p>Organization Indicator</p>
+        </div>
+        
+        <div id="right">
+           <!-- <div class="dropmenu">
+                    <div id="dd" class="wrapper-dropdown" tabindex="1">
+                        <span>NAVIGATION</span>
+                        <ul class="dropdown">
+                            <li><a href="#"><i class="overview"></i>Overview</a></li>
+                            <li><a href="#"><i class="rf-link"></i>Results Framework</a></li>
+                            <li><a href="#"><i class="logframe"></i>Logical Framework</a></li>
+                            <li><a href="#"><i class="im-tasks"></i>IM / Tasks</a></li>
+                            
+                            
+                        </ul>
+                    </div>
+                ​</div> -- ><!-- end dropmenu -->
+                
+                <apex:commandLink title="Indicator Edit" action="{!edit}" ><div class="edit topmenu"></div></apex:commandLink>
+               
+        </div>
+        
+    </header>
+    
+    <div class="clear"></div>
+    
+    
+    <!------ DASHBOARD HTML ------>
+    <h3>Indicator Information</h3>
+    <div class="dashboard">    
+        <div class="column">
+            <div class="award-t awarded">
+                <apex:outputText value="{!$ObjectType.OrgUnit_Indicator__c.fields.prCode__c.label}"></apex:outputText>
+            </div>
+            <div class="award-d awarded">
+                <apex:outputText value="{!OrgUnit_Indicator__c.prCode__c}"></apex:outputText>
+            </div>    
+            <div class="clear"></div>       
+            <div class="award-t awarded">
+                <apex:outputText value="{!$ObjectType.OrgUnit_Indicator__c.fields.Name.label}"></apex:outputText>
+            </div>
+            <div class="award-d awarded">
+                <apex:outputText value="{!OrgUnit_Indicator__c.Name}"></apex:outputText>
+            </div>   
+             <div class="clear"></div>        
+            <div class="award-t awarded">
+                <apex:outputText value="{!$ObjectType.OrgUnit_Indicator__c.fields.sIndCode__c.label}"></apex:outputText>
+            </div>
+            <div class="award-d awarded">
+                <apex:outputText value="{!OrgUnit_Indicator__c.sIndCode__c}"></apex:outputText>
+            </div>
+             <div class="clear"></div>  
+             
+            <div class="award-t awarded">
+                <apex:outputText value="{!$ObjectType.OrgUnit_Indicator__c.fields.isActive__c.label}"></apex:outputText>
+            </div>
+            <div class="award-d awarded">
+                <!-- <apex:outputText value="{!OrgUnit_Indicator__c.isActive__c}"></apex:outputText> -->
+                <!-- <apex:inputCheckbox value="{!OrgUnit_Indicator__c.isActive__c}" required=""/> -->
+                <apex:outputField value="{!OrgUnit_Indicator__c.isActive__c}"/>
+            </div>       
+          <!--  <div class="award-t awarded">
+                <apex:outputText value="{!$ObjectType.OrgUnit_Indicator__c.fields.indStatus__c.label}"></apex:outputText>
+            </div>
+            <div class="award-d awarded">
+                <apex:outputText value="{!OrgUnit_Indicator__c.indStatus__c}"></apex:outputText>
+            </div>  -->
+                  
+        </div><!-- end first column -->
+        
+        <div class="column">
+            <div class="award-t awarded">
+                <apex:outputText value="{!$ObjectType.OrgUnit_Indicator__c.fields.prName__c.label}"></apex:outputText>
+            </div>
+            <div class="award-d awarded">
+                <apex:outputText value="{!OrgUnit_Indicator__c.prName__c}"></apex:outputText>
+            </div>   
+             <div class="clear"></div>       
+            <div class="award-t awarded">
+                <apex:outputText value="{!$ObjectType.OrgUnit_Indicator__c.fields.indName__c.label}"></apex:outputText>
+            </div>
+            <div class="award-d awarded">
+                <apex:outputText value="{!OrgUnit_Indicator__c.indName__c}"></apex:outputText>
+            </div> 
+             <div class="clear"></div>        
+            <div class="award-t awarded">
+                <apex:outputText value="{!$ObjectType.OrgUnit_Indicator__c.fields.sIndName__c.label}"></apex:outputText>
+            </div>
+            <div class="award-d awarded">
+                <apex:outputText value="{!OrgUnit_Indicator__c.sIndName__c}"></apex:outputText>
+            </div>  
+             <div class="clear"></div>        
+            <div class="award-t awarded">
+                <apex:outputText value="{!$ObjectType.OrgUnit_Indicator__c.fields.indType1__c.label}"></apex:outputText>
+            </div>
+            <div class="award-d awarded">
+                <apex:outputText value="{!OrgUnit_Indicator__c.indType1__c}"></apex:outputText>
+            </div>  
+        
+        </div><!-- end second column -->
+
+
+        <div class="column">
+            <div class="award-t awarded">
+                <apex:outputText value="{!$ObjectType.OrgUnit_Indicator__c.fields.Source__c.label}"></apex:outputText>
+            </div>
+            <div class="award-d awarded">
+                <apex:outputText value="{!OrgUnit_Indicator__c.Source__c}"></apex:outputText>
+            </div>
+            <div class="clear"></div> 
+            <div class="award-t awarded">
+                <apex:outputText value="{!$ObjectType.OrgUnit_Indicator__c.fields.PPR__c.label}"></apex:outputText>
+            </div>
+            <div class="award-d awarded">
+                <!-- <apex:outputText value="{!OrgUnit_Indicator__c.PPR__c}"></apex:outputText> -->
+                <apex:outputField value="{!OrgUnit_Indicator__c.PPR__c}"/>
+            </div>
+             <div class="clear"></div>   
+            <div class="award-t awarded">
+                <apex:outputText value="{!$ObjectType.OrgUnit_Indicator__c.fields.UOM__c.label}"></apex:outputText>
+            </div>
+            <div class="award-d awarded">
+                <apex:outputText value="{!OrgUnit_Indicator__c.UOM__c}"></apex:outputText>
+            </div> 
+             <div class="clear"></div>  
+                 
+        </div>          
+    </div><!-- end dashboard -->
+    
+    
+    <!------ GRID HTML ------>
+    <div class="descContainer">
+        <div id="sidebar">
+            <h3>Tags</h3>
+            <ul>
+                <li class="sidebarItem">
+                    <span>USAID TAGS</span>
+                    <p><apex:outputText value="{!OrgUnit_Indicator__c.USAID_Tags__c}"></apex:outputText></p>                
+                </li>
+                <li class="sidebarItem">
+                    <span>USER DEFINED TAGS</span>
+                    <p><apex:outputText value="{!OrgUnit_Indicator__c.User_Defined_Tags__c}"></apex:outputText></p> 
+                </li>
+            </ul>
+            
+        </div>
+        <div class="content-wrapper">
+            <h3>Descriptive Information</h3>
+            <ul>
+                <li class="contentItem">
+                    <span><apex:outputText value="{!$ObjectType.OrgUnit_Indicator__c.fields.Rationale__c.label}"></apex:outputText></span>
+                    <p><apex:outputText value="{!OrgUnit_Indicator__c.Rationale__c}"></apex:outputText></p>
+                </li>
+    
+                <li class="contentItem">
+                    <span><apex:outputText value="{!$ObjectType.OrgUnit_Indicator__c.fields.Indicator_Rationales__c.label}"></apex:outputText></span>
+                    <p><apex:outputText value="{!OrgUnit_Indicator__c.Indicator_Rationales__c}"></apex:outputText></p>
+                </li>   
+            </ul>     
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="indicatorResultsBar">
+    <div class="indicatorResultsColumnHeaders">
+        <div class="indicatorResultsColumnHeaderR"><h3>Results Framework Results</h3></div>
+        <div class="indicatorResultsColumnHeaderM"><h3>Logical Framework Results</h3></div>
+        <div class="indicatorResultsColumnHeaderR"><h3>IM/Task Results</h3></div>
+        
+    </div>
+    <div class="indicatorResultsColumnR"> 
+          <apex:repeat value="{!rfIndResults}" var="rf">
+            <div class="indicatorResults">
+                <h5><apex:outputText value="{!rf.recType}"></apex:outputText></h5>
+                <p><apex:outputText value="{!IF(LEN(rf.recName)> 80,LEFT(rf.recName,80)+'...',rf.recName)}" title="{!IF(LEN(rf.recName)> 80,rf.recName,'')}"></apex:outputText></p> 
+                <apex:outputPanel rendered="{!rf.resultsEstablished }">
+                <div class="head boxed period"><p>PERIOD</p></div>
+                <div class="head boxed baseline"><p>BASELINE</p></div>
+                <div class="head boxed target"><p>TARGET</p></div>
+                <div class="head boxed target"><p>ACTUALS</p></div>
+                <div class="head boxed target"><p>DIFFERENCE</p></div>
+                <apex:repeat value="{!rf.rfResults}" var="rfResult1">
+                  <!--  <div class="data boxed period row1"><h3><apex:outputText value="{!LEFT(rfResult1.Reporting_Period_Name__c,4)}"></apex:outputText></h3></div> -->
+                    <div class="data boxed period row1"><h3><apex:outputText value="{!rfResult1.Reporting_Period_Name__c}"></apex:outputText></h3></div> 
+                    <div class="data boxed baseline row1"><h3><apex:outputText value="{!IF(rfResult1.Baseline__c != null,'{0,number,###,##0}','-')}"><apex:param value="{!rfResult1.Baseline__c}" /></apex:outputText></h3></div>
+                    <div class="data boxed target row1"><h3><apex:outputText value="{!IF(rfResult1.Target__c != null,'{0,number,###,##0}','-')}"><apex:param value="{!rfResult1.Target__c}" /></apex:outputText></h3></div>
+                    <div class="data boxed target row1"><h3><apex:outputText value="{!IF(rfResult1.Actual__c != null,'{0,number,###,##0}','-')}"><apex:param value="{!rfResult1.Actual__c}" /></apex:outputText></h3></div>
+                   <!-- <div class="data boxed target row1"><h3 class="g"><apex:outputText value="{!IF(rfResult1.Variance__c != null,'{0,number,###,##0}','-')}"><apex:param value="{!rfResult1.Variance__c}" /></apex:outputText></h3></div> -->
+                   <apex:outputPanel rendered="{!rfResult1.Variance__c != null && rfResult1.Variance__c < 0}">
+                        <div class="data boxed target row1"><h3 class="r"><apex:outputText value="{0,number,###,##0}%"><apex:param value="{!rfResult1.Variance__c}" /></apex:outputText></h3></div></apex:outputPanel>
+                    <apex:outputPanel rendered="{!rfResult1.Variance__c != null && rfResult1.Variance__c >= 0}">
+                        <div class="data boxed target row1"><h3 class="g"><apex:outputText value="{0,number,+###,##0}%"><apex:param value="{!rfResult1.Variance__c}" /></apex:outputText></h3></div>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!rfResult1.Variance__c == null}">
+                        <div class="data boxed target row1"><h3 class="g"><apex:outputText value="-"><apex:param value="{!rfResult1.Variance__c}" /></apex:outputText></h3></div>
+                    </apex:outputPanel>
+                   
+                </apex:repeat>                 
+            
+            <div class="clear"></div>
+            <div class="divider"></div>            
+            </apex:outputPanel>
+            </div>
+        </apex:repeat> 
+        
+        
+                  
+     <!--   <apex:variable value="" var="rfprevRecType"  />
+        <apex:repeat value="{!OrgUnit_Indicator__c.RF_Indicator_Results_Master__r}" var="rfResult">
+            <apex:variable value="{!rfResult.CDCS_Goals__c}" var="rfcurrRecType" rendered="{!IF(rfResult.RecordType.Name == 'RF Goal',true,false)}" />
+            <apex:variable value="{!rfResult.DO_Id__c}" var="rfcurrRecType" rendered="{!IF(rfResult.RecordType.Name == 'RF DO',true,false)}" />
+            <apex:variable value="{!rfResult.IR_Id__c}" var="rfcurrRecType" rendered="{!IF(rfResult.RecordType.Name == 'RF IR',true,false)}" />
+            <apex:variable value="{!rfResult.Sub_IR_Id__c}" var="rfcurrRecType" rendered="{!IF(rfResult.RecordType.Name == 'RF SUB IR',true,false)}" /> 
+            <apex:outputPanel rendered="{!IF(rfcurrRecType <> rfprevRecType,true, false)}">                                                         
+                <div class="indicatorResults">                   
+                    <h5>
+                        <apex:outputText value="Goal" rendered="{!IF(rfResult.RecordType.Name == 'RF Goal',true,false)}"></apex:outputText>
+                        <apex:outputText value="DO" rendered="{!IF(rfResult.RecordType.Name == 'RF DO',true,false)}"></apex:outputText>
+                        <apex:outputText value="IR" rendered="{!IF(rfResult.RecordType.Name == 'RF IR',true,false)}"></apex:outputText>
+                        <apex:outputText value="SUB IR" rendered="{!IF(rfResult.RecordType.Name == 'RF SUB IR',true,false)}"></apex:outputText>
+                    </h5>
+                    <p>
+                        <apex:outputText value="{!IF(LEN(rfResult.Goal_Name__c)> 80,LEFT(rfResult.Goal_Name__c,80)+'...',rfResult.Goal_Name__c)}" title="{!IF(LEN(rfResult.Goal_Name__c)> 80,rfResult.Goal_Name__c,'')}"  rendered="{!IF(rfResult.RecordType.Name == 'RF Goal',true,false)}"></apex:outputText>
+                        <apex:outputText value="{!IF(LEN(rfResult.DO_Title__c)> 80,LEFT(rfResult.DO_Title__c,80)+'...',rfResult.DO_Title__c)}" title="{!IF(LEN(rfResult.DO_Title__c)> 80,rfResult.DO_Title__c,'')}" rendered="{!IF(rfResult.RecordType.Name == 'RF DO',true,false)}"></apex:outputText>
+                        <apex:outputText value="{!IF(LEN(rfResult.IR_Title__c)> 80,LEFT(rfResult.IR_Title__c,80)+'...',rfResult.IR_Title__c)}" title="{!IF(LEN(rfResult.IR_Title__c)> 80,rfResult.IR_Title__c,'')}" rendered="{!IF(rfResult.RecordType.Name == 'RF IR',true,false)}"></apex:outputText>
+                        <apex:outputText value="{!IF(LEN(rfResult.Sub_IR_Title__c)> 80,LEFT(rfResult.Sub_IR_Title__c,80)+'...',rfResult.Sub_IR_Title__c)}" title="{!IF(LEN(rfResult.Sub_IR_Title__c)> 80,rfResult.Sub_IR_Title__c,'')}" rendered="{!IF(rfResult.RecordType.Name == 'RF SUB IR',true,false)}"></apex:outputText>
+                    </p>
+                    <div class="head boxed period"><p>PERIOD</p></div>
+                    <div class="head boxed baseline"><p>BASELINE</p></div>
+                    <div class="head boxed target"><p>TARGET</p></div>
+                    <div class="head boxed target"><p>ACTUALS</p></div>
+                    <div class="head boxed target"><p>DIFFERENCE</p></div>
+                         
+                    <apex:repeat value="{!OrgUnit_Indicator__c.RF_Indicator_Results_Master__r}" var="rfResult1">
+                        <apex:variable value="{!rfResult1.CDCS_Goals__c}" var="rfcurrRecType1" rendered="{!IF(rfResult1.RecordType.Name == 'RF Goal',true,false)}" />
+                        <apex:variable value="{!rfResult1.DO_Id__c}" var="rfcurrRecType1" rendered="{!IF(rfResult1.RecordType.Name == 'RF DO',true,false)}" />
+                        <apex:variable value="{!rfResult1.IR_Id__c}" var="rfcurrRecType1" rendered="{!IF(rfResult1.RecordType.Name == 'RF IR',true,false)}" />
+                        <apex:variable value="{!rfResult1.Sub_IR_Id__c}" var="rfcurrRecType1" rendered="{!IF(rfResult1.RecordType.Name == 'RF SUB IR',true,false)}" />
+                        <apex:outputPanel rendered="{!IF(rfcurrRecType1 == rfcurrRecType,true,false)}">
+                            <div class="data boxed period row1"><h3><apex:outputText value="{!LEFT(rfResult1.Reporting_Period_Name__c,4)}"></apex:outputText></h3></div>
+                            <div class="data boxed baseline row1"><h3><apex:outputText value="{!IF(rfResult1.Baseline__c != null,'{0,number,###,##0}','0')}"><apex:param value="{!rfResult1.Baseline__c}" /></apex:outputText></h3></div>
+                            <div class="data boxed target row1"><h3><apex:outputText value="{!IF(rfResult1.Target__c != null,'{0,number,###,##0}','0')}"><apex:param value="{!rfResult1.Target__c}" /></apex:outputText></h3></div>
+                            <div class="data boxed target row1"><h3><apex:outputText value="{!IF(rfResult1.Actual__c != null,'{0,number,###,##0}','0')}"><apex:param value="{!rfResult1.Actual__c}" /></apex:outputText></h3></div>
+                            <div class="data boxed target row1"><h3 class="g"><apex:outputText value="{!IF(rfResult1.Variance__c != null,'{0,number,###,##0}','0')}"><apex:param value="{!rfResult1.Variance__c}" /></apex:outputText></h3></div>
+                        </apex:outputPanel>
+                    </apex:repeat> 
+                    <div class="clear"></div>
+                    <div class="divider"></div>                    
+                    <apex:variable value="{!rfResult.CDCS_Goals__c}" var="rfprevRecType" rendered="{!IF(rfResult.RecordType.Name == 'RF Goal',true,false)}" />
+                    <apex:variable value="{!rfResult.DO_Id__c}" var="rfprevRecType" rendered="{!IF(rfResult.RecordType.Name == 'RF DO',true,false)}" />
+                    <apex:variable value="{!rfResult.IR_Id__c}" var="rfprevRecType" rendered="{!IF(rfResult.RecordType.Name == 'RF IR',true,false)}" />
+                    <apex:variable value="{!rfResult.Sub_IR_Id__c}" var="rfprevRecType" rendered="{!IF(rfResult.RecordType.Name == 'RF SUB IR',true,false)}" />
+                </div>
+            </apex:outputPanel>
+        </apex:repeat> -->
+    </div> 
+      
+    <div class="indicatorResultsColumnM">
+        <apex:repeat value="{!lfIndResults}" var="lf">
+            <div class="indicatorResults">
+                <h5><apex:outputText value="{!lf.recType}"></apex:outputText></h5>
+                <p><apex:outputText value="{!IF(LEN(lf.recName)> 80,LEFT(lf.recName,80)+'...',lf.recName)}" title="{!IF(LEN(lf.recName)> 80,lf.recName,'')}"></apex:outputText></p> 
+                <apex:outputPanel rendered="{!lf.resultsEstablished }">
+                <div class="head boxed period"><p>PERIOD</p></div>
+                <div class="head boxed baseline"><p>BASELINE</p></div>
+                <div class="head boxed target"><p>TARGET</p></div>
+                <div class="head boxed target"><p>ACTUALS</p></div>
+                <div class="head boxed target"><p>DIFFERENCE</p></div>
+                <apex:repeat value="{!lf.lfResults}" var="lfResult1">
+                   <!-- <div class="data boxed period row1"><h3><apex:outputText value="{!LEFT(lfResult1.Reporting_Period_Name__c,4)}"></apex:outputText></h3></div> -->
+                    <div class="data boxed period row1"><h3><apex:outputText value="{!lfResult1.Reporting_Period_Name__c}"></apex:outputText></h3></div>
+                    <div class="data boxed baseline row1"><h3><apex:outputText value="{!IF(lfResult1.Baseline__c != null,'{0,number,###,##0}','-')}"><apex:param value="{!lfResult1.Baseline__c}" /></apex:outputText></h3></div>
+                    <div class="data boxed target row1"><h3><apex:outputText value="{!IF(lfResult1.Target__c != null,'{0,number,###,##0}','-')}"><apex:param value="{!lfResult1.Target__c}" /></apex:outputText></h3></div>
+                    <div class="data boxed target row1"><h3><apex:outputText value="{!IF(lfResult1.Actual__c != null,'{0,number,###,##0}','-')}"><apex:param value="{!lfResult1.Actual__c}" /></apex:outputText></h3></div>
+                  <!--  <div class="data boxed target row1"><h3 class="g"><apex:outputText value="{!IF(lfResult1.Variance__c != null,'{0,number,###,##0}','-')}"><apex:param value="{!lfResult1.Variance__c}" /></apex:outputText></h3></div> -->
+                    <apex:outputPanel rendered="{!lfResult1.Variance__c != null && lfResult1.Variance__c < 0}">
+                        <div class="data boxed target row1"><h3 class="r"><apex:outputText value="{0,number,###,##0}%"><apex:param value="{!lfResult1.Variance__c}" /></apex:outputText></h3></div></apex:outputPanel>
+                    <apex:outputPanel rendered="{!lfResult1.Variance__c != null && lfResult1.Variance__c >= 0}">
+                        <div class="data boxed target row1"><h3 class="g"><apex:outputText value="{0,number,+###,##0}%"><apex:param value="{!lfResult1.Variance__c}" /></apex:outputText></h3></div>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!lfResult1.Variance__c == null}">
+                        <div class="data boxed target row1"><h3 class="g"><apex:outputText value="-"><apex:param value="{!lfResult1.Variance__c}" /></apex:outputText></h3></div>
+                    </apex:outputPanel>
+                </apex:repeat>                 
+            
+            <div class="clear"></div>
+            <div class="divider"></div>
+            </apex:outputPanel>
+            </div>
+        </apex:repeat> 
+        
+     <!--   <apex:variable value="" var="lfprevRecType"  />
+        <apex:repeat value="{!OrgUnit_Indicator__c.LF_Indicator_Results_Master__r}" var="lfResult">
+            <apex:variable value="{!lfResult.LF_Goal_Id__c}" var="lfcurrRecType" rendered="{!IF(lfResult.RecordType.Name == 'LF Goal',true,false)}" />
+            <apex:variable value="{!lfResult.LF_Purpose_Id__c}" var="lfcurrRecType" rendered="{!IF(lfResult.RecordType.Name == 'LF Purpose',true,false)}" />
+            <apex:variable value="{!lfResult.LF_SubPurpose_Id__c}" var="lfcurrRecType" rendered="{!IF(lfResult.RecordType.Name == 'LF Sub-Purpose',true,false)}" />
+            <apex:variable value="{!lfResult.LF_Output__c}" var="lfcurrRecType" rendered="{!IF(lfResult.RecordType.Name == 'LF Output',true,false)}" />
+            <apex:variable value="{!lfResult.LF_Input__c}" var="lfcurrRecType" rendered="{!IF(lfResult.RecordType.Name == 'LF Input',true,false)}" /> 
+            <apex:outputPanel rendered="{!IF(lfcurrRecType <> lfprevRecType,true, false)}">                                                         
+                <div class="indicatorResults">                   
+                    <h5>
+                        <apex:outputText value="Goal" rendered="{!IF(lfResult.RecordType.Name == 'LF Goal',true,false)}"></apex:outputText>
+                        <apex:outputText value="Purpose" rendered="{!IF(lfResult.RecordType.Name == 'LF Purpose',true,false)}"></apex:outputText>
+                        <apex:outputText value="SubPurpose" rendered="{!IF(lfResult.RecordType.Name == 'LF Sub-Purpose',true,false)}"></apex:outputText>
+                        <apex:outputText value="Output" rendered="{!IF(lfResult.RecordType.Name == 'LF Output',true,false)}"></apex:outputText>
+                        <apex:outputText value="Input" rendered="{!IF(lfResult.RecordType.Name == 'LF Input',true,false)}"></apex:outputText>
+                    </h5>
+                    <p>
+                        <apex:outputText value="{!IF(LEN(lfResult.LF_Goal_Name__c)> 80,LEFT(lfResult.LF_Goal_Name__c,80)+'...',lfResult.LF_Goal_Name__c)}" title="{!IF(LEN(lfResult.LF_Goal_Name__c)> 80,lfResult.LF_Goal_Name__c,'')}"  rendered="{!IF(lfResult.RecordType.Name == 'LF Goal',true,false)}"></apex:outputText>
+                        <apex:outputText value="{!IF(LEN(lfResult.LF_Purpose_Name__c)> 80,LEFT(lfResult.LF_Purpose_Name__c,80)+'...',lfResult.LF_Purpose_Name__c)}" title="{!IF(LEN(lfResult.LF_Purpose_Name__c)> 80,lfResult.LF_Purpose_Name__c,'')}"  rendered="{!IF(lfResult.RecordType.Name == 'LF Purpose',true,false)}"></apex:outputText>
+                        <apex:outputText value="{!IF(LEN(lfResult.LF_SubPurpose_Name__c)> 80,LEFT(lfResult.LF_SubPurpose_Name__c,80)+'...',lfResult.LF_SubPurpose_Name__c)}" title="{!IF(LEN(lfResult.LF_SubPurpose_Name__c)> 80,lfResult.LF_SubPurpose_Name__c,'')}"  rendered="{!IF(lfResult.RecordType.Name == 'LF Sub-Purpose',true,false)}"></apex:outputText>
+                        <apex:outputText value="{!IF(LEN(lfResult.LF_Output_Name__c)> 80,LEFT(lfResult.LF_Output_Name__c,80)+'...',lfResult.LF_Output_Name__c)}" title="{!IF(LEN(lfResult.LF_Output_Name__c)> 80,lfResult.LF_Output_Name__c,'')}"  rendered="{!IF(lfResult.RecordType.Name == 'LF Ouput',true,false)}"></apex:outputText>
+                        <apex:outputText value="{!IF(LEN(lfResult.LF_Input_Name__c)> 80,LEFT(lfResult.LF_Input_Name__c,80)+'...',lfResult.LF_Input_Name__c)}" title="{!IF(LEN(lfResult.LF_Input_Name__c)> 80,lfResult.LF_Input_Name__c,'')}"  rendered="{!IF(lfResult.RecordType.Name == 'LF Input',true,false)}"></apex:outputText>    
+                    </p>
+                    <h5>
+                        <apex:outputText value="Project: {!lfResult.Project_Name__c}" ></apex:outputText>
+                    </h5>
+                    <p></p>
+                    <div class="head boxed period"><p>PERIOD</p></div>
+                    <div class="head boxed baseline"><p>BASELINE</p></div>
+                    <div class="head boxed target"><p>TARGET</p></div>
+                    <div class="head boxed target"><p>ACTUALS</p></div>
+                    <div class="head boxed target"><p>DIFFERENCE</p></div>
+                         
+                    <apex:repeat value="{!OrgUnit_Indicator__c.LF_Indicator_Results_Master__r}" var="lfResult1">
+                        <apex:variable value="{!lfResult1.LF_Goal_Id__c}" var="lfcurrRecType1" rendered="{!IF(lfResult1.RecordType.Name == 'LF Goal',true,false)}" />
+                        <apex:variable value="{!lfResult1.LF_Purpose_Id__c}" var="lfcurrRecType1" rendered="{!IF(lfResult1.RecordType.Name == 'LF Purpose',true,false)}" />
+                        <apex:variable value="{!lfResult1.LF_SubPurpose_Id__c}" var="lfcurrRecType1" rendered="{!IF(lfResult1.RecordType.Name == 'LF Sub-Purpose',true,false)}" />
+                        <apex:variable value="{!lfResult1.LF_Output__c}" var="lfcurrRecType1" rendered="{!IF(lfResult1.RecordType.Name == 'LF Output',true,false)}" />
+                        <apex:variable value="{!lfResult1.LF_Input__c}" var="lfcurrRecType1" rendered="{!IF(lfResult1.RecordType.Name == 'LF Input',true,false)}" /> 
+                        <apex:outputPanel rendered="{!IF(lfcurrRecType1 == lfcurrRecType,true,false)}">
+                            <div class="data boxed period row1"><h3><apex:outputText value="{!LEFT(lfResult1.Reporting_Period_Name__c,4)}"></apex:outputText></h3></div>
+                            <div class="data boxed baseline row1"><h3><apex:outputText value="{!IF(lfResult1.Baseline__c != null,'{0,number,###,##0}','0')}"><apex:param value="{!lfResult1.Baseline__c}" /></apex:outputText></h3></div>
+                            <div class="data boxed target row1"><h3><apex:outputText value="{!IF(lfResult1.Target__c != null,'{0,number,###,##0}','0')}"><apex:param value="{!lfResult1.Target__c}" /></apex:outputText></h3></div>
+                            <div class="data boxed target row1"><h3><apex:outputText value="{!IF(lfResult1.Actual__c != null,'{0,number,###,##0}','0')}"><apex:param value="{!lfResult1.Actual__c}" /></apex:outputText></h3></div>
+                            <div class="data boxed target row1"><h3 class="g"><apex:outputText value="{!IF(lfResult1.Variance__c != null,'{0,number,###,##0}','0')}"><apex:param value="{!lfResult1.Variance__c}" /></apex:outputText></h3></div>
+                        </apex:outputPanel>
+                    </apex:repeat> 
+                    <div class="clear"></div>
+                    <div class="divider"></div>                     
+                    <apex:variable value="{!lfResult.LF_Goal_Id__c}" var="lfprevRecType" rendered="{!IF(lfResult.RecordType.Name == 'LF Goal',true,false)}" />
+                    <apex:variable value="{!lfResult.LF_Purpose_Id__c}" var="lfprevRecType" rendered="{!IF(lfResult.RecordType.Name == 'LF Purpose',true,false)}" />
+                    <apex:variable value="{!lfResult.LF_SubPurpose_Id__c}" var="lfprevRecType" rendered="{!IF(lfResult.RecordType.Name == 'LF Sub-Purpose',true,false)}" />
+                    <apex:variable value="{!lfResult.LF_Output__c}" var="lfprevRecType" rendered="{!IF(lfResult.RecordType.Name == 'LF Output',true,false)}" />
+                    <apex:variable value="{!lfResult.LF_Input__c}" var="lfprevRecType" rendered="{!IF(lfResult.RecordType.Name == 'LF Input',true,false)}" />
+                </div>
+            </apex:outputPanel>
+        </apex:repeat> -->
+    </div>
+    
+    
+    <div class="indicatorResultsColumnR">
+        <apex:repeat value="{!imIndResults}" var="im">
+            <div class="indicatorResults">
+                <h5><apex:outputText value="{!im.recType}"></apex:outputText></h5>
+                <p><apex:outputText value="{!IF(LEN(im.recName)> 80,LEFT(im.recName,80)+'...',im.recName)}" title="{!IF(LEN(im.recName)> 80,im.recName,'')}"></apex:outputText></p> 
+                <apex:outputPanel rendered="{!im.resultsEstablished }">
+                <div class="head boxed period"><p>PERIOD</p></div>
+                <div class="head boxed baseline"><p>BASELINE</p></div>
+                <div class="head boxed target"><p>TARGET</p></div>
+                <div class="head boxed target"><p>ACTUALS</p></div>
+                <div class="head boxed target"><p>DIFFERENCE</p></div>
+                <apex:repeat value="{!im.imResults}" var="iResult1">
+                   <!-- <div class="data boxed period row1"><h3><apex:outputText value="{!LEFT(iResult1.Reporting_Period_Name__c,4)}"></apex:outputText></h3></div> -->
+                    <div class="data boxed period row1"><h3><apex:outputText value="{!iResult1.Reporting_Period_Name__c}"></apex:outputText></h3></div>
+                    <div class="data boxed baseline row1"><h3><apex:outputText value="{!IF(iResult1.Baseline__c != null,'{0,number,###,##0}','-')}"><apex:param value="{!iResult1.Baseline__c}" /></apex:outputText></h3></div>
+                    <div class="data boxed target row1"><h3><apex:outputText value="{!IF(iResult1.Target__c != null,'{0,number,###,##0}','-')}"><apex:param value="{!iResult1.Target__c}" /></apex:outputText></h3></div>
+                    <div class="data boxed target row1"><h3><apex:outputText value="{!IF(iResult1.Actual__c != null,'{0,number,###,##0}','-')}"><apex:param value="{!iResult1.Actual__c}" /></apex:outputText></h3></div>
+                  <!--  <div class="data boxed target row1"><h3 class="g"><apex:outputText value="{!IF(iResult1.Variance__c != null,'{0,number,###,##0}','-')}"><apex:param value="{!iResult1.Variance__c}" /></apex:outputText></h3></div> -->
+                    <apex:outputPanel rendered="{!iResult1.Variance__c != null && iResult1.Variance__c < 0}">
+                        <div class="data boxed target row1"><h3 class="r"><apex:outputText value="{0,number,###,##0}%"><apex:param value="{!iResult1.Variance__c}" /></apex:outputText></h3></div></apex:outputPanel>
+                    <apex:outputPanel rendered="{!iResult1.Variance__c != null && iResult1.Variance__c >= 0}">
+                        <div class="data boxed target row1"><h3 class="g"><apex:outputText value="{0,number,+###,##0}%"><apex:param value="{!iResult1.Variance__c}" /></apex:outputText></h3></div>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!iResult1.Variance__c == null}">
+                        <div class="data boxed target row1"><h3 class="g"><apex:outputText value="-"><apex:param value="{!iResult1.Variance__c}" /></apex:outputText></h3></div>
+                    </apex:outputPanel> 
+                </apex:repeat>                 
+            
+            <div class="clear"></div>
+            <div class="divider"></div>
+            </apex:outputPanel>
+            </div>
+        </apex:repeat> 
+     <!--   <apex:variable value="" var="iprevRecType"  />
+        <apex:repeat value="{!OrgUnit_Indicator__c.Indicator_Results_Master__r}" var="iResult">
+            <apex:variable value="{!iResult.Implementing_Mechanism_Id__c}" var="icurrRecType" rendered="{!IF(iResult.Activity_Id__c == null,true,false)}" />
+            <apex:variable value="{!iResult.Activity_Id__c}" var="icurrRecType" rendered="{!IF(iResult.Activity_Id__c <> null ,true,false)}" />     
+            <apex:outputPanel rendered="{!IF(icurrRecType <> iprevRecType,true, false)}">                                                         
+                <div class="indicatorResults">                   
+                    <h5>
+                        <apex:outputText value="{!iResult.Implementing_Mechanism_Id__r.Name}" rendered="{!IF(iResult.Activity_Id__c == null,true,false)}"></apex:outputText>
+                        <apex:outputText value="Task | {!iResult.Activity_Id__r.Name} | {!iResult.Activity_Id__r.ImpMech_Id__r.Name}" rendered="{!IF(iResult.Activity_Id__c <> null,true,false)}"></apex:outputText>                    
+                    </h5>
+                    <p>
+                        <apex:outputText value="{!IF(LEN(iResult.ImpMech_Name__c)> 80,LEFT(iResult.ImpMech_Name__c,80)+'...',iResult.ImpMech_Name__c)}" title="{!IF(LEN(iResult.ImpMech_Name__c)> 80,iResult.ImpMech_Name__c,'')}"  rendered="{!IF(iResult.Activity_Id__c == null,true,false)}"></apex:outputText>
+                        <apex:outputText value="{!IF(LEN(iResult.Activity_Name__c)> 80,LEFT(iResult.Activity_Name__c,80)+'...',iResult.Activity_Name__c)}" title="{!IF(LEN(iResult.Activity_Name__c)> 80,iResult.Activity_Name__c,'')}"  rendered="{!IF(iResult.Activity_Id__c <> null,true,false)}"></apex:outputText>
+                                         
+                    </p>
+                    <h5>
+                        <apex:outputText value="{!IF(LEN(iResult.ImpMech_Name__c)> 80,LEFT(iResult.ImpMech_Name__c,80)+'...',iResult.ImpMech_Name__c)}" title="{!IF(LEN(iResult.ImpMech_Name__c)> 80,iResult.ImpMech_Name__c,'')}"  rendered="{!IF(iResult.Activity_Id__c <> null,true,false)}"></apex:outputText>                        
+                    </h5>
+                    <p></p>
+                    <div class="head boxed period"><p>PERIOD</p></div>
+                    <div class="head boxed baseline"><p>BASELINE</p></div>
+                    <div class="head boxed target"><p>TARGET</p></div>
+                    <div class="head boxed target"><p>ACTUALS</p></div>
+                    <div class="head boxed target"><p>DIFFERENCE</p></div>
+                         
+                    <apex:repeat value="{!OrgUnit_Indicator__c.Indicator_Results_Master__r}" var="iResult1">
+                        <apex:variable value="{!iResult1.Implementing_Mechanism_Id__c}" var="icurrRecType1" rendered="{!IF(iResult1.Activity_Id__c == null,true,false)}" />
+                        <apex:variable value="{!iResult1.Activity_Id__c}" var="icurrRecType1" rendered="{!IF(iResult1.Activity_Id__c <> null ,true,false)}" />
+                        
+                        <apex:outputPanel rendered="{!IF(icurrRecType1 == icurrRecType,true,false)}">
+                            <div class="data boxed period row1"><h3><apex:outputText value="{!LEFT(iResult1.Reporting_Period_Id__r.Name,4)}"></apex:outputText></h3></div>
+                            <div class="data boxed baseline row1"><h3><apex:outputText value="{!IF(iResult1.Baseline__c != null,'{0,number,###,##0}','0')}"><apex:param value="{!iResult1.Baseline__c}" /></apex:outputText></h3></div>
+                            <div class="data boxed target row1"><h3><apex:outputText value="{!IF(iResult1.Target__c != null,'{0,number,###,##0}','0')}"><apex:param value="{!iResult1.Target__c}" /></apex:outputText></h3></div>
+                            <div class="data boxed target row1"><h3><apex:outputText value="{!IF(iResult1.Actual__c != null,'{0,number,###,##0}','0')}"><apex:param value="{!iResult1.Actual__c}" /></apex:outputText></h3></div>
+                            <div class="data boxed target row1"><h3 class="g"><apex:outputText value="{!IF(iResult1.Variance__c != null,'{0,number,###,##0}','0')}"><apex:param value="{!iResult1.Variance__c}"  /></apex:outputText></h3></div>
+                        </apex:outputPanel>
+                    </apex:repeat> 
+                    <div class="clear"></div>
+                    <div class="divider"></div>                     
+                    <apex:variable value="{!iResult.Implementing_Mechanism_Id__c}" var="iprevRecType" rendered="{!IF(iResult.Activity_Id__c == null,true,false)}" />
+                    <apex:variable value="{!iResult.Activity_Id__c}" var="iprevRecType" rendered="{!IF(iResult.Activity_Id__c <> null ,true,false)}" />
+                </div>
+            </apex:outputPanel>
+        </apex:repeat> -->
+    </div>    
+  </div> 
+</div>  
+</apex:form>
+<div class="clear"></div>
+<c:HistoryRelatedListComponent recLimit="50" ObjName="{!OrgUnit_Indicator__c}"/>
+</body>
+</html>
+</apex:page>

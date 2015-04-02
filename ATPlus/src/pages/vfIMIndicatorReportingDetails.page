@@ -1,0 +1,77 @@
+<apex:page standardController="Implementing_Mechanism__c" extensions="clsIMEditController,ClsTabController"  tabStyle="Project_Implementation__tab" sidebar="false" id="IndRepotDetail" action="{!doAction}" >
+
+ <head> 
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        
+       
+        <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'project-style.css')}"/>        
+        <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/modernizr.custom.79639.js')}"/>        
+        <noscript><apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'css/noJS.css')}"/></noscript>        
+       
+ </head>
+ 
+ 
+ 
+ 
+ <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+
+<apex:sectionHeader title="Manage IM Indicators " subtitle="{!Implementing_Mechanism__c.name}"/> 
+<div style="height:5px; background:#1797C0;"></div> <br></br>
+<apex:outputText style="font-size:12px;font-weight:bold;" value="{!navigationLink}" escape="false"> </apex:outputText> 
+ <br></br>
+  <br></br>   
+    
+   <apex:tabPanel switchType="server"  id="CDCSGoalPanel"  value="{!selectedTab}" onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+      
+      <!-- <apex:tab label="Select Indicator Reporting Period" name="CDCSGoalDetails"  id="tabCDCSGoaldetails" style="margin-left: -1px;" styleClass="activeTabBackground">
+       <apex:pageBlock mode="maindetail">
+   <c:Manage_IndicatorsIM />
+ </apex:pageBlock>        
+         
+      </apex:tab> -->
+     
+      <apex:tab label="IM Indicator Data" name="OrgIndicator" 
+                id="tabRFOrgUnitInd" styleClass="activeTabBackground">
+       
+   <c:IMIndicatorReportingPeriodComponent gridedit="true" overRequired="true"  id="targetcompInd_id"/> 
+      </apex:tab>
+   
+      
+      
+        <apex:tab label="Reporting Period Actions" name="ReportingPeriod" 
+                id="tabRFReportingPeriod" styleClass="activeTabBackground">
+       
+       <!-- <c:IMIndicatorReportingPeriodComponent gridedit="false" overRequired="false" id="targetcomp_ids"/>-->
+        
+        <c:IMIndicatorResultComponent id="targetcomp_id"/>  
+      </apex:tab>
+     
+    
+   </apex:tabPanel>
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['IndRepotDetail:CDCSGoalPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+    
+    
+</script>
+</apex:page>

@@ -1,0 +1,102 @@
+<apex:page StandardController="Project_Location__c" extensions="GeocodingWizardController" tabStyle="Project_Location__c">
+ 
+    <apex:sectionHeader title="New Location" subtitle="Step 1 of 2"/>
+    <!-- Popup window  --> 
+       <apex:form >
+        <apex:outputPanel id="welcomePopup">
+        <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayPopUp}"/>
+            <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!displayPopUp}">
+                <font size="4" color="red"><center><b>Welcome to the Geocoding Wizard!</b></center></font>
+                <br/><br/>
+                <font size="3"><b>With this wizard you can:</b></font><br/><br/>
+                <font size="3" style="margin-left: 1em;">- Create a new location</font><br/>
+                <font size="3" style="margin-left: 1em;">- Associate a location to a Task</font><br/>
+               <!-- <font size="3" style="margin-left: 1em;">- Add a picture and description to the location</font><br/> -->
+                <font size="3" style="margin-left: 1em;">- Geocode the location to the map</font><br/>
+                <br/><br/><br/>
+                <apex:inputCheckbox value="{!checkboxSelected}"/>
+                Don't show this window again.<br/><br/>
+                <apex:commandButton value="Close" action="{!closePopup}" rerender="welcomePopup"/>
+            </apex:outputPanel>
+        </apex:outputPanel>
+    </apex:form>
+
+    <apex:form >       
+        <apex:pageBlock title="Location Edit">
+        
+            <!-- This facet tag defines the "Next" button that appears in the header of the pageBlock. 
+            It calls the step2() controller method, which returns a pageReference to the next step of the wizard. --> 
+             <apex:pageBlockButtons >
+                    <apex:commandButton action="{!step2}" value="Next" styleClass="btn"/>
+                    <apex:commandButton action="{!cancel}" value="Cancel" styleClass="btn" immediate="true"/>
+            </apex:pageBlockButtons>
+                
+            <apex:pageBlockSection title="Basic Information">
+                <apex:pageBlockSectionItem >                 
+                    <apex:outputLabel value="Location Name" for="locationName" style="font-weight:bold;padding:10px;"/>
+                    <apex:inputField id="locationName" value="{!location.Name}" required="true" /> 
+                  <!--  <apex:outputLabel value="Country" for="locationCountry" style="font-weight:bold"/>
+                    <apex:inputField id="locationCountry" value="{!location.Activity_Location_Country__c}"/> -->  
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Task ID" for="activityId" style="font-weight:bold;padding:10px;"/>
+                    <apex:inputField id="activityId" value="{!location.ActivityId__c}"/>
+                    <!--<apex:outputLabel value="Project Code" for="projectCode" style="font-weight:bold"/>
+                    <apex:outputField id="projectCode" value="{!location.Project_Code__c}"/>
+                    <apex:outputLabel value="Publish Status" for="publishStatus" style="font-weight:bold"/>
+                    <apex:inputField id="publishStatus" value="{!location.Publish_Status__c}"/>   -->
+                    <!--<apex:outputLabel value="Publicly Disclosable" for="publiclyDisclosable" style="font-weight:bold"/>
+                    <apex:inputField id="publiclyDisclosable" value="{!location.Publicly_Disclosable__c}"/> -->
+                </apex:pageBlockSectionItem> 
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Country" for="locCountry" style="font-weight:bold;padding:10px;"/>
+                    <apex:selectList id="locCountry" value="{!location.cntryId__c}" size="1" required="true">
+                        <apex:selectOptions value="{!CountryList}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem> 
+            </apex:pageBlockSection>
+          <!--  <apex:pageBlockSection title="Graphics">
+                <apex:panelGrid columns="2" width="200%">
+                    <apex:outputLabel value="Location Picture" for="locationPicture" style="font-weight:bold"/>
+                    <apex:inputField id="locationPicture" value="{!location.Activity_Location_Picture__c}"/> 
+                    <apex:outputLabel value="Location Description" for="locationDescription" style="font-weight:bold"/>
+                    <apex:inputField id="locationDescription" value="{!location.Location_Description__c}"/> 
+                </apex:panelGrid>
+            </apex:pageBlockSection> -->
+
+        </apex:pageBlock>
+
+    </apex:form> 
+
+
+    <!-- Popup window details -->
+    <style type="text/css">
+            .custPopup{
+                background-color: white;
+                border-width: 5px;
+                border-style: solid;
+                z-index: 9999;
+                left: 50%;
+                padding:10px;
+                position: absolute;
+                /* These are the 3 css properties you will need to change so the popup 
+                displays in the center of the screen. First set the width. Then set 
+                margin-left to negative half of what the width is. You can add 
+                the height property for a fixed size pop up if you want.*/
+                width: 500px;
+                margin-left: -250px;
+                top:100px;
+            }
+            .popupBackground{
+                background-color:black;
+                opacity: 0.40;
+                filter: alpha(opacity = 40);
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                z-index: 9998;
+            }
+    </style>
+</apex:page>

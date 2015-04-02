@@ -1,0 +1,72 @@
+<apex:page cache="true" expires="600" controller="AidTrackerProjectListDataController" title="USAID Portfolio Project List View" showHeader="false" doctype="html-5.0" readOnly="true" standardStylesheets="false" >
+
+        <title>USAID Portfolio Projects Overview</title>
+         <script type="text/javascript">
+            var USAIDTrackerApp;
+            var isInternal = {!IF($User.Alias=='guest',false, true)};
+            function initialize() {               
+               USAIDTrackerApp = new USAIDTracker.App({
+                   internal: {!IF($User.Alias=='guest',false, true)},
+                   mapDataUrl: "{!IF($User.Alias=='guest','/AidTrackerProjectListData', '/apex/AidTrackerProjectListData')}",
+                   polygonDataUrl: "{!URLFOR($Resource.AidTrackerMapPolygons)}",
+                   defaultPhotoUrl: "{!URLFOR($Resource.DefaultLogo)}",
+                   missionFlagUrl: "{!URLFOR($Resource.MissionFlags)}",
+                   locationRange: "{!$CurrentPage.parameters.l}",
+                   locationFocus: "{!$CurrentPage.parameters.w}",
+                   orgUnit: "{!$CurrentPage.parameters.m}",  
+                   viewMode: "list" || "{!$CurrentPage.parameters.v}" || "list",   
+                   term: "{!$CurrentPage.parameters.q}",
+                   order: "{!$CurrentPage.parameters.o}",    
+                   sector: "{!$CurrentPage.parameters.s}",                             
+                   debug: false
+               });
+               USAIDTrackerApp.present(dojo.byId("map_canvas"));
+               dojo.addClass(dojo.byId("map_canvas"), isInternal ? "internal" : "external");
+               dojo.connect(window, "onscroll", this, function() {
+                    var nVScroll = document.documentElement.scrollTop || document.body.scrollTop;
+                    var nTotalHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+                    var topHeight = isInternal ? 125 : 125;
+                    var bottomHeight = isInternal ? 35 : 1120;
+                    if (nVScroll > topHeight) {
+                       dojo.addClass(dojo.byId("map_canvas"), "floated");
+                    } else {
+                       dojo.removeClass(dojo.byId("map_canvas"), "floated");
+                    }
+                    if (nTotalHeight - nVScroll < bottomHeight) {
+                        dojo.removeClass(dojo.byId("map_canvas"), "floated");
+                    }
+               });
+            }
+            dojo.ready(initialize);
+        </script> 
+        
+        <apex:stylesheet value="https://fonts.googleapis.com/css?family=Abel"/>
+        <apex:stylesheet value="{!URLFOR($Resource.Dojo161, 'dijit/themes/tundra/tundra.css')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.Dojo161, 'dojox/form/resources/RangeSlider.css')}" />
+        <apex:includeScript value="https://maps.googleapis.com/maps/api/js?v=3&sensor=true"/>
+        <!-- Production Only  
+        <apex:includeScript value="https://maps.googleapis.com/maps/api/js?client=gme-usaid&sensor=false" />
+        -->
+        <apex:includeScript value="{!URLFOR($Resource.Dojo161, 'dojo.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.Dojo161, 'usaid-dojo.js')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.AidTrackerProjectListWithMapFrontEnd, 'resources/USAIDTracker.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.AidTrackerProjectListWithMapFrontEnd, 'resources/USAIDTrackerDefaultTheme.css')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.AidTrackerProjectListWithMapFrontEnd, 'USAIDTracker.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.AidTrackerMapPolygons, 'USAIDTrackerStatic.js')}"/>
+<style>
+.floated .DefaultTheme .searchbar {
+top: 280px !important;
+}
+.DefaultTheme .searchbar {
+top: 400px;
+}
+.floated .DefaultTheme .toolbar {
+top: 480px !important;
+}
+.DefaultTheme .toolbar {
+top: 580px;
+}
+</style>
+    <div id="map_canvas" style="width: 100%;min-height:400px;padding-top:24px;"></div>
+
+</apex:page>

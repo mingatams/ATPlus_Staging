@@ -1,0 +1,25 @@
+<apex:page >
+  <head>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+</head>
+
+                     <p><b><b>Navigating Partner Portal </b></b></p>
+
+ <object id="tscPlayer" name="tscplayer"  width="624" height="350" type="application/x-shockwave-flash" data="http://content.screencast.com/users/AIDtrackerTraining/folders/Videos%20for%20Production%20(Current)/media/d2d9d429-8a35-4e8e-97c5-871c446e6656/tscplayer.swf" >
+ <param name="movie" value="https://content.screencast.com/users/AIDtrackerTraining/folders/Videos%20for%20Production%20(Current)/media/d2d9d429-8a35-4e8e-97c5-871c446e6656/tscplayer.swf" /> 
+ <param name="quality" value="high" />
+ <param name="bgcolor" value="#FFFFFF" />
+ <param name="flashVars" value="poster=https://content.screencast.com/users/AIDtrackerTraining/folders/Videos%20for%20Production%20(Current)/media/d2d9d429-8a35-4e8e-97c5-871c446e6656/FirstFrame.jpg&autohide=true&autoplay=false&backgroundcolor=000000&captionsenabled=false&endaction=stop&endactionparam=true&locale=en-US&searchable=true&sidebarenabled=false&sidebarlocation=left&unicodeenabled=false&xmp=sc.xmp&enableQuizzing=false&src=http://content.screencast.com/users/AIDtrackerTraining/folders/Videos%20for%20Production%20(Current)/media/d2d9d429-8a35-4e8e-97c5-871c446e6656/Partner%20Portal.mp4" />
+ <param name="allowFullScreen" value="true" />
+ <param name="allowScriptAccess" value="always" />
+ <param name="allowScriptAccess" value="always" />
+ <param name="base" value="https://content.screencast.com/users/AIDtrackerTraining/folders/Videos%20for%20Production%20(Current)/media/d2d9d429-8a35-4e8e-97c5-871c446e6656/" />
+ <param name="wmode" value="direct" />
+ <param name="allowNetworking" value="all" />
+ Unable to display content. Adobe Flash is is not installed. If you are using Google Please Check your popup settings
+</object> 
+
+
+
+</apex:page>

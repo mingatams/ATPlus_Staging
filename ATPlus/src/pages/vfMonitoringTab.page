@@ -1,0 +1,11 @@
+<apex:page standardController="OrgUnit__c" tabStyle="Monitoring__tab" sidebar="false" extensions="ClsTabController">
+<!--<apex:sectionHeader title="{!$ObjectType.OrgUnit__c.label}" subtitle="{!ou.name}" />-->
+<c:IndicatorsRelatedList />
+<!--<c:testComponent fSetName="MonitoringTabFields" parentName="OrgUnit__c" parentRId="{!ou.Id}" parentCId="" childName="OrgUnit_Indicator__c" colName="ouId__c"  pSize="20" bTitle="" />
+ <!-- <apex:relatedList subject="{!ou.Id}" pageSize="50" Title="Orgnization Indicators" list="OrgUnit_Indicators__r"/>
+  <apex:enhancedList type="Project__c" height="500" rowsPerPage="50"
+        id="ProjectUserList" customizable="false" rendered="{!IF($Profile.Name <> 'System Administrator(c)' , true , false)}"  /> 
+ <apex:enhancedList type="OrgUnit_Indicator__c" height="500" rowsPerPage="50" 
+        id="ProjectAdminList" customizable="true" rendered="{!IF($Profile.Name == 'System Administrator(c)' , true , false)}"  />  -->
+          
+</apex:page>

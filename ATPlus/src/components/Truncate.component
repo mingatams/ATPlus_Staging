@@ -1,0 +1,6 @@
+<apex:component >
+    <apex:attribute name="title"        type="String"   required="true"     description="The name to format" />
+    <apex:attribute name="maxLength"    type="Integer"  required="true"     description="The length to truncate at." />
+    
+    {!IF(LEN(title) > maxLength, LEFT(title, maxLength)+'...', title)}
+</apex:component>

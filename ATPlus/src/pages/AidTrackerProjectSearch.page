@@ -1,0 +1,7 @@
+<apex:page cache="true" expires="600" title="USAID Project List" showHeader="true" standardStyleSheets="false">
+
+<apex:outputPanel rendered="{!NOT($User.Alias=='guest')}">
+<apex:include pageName="AidTrackerProjectListWithMap"/>   
+</apex:outputPanel>                
+
+</apex:page>

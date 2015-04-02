@@ -1,0 +1,61 @@
+<apex:page tabStyle="Portfolio_Mapping__tab" controller="ClsTabController" extensions="ClsUserProfileFinder" action="{!doAction}" sidebar="false">
+
+ <!--   <apex:stylesheet value="{!$Resource.CustomTabCSS}"/> -->
+ <!-- <apex:enhancedList type="Project__c" listid="00Bd0000004XLGP" height="500" rowsPerPage="50"
+        id="LFProjectUserList" customizable="false" rendered="{!IF($Profile.Name <> 'System Administrator(c)' , true , false)}"  />
+ <apex:enhancedList type="Project__c" height="500" rowsPerPage="50" customizable="true" listid="00Bd0000004XLGP" rendered="{!IF($Profile.Name == 'System Administrator(c)' , true , false)}"  /> -->
+ 
+      <apex:enhancedList type="Project__c" listid="00Bd0000004XLGP" height="500" rowsPerPage="50"
+        id="LFProjectUserList" customizable="false" rendered="{! IsADMINUser == false}"  />
+      <apex:enhancedList type="Project__c" height="500" rowsPerPage="50" customizable="true" listid="00Bd0000004XLGP" rendered="{! IsADMINUser}"  /> 
+ 
+       <!-- <apex:enhancedList type="Project__c" height="500" rowsPerPage="50" 
+        id="ProjectAdminList" customizable="true"  rendered="{!IF($Profile.Name == 'System Administrator(c)' , true , false)}"  /> -->
+ 
+    <!--  <apex:tabPanel switchType="ajax" id="ProjectPanel"  value="{!selectedTab}" onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab"> 
+      
+          
+        <apex:tab label="ProjectS" name="ProjectDetails"  id="tabProjectdetails" >
+            <apex:enhancedList type="Project__c" height="500" rowsPerPage="50"
+                id="ProjectUserList" customizable="false" rendered="{!IF($Profile.Name <> 'System Administrator(c)' , true , false)}"  />
+            <apex:enhancedList type="Project__c" height="500" rowsPerPage="50" 
+                id="ProjectAdminList" customizable="true" rendered="{!IF($Profile.Name == 'System Administrator(c)' , true , false)}"  />
+        </apex:tab>
+        
+        <apex:tab label="Implementing Mechanism" name="IMDetails"  id="tabIMdetails">
+            <apex:enhancedList type="Implementing_Mechanism__c" height="500" rowsPerPage="50"
+                id="IMUserList" customizable="false" rendered="{!IF($Profile.Name <> 'System Administrator(c)' , true , false)}"  />
+            <apex:enhancedList type="Implementing_Mechanism__c" height="500" rowsPerPage="50"
+                id="IMAdminList" customizable="true" rendered="{!IF($Profile.Name == 'System Administrator(c)' , true , false)}"  />
+        </apex:tab>
+    
+      </apex:tabPanel>
+
+
+    <apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['ProjectPage:ProjectPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+ 
+</script>  -->
+          
+</apex:page>

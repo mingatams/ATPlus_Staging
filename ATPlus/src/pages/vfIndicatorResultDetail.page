@@ -1,0 +1,83 @@
+<apex:page standardController="Indicator_Results__c" tabStyle="Data_Admin__tab" sidebar="false" extensions="ClsTabController" id="IndicatorResultPage" action="{!doAction}">
+ <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+        
+        <apex:sectionHeader title="{!$ObjectType.Indicator_Results__c.label}" subtitle="{!Indicator_Results__c.name}"/>
+    
+   <apex:tabPanel switchType="client"  id="IndicatorResultPanel"  value="{!selectedTab}" onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+      <apex:tab label="Overview" name="IndicatorResultDetails"  id="tabIndicatorResultdetails" style="margin-left: -1px;" styleClass="activeTabBackground">
+      <apex:pageBlock mode="maindetail">      
+          <apex:pageBlockButtons >
+                <apex:form >
+                        <apex:commandButton action="{!delete}" value="Delete"/>
+                </apex:form>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection showHeader="false" columns="2">
+                        <apex:outputField value="{!Indicator_Results__c.Name}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Indicator_Results__c.Activity_Id__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Indicator_Results__c.ouId__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Indicator_Results__c.Project_Code__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Indicator_Results__c.Project_Name__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Indicator_Results__c.Partner_Name__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Indicator_Results__c.Project_Id__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Indicator_Results__c.ImpMech_Name__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Indicator_Results__c.ImpMech_Number__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Indicator_Results__c.Reporting_Period_Id__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Indicator_Results__c.Fiscal_Year__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Indicator_Results__c.Status__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Indicator_Results__c.Fiscal_Period__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Indicator_Results__c.Baseline__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Indicator_Results__c.Target__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Indicator_Results__c.Organization_Indicator_Id__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Indicator_Results__c.Implementing_Mechanism_Id__c}"/>
+                        <apex:pageBlockSectionItem />
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="false" columns="2">
+                        <apex:outputField value="{!Indicator_Results__c.CreatedById}"/>
+                        <apex:outputField value="{!Indicator_Results__c.LastModifiedById}"/>
+                </apex:pageBlockSection>
+              
+         </apex:pageBlock>      
+      </apex:tab>
+     
+   </apex:tabPanel>
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['IndicatorResultPage:IndicatorResultPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+</script>
+</apex:page>

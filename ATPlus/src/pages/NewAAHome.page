@@ -1,0 +1,82 @@
+<apex:page controller="NewAAHomeController" sidebar="false">
+    <link rel="stylesheet" href="{!URLFOR($Resource.AAPlanStandardReportsV2, 'style.css')}" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{!URLFOR($Resource.AAPlanStandardReportsV2, 'css/rounded.css')}" type="text/css" media="screen" />
+    
+    <apex:stylesheet value="{!URLFOR($Resource.Twitter_Bootstrap, 'bootstrap/css/bootstrap.min.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Twitter_Bootstrap, 'bootstrap/css/bootstrap.css')}" />
+    
+    <style>
+        .seperator {
+            height: 25px;
+        }
+        
+        .announcements {
+            border-bottom-style: solid;
+            border-bottom-width: 1px;
+            border-left-style: solid;
+            border-left-width: 1px;
+            border-right-style: solid;
+            border-right-width: 1px;
+            margin-right: 2px;
+            margin-left: 2px;
+        }
+    </style>
+    
+    <div class="row">
+        <div class="span12">
+            <apex:image url="{!headerIconUrl}" alt="A&A Banner"/>
+        </div>
+    </div>
+    <div class="seperator"></div>
+    <div class="row">
+        <div class="span3">
+            <a target="_parent" href="/apex/AAPlanList">
+                <apex:image url="{!planIconUrl}" alt="Plan"/>
+            </a>
+        </div>
+        <div class="span3">
+            <a target="_parent" href="/apex/tmp">
+                <apex:image url="{!dashboardIconUrl}" alt="Dashboard"/>
+            </a>
+        </div>
+        <div class="span3">
+            <a target="_parent" href="/apex/Reports">
+                <apex:image url="{!reportsIconUrl}" alt="Reports"/>
+            </a>
+        </div>
+        <div class="span3">
+            <a target="_parent" href="/apex/A_A_Help">
+                <apex:image url="{!helpIconUrl}" alt="Help"/>
+            </a>
+        </div>
+    </div>
+    <div class="seperator"></div>
+    <div class="row">
+        <div class="span12">
+            <apex:image url="{!announcementsIconUrl}" alt="Announcements"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span12">
+            <div class="announcements">
+                
+                <div class="seperator"></div>
+               <!--
+                <apex:pageBlock Title="Please Update Status">
+                    <apex:pageBlockSection columns="1">
+                        <apex:outputPanel styleClass="notice">
+                            A&amp;A Plan Users: Please remember to update the Status of actions completed to "Awarded".
+                        </apex:outputPanel>
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+               -->
+                
+                <c:AAAnnouncements ></c:AAAnnouncements>
+                
+                <div class="seperator"></div>
+                
+            </div>
+        </div>
+    </div>
+   
+</apex:page>

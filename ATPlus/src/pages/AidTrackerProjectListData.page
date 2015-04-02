@@ -1,0 +1,25 @@
+<apex:page cache="false" contentType="text/javascript" controller="AidTrackerProjectListDataController" readOnly="true">
+<apex:variable var="IsFirst" value="true" />
+<apex:outputPanel layout="none" rendered="{!NOT(IsNull(error))}">{error: '{!JSENCODE(error)}'}</apex:outputPanel>
+<apex:outputPanel layout="none" rendered="{!AND(IsNull(error), requestSnapshot)}">{!JSENCODE(CallBack)}({!SnapShotJSON}
+);
+</apex:outputPanel>
+<apex:outputPanel layout="none" rendered="{!AND(IsNull(error), requestProjectsOverview, ViewMode != 'flag')}">{!JSENCODE(CallBack)}({!OverviewJSON}
+);
+</apex:outputPanel>
+<apex:outputPanel layout="none" rendered="{!AND(IsNull(error), requestProjectsOverview, ViewMode == 'flag')}">{!JSENCODE(CallBack)}({!MissionOverviewJSON}
+);
+</apex:outputPanel>
+<apex:outputPanel layout="none" rendered="{!AND(IsNull(error), requestProjects)}">{!JSENCODE(CallBack)}({!ProjectsJSON}
+);
+</apex:outputPanel>
+<apex:outputPanel layout="none" rendered="{!AND(IsNull(error), requestProjectDetails)}">{!JSENCODE(CallBack)}({!ProjectDetailsJSON}
+);
+</apex:outputPanel>
+<apex:outputPanel layout="none" rendered="{!AND(IsNull(error), requestProjectSearch)}">{!JSENCODE(CallBack)}({!ProjectSearchResultsJSON}
+);
+</apex:outputPanel>
+<apex:outputPanel layout="none" rendered="{!AND(IsNull(error), requestProjectDetailLocations)}">{!JSENCODE(CallBack)}({!ProjectDetailLocationsJSON}
+);
+</apex:outputPanel>
+</apex:page>

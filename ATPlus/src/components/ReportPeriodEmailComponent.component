@@ -1,0 +1,55 @@
+<apex:component access="global">
+  <apex:attribute name="repPeriod" type="Reporting_Period__c" description="The context of the outer page / email templates" access="global"/>
+  <apex:attribute name="currentStatus" description=""   type="String"/>
+
+<apex:outputPanel rendered="{!currentStatus !='Submitted'}"> 
+ <p>
+Dear {!if(repPeriod.Implementing_Mechanism_Id__r.Partner_User_1__c!=null,repPeriod.Implementing_Mechanism_Id__r.Partner_User_1__r.name,IF(repPeriod.Implementing_Mechanism_Id__r.Partner_User_2__c!=null,repPeriod.Implementing_Mechanism_Id__r.Partner_User_2__r.name,IF(repPeriod.Implementing_Mechanism_Id__r.Partner_User_3__c!=null,repPeriod.Implementing_Mechanism_Id__r.Partner_User_3__r.name,IF(repPeriod.Implementing_Mechanism_Id__r.Partner_User_4__c!=null,repPeriod.Implementing_Mechanism_Id__r.Partner_User_4__r.name,'Partner'))))},  </p>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!currentStatus=='Submitted'}">
+<p>
+Dear {!if(repPeriod.Implementing_Mechanism_Id__r.COR_Name__c !=null ,repPeriod.Implementing_Mechanism_Id__r.COR_Name__c,repPeriod.Implementing_Mechanism_Id__r.AOR__r.name)},  </p>
+</apex:outputPanel>
+
+<p>
+<br/>
+<apex:outputPanel rendered="{!currentStatus=='PublishRemind'}">
+    The {!repPeriod.Name} Reporting Period is ready to establish Baseline, Targets and finally publish the same to partner users.
+</apex:outputPanel>
+<apex:outputPanel rendered="{!currentStatus=='Submitted'}">
+  The {!repPeriod.Fiscal_Year__c} {!repPeriod.Fiscal_Period__c} Reporting Period results have been submitted by Partner: {!repPeriod.Implementing_Mechanism_Id__r.Partner_Name__c} for IM: {!repPeriod.Implementing_Mechanism_Id__r.name} ( {!repPeriod.Implementing_Mechanism_Id__r.Implementing_Mechanism_Name__c}).  Please <a href="https://aidtracker--c.na21.visual.force.com/{!repPeriod.Id}">Click here </a> to log-in to AIDtracker in order to review and approve these results..
+ </apex:outputPanel>
+
+ <apex:outputPanel rendered="{!currentStatus=='Rejected'}">
+  Indicator results for the {!repPeriod.Fiscal_Year__c} {!repPeriod.Fiscal_Period__c} Reporting Period for {!repPeriod.Implementing_Mechanism_Id__r.name} ( {!repPeriod.Implementing_Mechanism_Id__r.Implementing_Mechanism_Name__c}) has been Rejected and Re-Opened  by your AOR/COR for the following reason(s) <br> </br> 
+  {!repPeriod.Reason__c}. 
+ </apex:outputPanel>
+ 
+ <apex:outputPanel rendered="{!currentStatus=='Extended'}">
+  Indicator results for the {!repPeriod.Fiscal_Year__c} {!repPeriod.Fiscal_Period__c} Reporting Period for {!repPeriod.Implementing_Mechanism_Id__r.name} ( {!repPeriod.Implementing_Mechanism_Id__r.Implementing_Mechanism_Name__c}) has been extended till &nbsp;  <apex:outputText value="{0,date,MM/dd/yyyy}"><apex:param value="{!repPeriod.Close_Date__c}" /></apex:outputText>. 
+ </apex:outputPanel>
+ 
+ <apex:outputPanel rendered="{!currentStatus =='Open'}">
+ The {!repPeriod.Fiscal_Year__c} {!repPeriod.Fiscal_Period__c} Reporting Period for  ( {!repPeriod.Implementing_Mechanism_Name__c}) is now open.  Please <a href="http://usaid-gov.force.com/Partners">Click here </a> to log-in to AIDtracker in order to enter and submit actual indicator results for the specified reporting period, 
+ </apex:outputPanel>
+ 
+ <apex:outputPanel rendered="{!currentStatus =='Approved'}">
+ Indicator results for the {!repPeriod.Fiscal_Year__c} {!repPeriod.Fiscal_Period__c} Reporting Period for {!repPeriod.Implementing_Mechanism_Id__r.name} ( {!repPeriod.Implementing_Mechanism_Id__r.Implementing_Mechanism_Name__c}) has been {!repPeriod.Status__c}.  Please <a href="http://usaid-gov.force.com/Partners">Click here </a> to view a record 
+ </apex:outputPanel>
+ 
+ <apex:outputPanel rendered="{!currentStatus =='SubmitRemind'}">
+ The {!repPeriod.Name} is open to record Actuals and due Date to submit this reporting period is <apex:outputText value="{0,date,MM'/'dd'/'yyyy}"><apex:param value="{!repPeriod.Close_Date__c}"/></apex:outputText>
+ </apex:outputPanel>
+
+</p>
+<apex:outputPanel rendered="{!currentStatus=='Rejected'}">
+Please rectify the issue(s) and submit the reporting period. If you have any questions, please contact: {!if(repPeriod.Implementing_Mechanism_Id__r.AOR__c!=null,repPeriod.Implementing_Mechanism_Id__r.AOR__r.name,repPeriod.Implementing_Mechanism_Id__r.COR__r.name)} / {!if(repPeriod.Implementing_Mechanism_Id__r.AOR__c!=null,repPeriod.Implementing_Mechanism_Id__r.AOR__r.email,repPeriod.Implementing_Mechanism_Id__r.COR__r.email)} .
+</apex:outputPanel>
+<apex:outputPanel rendered="{!currentStatus!='Rejected' && currentStatus!='Submitted'}">
+Should you need any help, please consult the "Help" tab in AIDtracker, or your AOR/COR: {!if(repPeriod.Implementing_Mechanism_Id__r.AOR__c!=null,repPeriod.Implementing_Mechanism_Id__r.AOR__r.name,repPeriod.Implementing_Mechanism_Id__r.COR__r.name)} / {!if(repPeriod.Implementing_Mechanism_Id__r.AOR__c!=null,repPeriod.Implementing_Mechanism_Id__r.AOR__r.email,repPeriod.Implementing_Mechanism_Id__r.COR__r.email)} .
+</apex:outputPanel>
+<p>
+Thank you,</p>
+
+AIDtracker Support Team
+</apex:component>

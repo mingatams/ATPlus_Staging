@@ -1,0 +1,123 @@
+<apex:page standardController="Project_Location__c" tabStyle="Project_Implementation__tab" extensions="ClsTabController,ClsDeleteControllerExt,ClsUserProfileFinder" sidebar="false" id="TaskLocationPage" action="{!doAction}">
+<head> 
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        
+       
+        <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'project-style.css')}"/>        
+        <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/modernizr.custom.79639.js')}"/>        
+        <noscript><apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'css/noJS.css')}"/></noscript>        
+       
+ </head>
+ <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+        
+      <apex:sectionHeader title="{!$ObjectType.Project_Location__c.label}" subtitle="{!Project_Location__c.name}"/>
+    <div style="height:5px; background:#1797C0;"></div> <br></br>
+<apex:outputText style="font-size:12px;font-weight:bold;" value="{!navigationLink}" escape="false"> </apex:outputText> 
+ <br></br>
+  <br></br>
+  
+  <apex:outputPanel rendered="{!HasErrorMessages}">               
+     <apex:pagemessages />        
+  </apex:outputPanel> 
+  
+   <apex:tabPanel switchType="client"  id="TaskLocationPanel"  value="{!selectedTab}" onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+      <apex:tab label="Overview" name="TaskLocationDetails"  id="tabTaskLocationdetails" styleClass="activeTabBackground">
+      <apex:pageBlock mode="maindetail" id="TaskLocationPageBlock">      
+         <apex:pageBlockButtons >
+                <apex:form >
+                        <apex:commandButton action="{!edit}" value="Edit"/>
+                        <apex:commandLink rendered="{!$ObjectType['Project_Location__c'].deletable}" styleClass="btn" style="text-decoration:none;" reRender="" action="{!customDelete}" value="Delete" onclick="return window.confirm('Are you sure?');">
+                        <apex:param name="deleUrl" assignTo="{!deleUrl}" value="/apex/vfActivityDetail?id={!Project_Location__c.ActivityId__r.id}"/>
+                        </apex:commandLink>
+                </apex:form>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection showHeader="true" title="Overview" columns="2">
+                        <apex:outputField value="{!Project_Location__c.ouName__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Project_Location__c.ActivityId__c}"/>
+                        <apex:outputField value="{!Project_Location__c.Project_Code__c}"/>
+                        <apex:outputField value="{!Project_Location__c.ActivityName__c}"/>
+                        <apex:outputField value="{!Project_Location__c.Project_Name__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Location Information" columns="2">
+                        <apex:outputField value="{!Project_Location__c.Name}"/>
+                        <apex:outputField value="{!Project_Location__c.Latitude__c}"/>
+                        <apex:outputField value="{!Project_Location__c.address__c}"/>
+                        <apex:outputField value="{!Project_Location__c.Longitude__c}"/>
+                        <apex:outputField value="{!Project_Location__c.City__c}"/>
+                        <apex:outputField value="{!Project_Location__c.Location_Funding_Amount__c}"/>
+                        <apex:outputField value="{!Project_Location__c.admin2BndryName__c}"/>
+                        <apex:outputField value="{!Project_Location__c.admin1BndryLatitude__c}"/>
+                        <apex:outputField value="{!Project_Location__c.admin1BndryId__c}"/>
+                        <apex:outputField value="{!Project_Location__c.admin1BndryLongitude__c}"/>
+                        <apex:outputField value="{!Project_Location__c.Additional_Location_Information__c}"/>
+                        <apex:outputField value="{!Project_Location__c.Precision_Extent__c}"/>
+                        <apex:outputField value="{!Project_Location__c.cntryId__c}"/>
+                        <apex:outputField value="{!Project_Location__c.Method__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="System Information" columns="2" id="SysHeadSection" rendered="{!IsADMINUser}">
+                        <apex:outputField value="{!Project_Location__c.CreatedById}"/>
+                        <apex:outputField value="{!Project_Location__c.LastModifiedById}"/>
+                </apex:pageBlockSection>             
+                                       
+         </apex:pageBlock>    
+         <apex:relatedList pageSize="20"  list="NotesAndAttachments" rendered="{!IsADMINUser}"/>
+         <c:HistoryRelatedListComponent recLimit="50" ObjName="{!Project_Location__c}"/>  
+      </apex:tab>
+        
+        <apex:tab label="Map" name="LocationMap" id="tabLocationMap" styleClass="activeTabBackground" rendered="{!isMissionPartnerUser == false}">        
+                        <apex:include pageName="PlaceLocator" />              
+      </apex:tab>     
+      
+ <!-- <apex:tab label="Notes and Attachments" 
+                name="LocationNotesAndAttachments" 
+               id="tabNoteTaskLocation">
+         <apex:relatedList title="" list="NotesAndAttachments"/>
+      </apex:tab>   -->  
+        
+   </apex:tabPanel>
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['TaskLocationPage:TaskLocationPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+    
+function addLoadEvent(func) {   
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+
+function hideHeadSesction() {
+ twistSection(document.getElementById('TaskLocationPage:TaskLocationPageBlock:SysHeadSection').childNodes[0].childNodes[0]);
+}
+
+addLoadEvent(hideHeadSesction);              
+</script>
+</apex:page>

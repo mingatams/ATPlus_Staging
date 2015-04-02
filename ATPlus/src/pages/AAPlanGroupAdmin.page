@@ -1,0 +1,157 @@
+<apex:page id="pgAAPlanGroupAdmin" controller="AAPlanGroupAdminController" tabStyle="Admin__tab">
+    <apex:StyleSheet value="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/cupertino/jquery-ui.min.css" />
+    <c:styles />
+    
+    <style>
+
+        .activeTab {
+            background-color: #1796bf;
+            color: white;
+            background-image: none;
+            padding: 5px;
+            font-style: bold;
+            cursor: pointer;
+        }
+        
+        .inactiveTab {
+            background-color: #d3d3d3;
+            color: black;
+            background-image: none;
+            padding: 5px;
+            font-style: bold;
+            cursor: pointer;
+        }
+        
+        textarea {
+            width: 97%;
+        }
+        
+        .commandButtonContainer {
+            text-align: center;
+            margin: 10px;
+            clear: both;
+            padding: 5px;
+        }
+        
+        .recordHeader > div {
+            font-weight: bold;
+            width: 33.33%;
+            font-size: 14px !important;
+            float: left;
+        }
+        
+        .recordHeader a {
+            color: #000;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+    </style>
+    
+    <apex:Messages id="msgs" />
+    <apex:outputPanel rendered="{!groupID == null}">This page requires a Public Group ID be specified.</apex:outputPanel>
+    <apex:pageBlock title="{!UPPER(varGroup.Name)} Public Group Administration">
+        <apex:tabPanel rendered="{!groupID != null}" switchType="Ajax" value="{!ActiveTab}" html-data-id="AandAPlanGroupAdminTabPanelID" tabClass="activeTab" inactiveTabClass="inactiveTab">
+            <apex:tab name="userAdmin" label="Users" id="userTab">
+                <apex:pageBlock >
+                    <apex:form >
+                        <apex:pageBlockSection collapsible="false" title="Add User to Public Group" id="pbs1" columns="1">
+                            <apex:pageBlockSectionItem id="pbsiAddUser" helpText="Select a user to add to the Public Group">
+                                <apex:outputLabel id="lblAddUserLabel" for="txtAddUserLabel" value="User Name" ></apex:outputLabel>
+                                <apex:outputPanel styleClass="requiredInput" layout="block">
+                                    <apex:outputPanel id="divReqBlock" styleClass="requiredBlock" layout="block" />
+                                    <apex:inputText styleClass="requiredInput" id="txtAddUserLabel" value="{!userSearch}" />
+                                </apex:outputPanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSection id="pbsAvailUsers" columns="2" rendered="{!Users.size > 0}">
+                                <apex:pageBlockSectionItem >
+                                    <apex:outputLabel id="lblUserReturn" for="availableUsers" value="Available Users" ></apex:outputLabel>
+                                    <apex:selectList multiselect="false" size="1" id="availableUsers"  value="{!selectedUser}">
+                                        <apex:selectOptions value="{!Users}"></apex:selectOptions>
+                                    </apex:selectList>
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem >
+                                    <apex:outputLabel id="lblUserSelection" for="selectUser" value="Click to add users to group" ></apex:outputLabel>
+                                    <apex:commandButton id="selectUser" action="{!addUser}" value="Add" reRender="pbs1,pbs2" />
+                                </apex:pageBlockSectionItem>
+                            </apex:pageBlockSection>
+                            <apex:commandButton title="Search" value="Search" action="{!searchForUsers}"  />
+                            <apex:outputPanel id="userNotification" rendered="{!addedUserName!=NULL}">
+                                {!addedUserName} has been added to {!varGroup.Name}.
+                            </apex:outputPanel>
+                        </apex:pageBlockSection>
+                    </apex:form>
+                </apex:pageBlock>
+                <apex:pageBlock >
+                    <apex:form >
+                        <apex:pageBlockSection id="pbs2" columns="1" collapsible="false" title="Remove User from Public Group">
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel id="lblSelectUserRemove" for="removeUsers" value="Users" ></apex:outputLabel>
+                                <apex:selectList multiselect="false" size="1" id="removeUsers" value="{!userToRemove}">
+                                    <apex:selectOptions value="{!PublicGroupUsers}"></apex:selectOptions>
+                                </apex:selectList>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel id="lblUserRemove" for="selectUserToRemove" value="Click to remove User from Public Group" ></apex:outputLabel>
+                                <apex:commandButton id="selectUserToRemove" action="{!removeUser}" value="Remove" reRender="pbs1,pbs2" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!userRemoved}">
+                                <apex:outputPanel >User has been removed</apex:outputPanel>
+                            </apex:pageBlockSectionItem>
+                        </apex:pageBlockSection>
+                    </apex:form>
+                </apex:pageBlock>
+            </apex:tab>
+            <apex:tab name="groupAdmin" label="Groups" id="groupTab">
+                <apex:pageBlock >
+                    <apex:form >
+                        <apex:pageBlockSection collapsible="false" title="Add Public Group to Public Group" id="pbs3" columns="1">
+                            <apex:pageBlockSectionItem id="pbsiAddGroup" helpText="Select a Group to add to the Public Group">
+                                <apex:outputLabel id="lblAddGroupLabel" for="txtAddGroup" value="Group Name" ></apex:outputLabel>
+                                <apex:outputPanel styleClass="requiredInput" layout="block">
+                                    <apex:outputPanel id="divReqBlock" styleClass="requiredBlock" layout="block" />
+                                    <apex:inputText styleClass="requiredInput" id="txtAddGroup" value="{!groupSearch}" />
+                                </apex:outputPanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSection columns="2" rendered="{!Groups.size > 0}">
+                                <apex:pageBlockSectionItem >
+                                    <apex:outputLabel id="lblGroupReturn" for="availableGroups" value="Available Groups" ></apex:outputLabel>
+                                    <apex:selectList id="availableGroups" multiselect="false" size="1" value="{!selectedGroup}">
+                                        <apex:selectOptions value="{!Groups}"></apex:selectOptions>
+                                    </apex:selectList>
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem >
+                                    <apex:outputLabel id="lblGroupSelection" for="selectGroup" value="Click to add Group to Public Group" ></apex:outputLabel>
+                                    <apex:commandButton id="selectGroup" action="{!addGroup}" value="Add" reRender="pbs3,pbs4" />
+                                </apex:pageBlockSectionItem>
+                            </apex:pageBlockSection>
+                            <apex:commandButton title="Search" value="Search" action="{!searchForGroups}"/>
+                            <apex:outputPanel rendered="{!addedGroupName!=NULL}">
+                                {!addedGroupName} has been added to {!varGroup.Name}.
+                            </apex:outputPanel>
+                        </apex:pageBlockSection>
+                    </apex:form>
+                </apex:pageBlock>
+                <apex:pageBlock >
+                    <apex:form >
+                        <apex:pageBlockSection collapsible="false" title="Remove Public Group from Public Group" id="pbs4" columns="1">
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel id="lblSelectGroupRemove" for="removeGroups" value="Groups" ></apex:outputLabel>
+                                <apex:selectList id="removeGroups" multiselect="false" size="1" value="{!groupToRemove}">
+                                    <apex:selectOptions value="{!PublicGroupGroups}"></apex:selectOptions>
+                                </apex:selectList>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel id="lbGroupRemove" for="selectGroupToRemove" value="Click to remove Public Group from Public Group" ></apex:outputLabel>
+                                <apex:commandButton id="selectGroupToRemove" action="{!removeGroup}" value="Remove" reRender="pbs3,pbs4"/>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!groupRemoved}">
+                                <apex:outputPanel >Group has been removed</apex:outputPanel>
+                            </apex:pageBlockSectionItem>
+                        </apex:pageBlockSection>
+                    </apex:form>
+                </apex:pageBlock>
+            </apex:tab>
+        </apex:tabPanel>
+    </apex:pageblock>
+</apex:page>

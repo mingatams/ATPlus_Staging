@@ -1,0 +1,135 @@
+<apex:page standardController="LF_Output__c" tabStyle="Project_Design__tab" extensions="ClsTabController,ClsDeleteControllerExt,ClsUserProfileFinder" sidebar="false" id="LFOutputPage" action="{!doAction}">
+ <head> 
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        
+       
+        <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'project-style.css')}"/>        
+        <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/modernizr.custom.79639.js')}"/>        
+        <noscript><apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'css/noJS.css')}"/></noscript>        
+       
+ </head>
+ <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+        
+    <apex:sectionHeader title="{!$ObjectType.LF_Output__c.label}" subtitle="{!LF_Output__c.name}"/>
+    <div style="height:5px; background:#1797C0;"></div> <br></br>
+<apex:outputText style="font-size:12px;font-weight:bold;" value="{!navigationLink}" escape="false"> </apex:outputText> 
+ <br></br>
+  <br></br>
+  <apex:outputPanel rendered="{!HasErrorMessages}">               
+     <apex:pagemessages />        
+  </apex:outputPanel> 
+   <apex:tabPanel switchType="server"  id="LFOutputPanel"  value="{!selectedTab}" onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+      <apex:tab label="Outputs" name="LFOutputDetails"  id="tabLFOutputdetails" style="margin-left: -1px;" styleClass="activeTabBackground">
+      <apex:pageBlock mode="maindetail" id="LFOutputPageBlock">      
+         <apex:pageBlockButtons >
+                <apex:form >
+                        <apex:commandButton action="{!edit}" value="Edit" rendered="{!$ObjectType['LF_Output__c'].updateable}"/>
+                          <apex:commandLink styleClass="btn" rendered="{!$ObjectType['LF_Output__c'].deletable}" style="text-decoration:none;" reRender="" action="{!customDelete}" value="Delete" onclick="return window.confirm('Are you sure?');">
+                    <apex:param name="deleUrl" assignTo="{!deleUrl}" value="{!if($CurrentPage.parameters.retURL != null,$CurrentPage.parameters.retURL,'/apex/vfLFSubPurposeDetail?id='+LF_Output__c.LF_SubPurpose_Id__r.id)}"/>
+ </apex:commandLink>                                            
+                </apex:form>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection showHeader="true" title="Project Information" columns="2">
+                        <apex:outputField value="{!LF_Output__c.ouName__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!LF_Output__c.Project_Code__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!LF_Output__c.Project_Name__c}"/>
+                        <apex:pageBlockSectionItem />
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Project LogFrame Information" columns="1">
+                        <apex:outputField value="{!LF_Output__c.LF_Goal_Name__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!LF_Output__c.LF_Purpose_Id__c}"/>
+                        <apex:outputField value="{!LF_Output__c.LF_Purpose_Name__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!LF_Output__c.LF_SubPurpose_Id__c}"/>
+                        <apex:outputField value="{!LF_Output__c.LF_SubPurpose_Name__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Project Output Information" columns="1">
+                        <apex:outputField value="{!LF_Output__c.Name}"/>
+                        <apex:outputField value="{!LF_Output__c.LF_Output_Name__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Indicator Reporting" columns="2">
+                        <apex:outputField value="{!LF_Output__c.Indicators_Established__c}"/>
+                        <apex:outputField value="{!LF_Output__c.Reporting_Periods_Established__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="System Information" columns="2" id="SysHeadSection" rendered="{!IsADMINUser}">
+                        <apex:outputField value="{!LF_Output__c.CreatedById}"/>
+                        <apex:outputField value="{!LF_Output__c.LastModifiedById}"/>
+                </apex:pageBlockSection>                            
+         </apex:pageBlock>
+          <apex:relatedList pageSize="20"  list="LF_Inputs__r"/>
+          <apex:relatedList pageSize="20" list="NotesAndAttachments"/>
+          <c:HistoryRelatedListComponent recLimit="50" ObjName="{!LF_Output__c}"/> 
+      </apex:tab>
+  
+        
+   <!--   <apex:tab label="Inputs" name="LF_Outputs_Inputs" 
+                id="tabLFOutputInputs">
+         <apex:relatedList pageSize="20" title="" list="LF_Inputs__r"/>
+      </apex:tab> -->
+      
+      <apex:tab label="Output Indicators" name="LFOutput_OrgUnit_Indicators" 
+                id="tabLFOutputOrgIndicators" styleClass="activeTabBackground">
+         <!-- <apex:relatedList pageSize="20" title="" list="OrgUnit_Indicators__r"/> -->
+         <c:Manage_Indicators />
+      </apex:tab>
+      
+        <apex:tab label="Output Indicator Data" name="LF_Output_Reporting_Periods" 
+                id="tabLFOutputReportingPeriod" styleClass="activeTabBackground">
+         <!-- <apex:relatedList pageSize="20" title="" list="LF_Reporting_Periods__r"/> -->
+         <c:ManageTargets id="targetcomp_id" />
+      </apex:tab>
+     
+     <!-- <apex:tab label="Notes and Attachments" 
+                name="NotesAndAttachmentsLFOutput" 
+               id="tabNoteAtt">
+         <apex:relatedList pageSize="20" title="" list="NotesAndAttachments"/>
+      </apex:tab> -->
+   </apex:tabPanel>
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['LFOutputPage:LFOutputPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+    
+function addLoadEvent(func) {   
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+
+function hideHeadSesction() {
+ twistSection(document.getElementById('LFOutputPage:LFOutputPageBlock:SysHeadSection').childNodes[0].childNodes[0]);
+}
+
+addLoadEvent(hideHeadSesction);       
+</script>
+</apex:page>

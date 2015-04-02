@@ -1,0 +1,66 @@
+<apex:page standardController="OrgUnit_Indicator__c" tabStyle="Monitoring__tab" sidebar="false">
+ <apex:sectionHeader title="{!$ObjectType.OrgUnit_Indicator__c.label} Edit" subtitle="{!OrgUnit_Indicator__c.name}"/>
+    <apex:form >
+    <apex:pageMessages />
+    <apex:pageBlock title="{!$ObjectType.OrgUnit_Indicator__c.label} Edit" mode="edit">
+        <apex:pageBlockButtons >
+            <apex:commandButton action="{!save}" value="Save"/>
+            <apex:commandButton action="{!cancel}" value="Cancel"/>
+        </apex:pageBlockButtons>
+       
+         <apex:pageBlockSection showHeader="true" title="USAID Performance Indicator Reference Sheet" columns="2" >
+             <apex:facet name="header">        
+               <span class="pbSubExtra"><span class="requiredLegend">
+               <span class="requiredExampleOuter"></span>
+                <!-- <span class="requiredText"> <img src="{!$Resource.PublicIcon}" /> = Public Fields</span> -->
+                 </span></span>
+                  <!-- <h3>Basic Information</h3> -->
+               <h3>Overview</h3>
+             </apex:facet>
+            <apex:outputField value="{!OrgUnit_Indicator__c.Name}"/>            
+            <apex:outputField value="{!OrgUnit_Indicator__c.indName__c}"/>
+            <apex:outputField value="{!OrgUnit_Indicator__c.sIndCode__c}"/>
+            <apex:outputField value="{!OrgUnit_Indicator__c.sIndName__c}" />
+            <apex:inputField value="{!OrgUnit_Indicator__c.PPR__c}" />
+            <apex:inputField value="{!OrgUnit_Indicator__c.PPR_Reporting_Years__c}" />
+            <apex:outputField value="{!OrgUnit_Indicator__c.prCode__c}" />
+            <apex:outputField value="{!OrgUnit_Indicator__c.prName__c}" />
+            <apex:outputField value="{!OrgUnit_Indicator__c.indType1__c}" />
+            <apex:inputField value="{!OrgUnit_Indicator__c.User_Defined_Tags__c}" />
+            <apex:pageBlockSectionItem > </apex:pageBlockSectionItem>
+            <apex:outputField value="{!OrgUnit_Indicator__c.UOM__c}" />  
+           
+        
+        </apex:pageBlockSection>
+        <apex:pageBlockSection showHeader="true" title="Description" columns="1" >
+            <apex:inputField style="width:90%;" value="{!OrgUnit_Indicator__c.Result_Measured__c}" />
+            <apex:inputField style="width:90%;" value="{!OrgUnit_Indicator__c.Precise_Defintion__c}" />
+            <apex:inputField style="width:90%;" value="{!OrgUnit_Indicator__c.Rationale__c}" />            
+        </apex:pageBlockSection>
+        
+        <apex:pageBlockSection showHeader="true" title="Plan for Data Collection by USAID" columns="1" >
+            <apex:inputField style="width:90%;" value="{!OrgUnit_Indicator__c.Data_Source__c}" />
+            <apex:inputField style="width:90%;" value="{!OrgUnit_Indicator__c.Data__c}" />
+            <apex:inputField style="width:90%;" value="{!OrgUnit_Indicator__c.Reporting_Frequency__c}" />
+            <apex:inputField style="width:90%;" value="{!OrgUnit_Indicator__c.Individual_Responsible__c}" />
+        </apex:pageBlockSection>
+        
+        <apex:pageBlockSection showHeader="true" title="Data Quality Issues" columns="1" >
+            <apex:inputField style="width:90%;" value="{!OrgUnit_Indicator__c.Previous_DQA_Info__c}" />
+            <apex:inputField style="width:90%;" value="{!OrgUnit_Indicator__c.Date_of_Future_DQA__c}" />
+            <apex:inputField style="width:90%;" value="{!OrgUnit_Indicator__c.DQA_Data_Limitations__c}" />            
+        </apex:pageBlockSection>
+        
+        <apex:pageBlockSection showHeader="true" title="Targets and Baseline" columns="1" >
+            <apex:inputField style="width:90%;" value="{!OrgUnit_Indicator__c.Baseline_timeframe__c}" />
+            <apex:inputField style="width:90%;" value="{!OrgUnit_Indicator__c.Rationale_for_Targets__c}" />            
+        </apex:pageBlockSection>
+        
+        <apex:pageBlockSection showHeader="true" title="Changes to Indicator" columns="1" >
+            <apex:inputField style="width:90%;" value="{!OrgUnit_Indicator__c.Indicator_Rationales__c}" />
+            <apex:inputField style="width:90%;" value="{!OrgUnit_Indicator__c.Other_Notes__c}" />            
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+    </apex:form>
+  
+</apex:page>

@@ -1,0 +1,75 @@
+<apex:page >
+	<link rel="stylesheet" href="{!URLFOR($Resource.AAPlanStandardReportsV2, 'style.css')}" type="text/css" media="screen" />
+	<link rel="stylesheet" href="{!URLFOR($Resource.AAPlanStandardReportsV2, 'css/rounded.css')}" type="text/css" media="screen" />
+	
+	<style>
+		#content {
+		    background: -webkit-linear-gradient(#ffffff,#D0F6FF); /* For Safari 5.1 to 6.0 */
+		    background: -o-linear-gradient(#ffffff,#D0F6FF); /* For Opera 11.1 to 12.0 */
+		    background: -moz-linear-gradient(#ffffff,#D0F6FF); /* For Firefox 3.6 to 15 */
+		    background: linear-gradient(#ffffff,#D0F6FF); /* Standard syntax (must be last) */
+		}
+		
+		#container a {
+			text-decoration:none;
+		}
+		
+		#container a.btn {
+			height: 100px;
+			width: 500px;
+		}
+		
+		#container table th {
+			text-align: center;
+		}
+	</style>
+	
+	<div id="container">
+		<table align="center" style="width:100%; text-align:center;">
+			<tr>
+				<td>
+					<div id="content" style="width:100%; text-align:center;">
+						<table cellpadding="10" align="center" >
+							<tr>
+								<td valign="center">
+									<a class="btn" href="#" style="background-color:#F9C499; color:#fff;font-size:18px;">
+								    	Welcome to the Acquisition and Assistance Plan System
+								    </a>
+								</td>
+								<td>
+									<a class="btn" target="_blank" href="/apex/AAPlanList" style="background-color:#96AFCF; color:#fff;font-size:18px;">
+								    	A&amp;A Plans
+								    </a>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<a class="btn" target="_blank" href="/apex/Reports" style="background-color:#789440; color:#fff;font-size:18px;">
+								    	A&amp;A Plan Standard Reports
+								    </a>
+								</td>
+								<td>
+									<a class="btn" target="_blank" href="/apex/tmp" style="background-color:#923931; color:#fff;font-size:18px;">
+								    	A&amp;A Plan Dashboards
+								    </a>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<a class="btn" target="_blank" href="/apex/Help" style="background-color:#7E649E; color:#fff;font-size:18px;">
+								    	Help, Resources, and FAQs
+								    </a>
+								</td>
+								<td>
+									<a class="btn" href="#" style="background-color:#92CDDC; color:#fff;font-size:18px;">
+								    	Announcements
+								    </a>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>	
+</apex:page>

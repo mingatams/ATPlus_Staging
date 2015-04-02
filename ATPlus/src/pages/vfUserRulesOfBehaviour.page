@@ -1,0 +1,130 @@
+<apex:page cache="false" sidebar="false" showHeader="false" controller="ClsSiteLoginController" >
+    <head>
+        <apex:stylesheet value="{!URLFOR($Resource.login_framework, 'style.css')}" />    
+    </head>
+
+<body>
+<div id="wrapper">
+   <div id="header"  style="padding-bottom: 20px;" >
+    <img src="{!URLFOR($Resource.Partner_Login, 'images/usaid-logo.png')}" />
+      </div> <!-- end header -->
+       <div id="container" style="align:center">
+        <div id="aidtracker-logo" style="margin-top:0px;"></div> 
+        
+            
+          <table align="center" width="100%" border="0">
+         
+          <tr><td align="center"  style="font-weight:bold;">AIDtracker User Rules Of Behavior</td></tr>    
+          
+          <tr>   
+          <td>
+       
+       <div id="disclaimer" style="margin-top:5px;margin-left:125px;margin-right:20px;color:black;" >          
+
+       You must adhere to this security policy contained in United States Agency for International Development (USAID) Automated Directives System (ADS) 545, and the plans, procedures,
+rules of behavior, standards, checklists, and guidelines derived from them.
+ 
+You must use this information system only for USAID business.
+ 
+You must only process information on systems that are approved for processing at the same security level or higher than that of the information being processed.
+ 
+You have no reasonable expectation of privacy when using any USAID information systems. USAID will protect the privacy of specific personally identifiable information as required by law.
+ 
+You must safeguard USAID information/data.
+ 
+You must not bypass, modify, deactivate or intentionally probe security controls used to protect USAID’s information systems without written approval from the Chief Information Security Officer (CISO). 
+
+    </div>
+
+
+    </td> </tr>
+   
+   <br /> <br />
+     <tr><td align="center"  style="font-weight:bold;">System User Acknowledgement and Acceptance</td></tr>
+     <apex:outputPanel id="pan1" rendered="{!IF(isPortalUser, false, true)}">
+     <tr>   
+          <td>
+          <span>
+            <div id="disclaimer" style="margin-top:5px;margin-left:125px;margin-right:50px;color:black;" >  
+                I have reviewed the system rules of behavior and I understand that I am responsible for adhering to them at all times.  I also understand that I am responsible for immediately notifying the assigned Contracting Officer’s Representative (COR), Alternate Contracting Officer’s Representative (AOR), and/or USAID Mission Point of Contact (POC) when I am no longer the correct point of contact for Implementing Partner reporting.
+            </div>
+           </span>
+
+      </td>
+     </tr>
+     </apex:outputPanel>
+     <apex:outputPanel id="pan2" rendered="{!IF(! isPortalUser, false, true)}">
+     <tr>   
+          <td>
+         
+             <div id="disclaimer" style="margin-top:5px;margin-left:125px;margin-right:50px;color:black;" >       
+        <span>             
+            I have reviewed the system rules of behavior and I understand that I am responsible for adhering to them at all times.               
+        </span>
+    </div> 
+    </td></tr>
+     </apex:outputPanel>
+   
+    
+            <tr align="center">   
+            
+          <td style="margin-left:200px;">
+          
+              <apex:form forceSSL="true" style="margin: 0; text-align: center;">
+              
+          
+           <div id="c-submit" class="cc" style="margin-left:400px;">
+               <apex:commandButton action="{!Accept}" value="Accept" />          
+            </div>
+             <div id="c-submit" class="cc">
+               <apex:commandButton action="{!$Site.Prefix}/" value="Cancel" />     
+              </div>
+             
+        </apex:form>
+        </td></tr>
+          </table> 
+    </div>
+       </div> 
+
+   
+</body>
+</apex:page> 
+
+
+
+<!--<apex:page id="forgotPassword" showHeader="false" controller="ForgotPasswordController" title="{!$Label.site.forgot_password}">
+ <apex:composition template="{!$Site.Template}">
+    <apex:define name="body">
+      <center>
+        <apex:panelGrid bgcolor="white" columns="1"> 
+          <br/>
+          <br/>
+          <apex:panelGrid width="758" cellpadding="0" cellspacing="0" bgcolor="white" columns="1" styleClass="topPanelContainer"> 
+            <br/>
+            <apex:outputPanel layout="block" styleClass="topPanel">
+              <apex:panelGrid width="758" cellpadding="0" cellspacing="0" bgcolor="white" columns="2"> 
+                <apex:image url="{!URLFOR($Resource.SiteSamples, 'img/clock.png')}"/>
+                <apex:panelGroup >
+                  <br/>
+                  <apex:outputText styleClass="title" value="{!$Label.site.enter_password}"/>
+                  <br/>
+                  <apex:form id="theForm">
+                    <apex:pageMessages id="error"/>
+                    <apex:panelGrid columns="3" style="margin-top:1em;">
+                      <apex:outputLabel value="{!$Label.site.username}" for="username"/>
+                      <apex:inputText required="true" id="username" value="{!username}"/>
+                      <apex:commandButton id="submit" value="{!$Label.site.submit}" action="{!forgotPassword}"/>
+                    </apex:panelGrid> 
+                    </apex:form>                  
+                  <br/>
+                </apex:panelGroup>
+              </apex:panelGrid> 
+             </apex:outputPanel>
+            <c:SitePoweredBy />
+          </apex:panelGrid> 
+       </apex:panelGrid>
+      </center>
+      <br/>
+    </apex:define>
+  </apex:composition>
+</apex:page> -->

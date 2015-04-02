@@ -1,0 +1,399 @@
+<apex:component controller="ClsIndicatorSetupControllerIM"   allowDML="true" >
+ <apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxcommon.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxtabbar.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxtabbar_start.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgridcell.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/dhtmlxtreegrid.js')}" /> 
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_group.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_splt.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/excells/dhtmlxgrid_excell_link.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_selection.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/excells/dhtmlxgrid_excell_combo.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_lines.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxcontainer.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxCombo, 'dhtmlxCombo/codebase/dhtmlxcombo.js')}" />
+
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxtabbar.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid_skins.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/skins/dhtmlxgrid_dhx_skyblue.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxCombo, 'dhtmlxCombo/codebase/dhtmlxcombo.css')}"/>
+
+
+<style>  
+    div.gridbox_dhx_skyblue table.obj tr td{font-family:Tahoma; font-size:11px; border-width: 1px 1px 1px 1px; border-color : #FDFDFD #A4BED4 #A4BED4 #FDFDFD;}
+    div.gridbox_dhx_skyblue table.hdr td { Font-size:12px; font-family:Trebuchet MS;}
+    div.gridbox_dhx_skyblue table.obj tr td{ font-size:12px; font-family:Trebuchet MS;}
+    div.gridbox_dhx_skyblue table.obj tr td { font-family: Arial, Verdana, sans-serif; font-size:11px; }
+    div.gridbox_dhx_skyblue table.hdr td { font-family:Arial, Verdana, sans-serif; font-size:12px; }
+    div.gridbox table.obj td.group_row { background-color: #4B627F; border-color:#FDFDFD #A4BED4 #A4BED4 #FDFDFD; border-width:1px; color: #FFFFFF}
+   
+    .dhx_combo_select, .gridbox_dhx_skyblue .dhx_combo_edit, .gridbox_dhx_skyblue .dhx_textarea{ font-size:12px;}
+    .bPageBlock .detailList .labelCol { width:9%; }
+    .bPageBlock .detailList .dataCol { width:25%; }
+    body .bPageTitle { padding:0 0 0;}
+    ul li, ol li { list-style: none; }
+    a {color:#1797C0; font-size:12px; font-weight:bold;}
+    element.style { color:red; font-family:Helvetica, sans-serif; font-size:11pt; font-weight:bold; overflow:auto; text-align:center;} 
+    div.gridbox_dhx_skyblue table.hdr td { text-align:center; }   
+</style>
+
+ <script>
+
+        function dispSetupIndicatorTree(){
+        document.getElementById("gridboxCC").innerHTML = "";
+        mygrids = new dhtmlXGridObject("gridboxCC","100%", "100%");
+        mygrids.selMultiRows = true;
+        mygrids.setImagePath("{!URLFOR($Resource.dhtmlxGrid, '/dhtmlxGrid/codebase/imgs/')}");        
+        mygrids.setHeader("Indicator Code,Indicator Name,USAID Tag{#special}, User Defined Tag{#special1}, Indicator Type,PPR,Active,Custom,Select,,Rept Frequency");
+        mygrids.attachHeader("#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#filter_checkbox,#filter_checkbox,#filter_checkbox,#filter_checkbox,#rspan,#text_filter");
+        mygrids.setInitWidthsP("10,35,9,9,9,5,5,5,5,0,8");
+        mygrids.setColAlign("left,left,left,left,left,center,center,center,center,center,center");
+        mygrids.setColTypes("tree,rotxt,rotxt,rotxt,rotxt,ch,ch,ch,ch,rotxt,co");
+        mygrids.enableEditEvents(true,true,true);
+        mygrids.getCombo(10).put(1, "Quarterly");
+        mygrids.getCombo(10).put(2, "Semi-Annual");
+        mygrids.getCombo(10).put(3, "Annual");
+        mygrids.enableAutoHeigth(false);
+        mygrids.enableResizing("false,false,false,false,false,false,false,false,false,false,false");
+        mygrids.enableTooltips("true,true,true,true,false,false,false,false,false,false,false,false");
+        mygrids.enableTreeCellEdit(false);
+        mygrids.enableSmartXMLParsing(true);   
+        mygrids.setFiltrationLevel(-2);
+        mygrids.init();
+        mygrids.attachEvent("onRowCreated",lockCheckbox);
+        mygrids.setSkin("dhx_skyblue");       
+        mygrids.loadXMLString('{!xmlStringSetup}'); 
+        mygrids.attachEvent("onMouseOver",doonMouseOver);
+        mygrids.attachEvent("onFilterStart", doStart);
+        mygrids.attachEvent("onFilterEnd", doExpand); 
+        mygrids.expandAll();
+        mygrids.sortRows(0,"str", "asc");   
+        mygrids.customGroupFormat=function(name,count){
+          if (name == 'STANDARD') 
+          { name = 'F / Standard';
+          }  
+          return name;
+        }
+        mygrids.setColumnHidden(9,true);
+        mygrids.sortRows(9,"str", "asc");       
+        mygrids.sortRows(0,"str", "asc");
+        mygrids.groupBy(9);
+        mygrids.attachEvent("onCheck",selectParent);
+        mygrids.attachEvent("onEditCell", setFrequency);       
+        mygrids.attachEvent("onOpenEnd", function(id,state){
+        mygrids.sortRows(9,"str", "asc");    
+        mygrids.sortRows(0,"str", "asc");
+        mygrids.groupBy(9);
+        }); 
+        var ids=mygrids.getAllRowIds();        
+        var allRowIdList = ids.split(",");       
+        for(i =0; i<allRowIdList.length; i++ ){
+            mygrids.cells(allRowIdList[i],5).setDisabled(true);        
+            mygrids.cells(allRowIdList[i],6).setDisabled(true); 
+            mygrids.cells(allRowIdList[i],7).setDisabled(true);         
+           if (mygrids.hasChildren(allRowIdList[i]) > 0 ){            
+             var allChildren = mygrids.getAllSubItems(allRowIdList[i]);
+                var subItemsList = allChildren.split(",");                                             
+                 for(j =0; j<subItemsList.length; j++ ){                  
+                      mygrids.cells(subItemsList[j],5).setDisabled(true);   
+                      mygrids.cells(subItemsList[j],6).setDisabled(true);
+                      mygrids.cells(subItemsList[j],7).setDisabled(true);                          
+                 }                    
+           }
+        }         
+   }
+ 
+ dhtmlXGridObject.prototype._in_header_special=function(tag,index,data){ 
+        tag.innerHTML=data[0];
+        tag.title="A searchable field designating the standard USAID areas the indicator supports, if one exists."; 
+ }
+ dhtmlXGridObject.prototype._in_header_special1=function(tag,index,data){ 
+    tag.innerHTML=data[0];
+    tag.title="A searchable, editable field for users to identify Mission specific groups of indicators."; 
+ }
+   
+ dhtmlXGridObject.prototype._in_header_filter_checkbox=function(t,i,c){
+ t.innerHTML=c[0]+"<input type='checkbox' />"+c[1];
+ var self=this;
+ t.firstChild.onclick=function(e){
+   self.filterBy(i,this.checked?1:0);
+  (e||event).cancelBubble=true;
+   mygrids.sortRows(9,"str", "asc");      
+   mygrids.sortRows(0,"str", "asc");
+   mygrids.groupBy(9);
+ }
+}
+    
+   function doStart(indexes,values) {
+    count = 0;
+    for (i=0;i<values.length; i++){
+      if(values[i].length != 0){
+       count = count + 1;
+      }
+    }
+     mygrids.sortRows(0,"str", "asc");     
+      return true;
+   }
+   
+    function doExpand(){
+      if(count == 0){
+          var id = mygrids.getRowId(0);
+          var allChildren = mygrids.getSubItems(id);
+          var subItemsList = allChildren.split(",");
+          for(i=0;i<subItemsList.length;i++){
+           mygrids.closeItem(subItemsList[i]);
+          }           
+          } else {
+          mygrids.expandAll();
+          }  
+            
+ }
+ 
+     function setFrequency(stage,rId,cInd,nValue,oValue){
+         if(cInd == 10 && stage == 2){
+         var allChildren = mygrids.getSubItems(rId);
+         var subItemsList = allChildren.split(",");
+         if (nValue == 'Quarterly' || nValue == '1')
+                mygrids.cells(rId,10).setValue(1);
+            else if (nValue == 'Semi-Annual' || nValue == '2')
+                mygrids.cells(rId,10).setValue(2);
+            else if (nValue == 'Annual' || nValue == '3')
+                mygrids.cells(rId,10).setValue(3);
+          for(i=0;i<subItemsList.length;i++){
+            if (nValue == 'Quarterly' || nValue == '1')
+                mygrids.cells(subItemsList[i],10).setValue(1);
+            else if (nValue == 'Semi-Annual' || nValue == '2')
+                mygrids.cells(subItemsList[i],10).setValue(2);
+            else if (nValue == 'Annual' || nValue == '3')
+                mygrids.cells(subItemsList[i],10).setValue(3);
+          }
+         }
+         return true;
+     }
+  
+   
+    function lockCheckbox(id){
+        var n = mygrids.getItemImage(id);
+        var val = mygrids.cells(id,8).getValue();
+        var pId = mygrids.getParentId(id);
+        var val2;
+        if((n == 'sub-indicator.png' || n == 'custom-sub-indicator.png')&& val == 1){
+            mygrids.cells(mygrids.getParentId(id),8).setDisabled(true);
+        }
+        
+        if((n == 'sub-indicator.png' || n == 'custom-sub-indicator.png')){
+            mygrids.cells(id,10).setDisabled(true);
+            mygrids.setCellTextStyle(id,10,"background-color:gray;");
+        }
+        if (mygrids.cells(id,8).getAttribute("disabled")){
+              mygrids.cells(id,8).setDisabled(true);
+              mygrids.cells(id,10).setDisabled(true);
+        }
+        if(n == 'indicator.png' || n == 'custom-indicator.png'){
+           val2 = mygrids.cells(id,10).getValue();
+        } else if(n == 'sub-indicator.png' || n == 'custom-sub-indicator.png'){
+           val2 = mygrids.cells(pId,10).getValue();
+        }
+        //alert(mygrids.cells(id,0).getValue()+'::'+val2);
+        if (val2 == null || val2 == ''||val2 == 'Quarterly' || val2 == '1'){
+            mygrids.cells(id,10).setValue(1);
+          }
+        else if (val2 == 'Semi-Annual' || val2 == '2'){
+            mygrids.cells(id,10).setValue(2);
+            }
+        else if (val2 == 'Annual' || val2 == '3'){
+            mygrids.cells(id,10).setValue(3);
+            }
+    }
+
+    
+    function selectParent(rId, cInd, state){   
+       var pId = mygrids.getParentId(rId);
+       var j = mygrids.getItemImage(pId);
+       var type = mygrids.cells(pId,8).getAttribute("disabled");
+       var count = 0;         
+      
+       if(state){ 
+           if (mygrids.cells(pId,8).getValue() == 0 && (j =='indicator.png' || j == 'custom-indicator.png' )){
+                          mygrids.cells(pId,8).setValue(1);
+           }
+           mygrids.cells(pId,8).setDisabled(true);
+           }
+        else{if ( (!state) || ( mygrids.cells(pId,8).getValue() == 1 &&(mygrids.getRowById(pId)._locked) != true)){       
+                    if (mygrids.hasChildren(pId) > 0 ){
+                        var allChildren = mygrids.getAllSubItems(pId);
+                        var subItemsList = allChildren.split(",");                                              
+                        for(i =0; i<subItemsList.length; i++ ){                          
+                            if (mygrids.cells(subItemsList[i],8).getValue() == 1){
+                            count = count +1;
+                            }
+                        }                  
+                      if(count == 0 && !type){                                           
+                             mygrids.cells(pId,8).setDisabled(false);
+                        }else {
+                                 if(count > 0){                                 
+                                  if(mygrids.cells(pId,8).getValue() == 0 &&  (j =='indicator.png' || j == 'custom-indicator.png' )){
+                                      mygrids.cells(pId,8).setValue(1);                        
+                                  }
+                                  mygrids.cells(pId,8).setDisabled(true);
+                        }                        
+                        }
+                    }
+           }            
+      }     
+   }
+   
+   function doonMouseOver(id,index){
+       var val = mygrids.getItemImage(id);
+       var indVal = mygrids.cellById(id,0).getValue();
+       // indVal= indVal.substring(6);
+       /*
+       if (val == "pse.png") {
+       mygrids.cellById(id,0).setAttribute("title","Source");
+       }   */
+       if (val == "indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Indicator: "+indVal);
+       }
+       if (val == "sub-indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Disaggregation: "+indVal);
+       }
+       if (val == "custom-indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Custom Indicator: "+indVal);
+       }
+       if (val == "custom-sub-indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Custom Disaggregation: "+indVal);
+       }
+       var val1 = mygrids.cells(id,index).getValue();
+       if (val1 == "") return false; 
+       return true;
+   }
+   
+  function call02(hiddenId){
+        var checked = [];
+        mygrids.filterBy(0,"");
+        mygrids.filterBy(1,"",true);
+        mygrids.filterBy(2,"",true);
+        mygrids.filterBy(3,"",true);
+        mygrids.filterBy(4,"",true);
+        mygrids.filterBy(5,false,true);
+        mygrids.filterBy(6,false,true);
+        mygrids.filterBy(7,false,true);
+        mygrids.filterBy(8,false,true);
+        mygrids.filterBy(10,"",true);
+        
+         var ids=mygrids.getAllRowIds();
+         var allRowIdList = ids.split(",");     
+         
+         if(allRowIdList.length > 0){
+            for(i =0; i<allRowIdList.length; i++ ){            
+                if (mygrids.cells(allRowIdList[i],8).getValue() != 0){
+                      checked.push(allRowIdList[i]+':::'+mygrids.cells(allRowIdList[i],10).getValue());
+                   if(mygrids.hasChildren(allRowIdList[i]) > 0){
+                      
+                      var allChildren = mygrids.getAllSubItems(allRowIdList[i]);
+                      var subItemsList = allChildren.split(",");
+                                            
+                 for(j =0; j<subItemsList.length; j++ ){
+                       if (mygrids.cells(subItemsList[j],8).getValue() != 0)
+                          checked.push(subItemsList[j]+':::'+mygrids.cells(subItemsList[j],10).getValue());                      
+              
+                  }
+                  }
+                  
+                }
+             }
+             }
+
+       document.getElementById(hiddenId).value = checked;      
+   }
+   
+   function addLoadEvent(func) {
+      var oldonload = window.onload;
+      if (typeof window.onload != 'function') {
+        window.onload = func;
+      } else {
+        window.onload = function() {
+          if (oldonload) {
+            oldonload();
+          }
+          func();
+        }
+      }
+    }
+   addLoadEvent(dispSetupIndicatorTree); 
+
+</script>
+
+
+  
+<apex:form > 
+ <apex:pageBlock rendered="{!IMRec.Reporting_Level__c != null}" >
+     <div>
+          <p style="color: rgb(1,91,167); font-weight:bold; font-size:12px; font-family:Arial, Helvetica, Sans-Serif; margin:9px;">Select the Indicators that are applicable.</p>
+     </div>
+ </apex:pageBlock> 
+<!--<div rendered="{!isIndicatorExist == true && IMRec.Reporting_Level__c!= null}">
+<p style="color: rgb(1,91,167); font-weight:bold; font-size:12px; font-family:Arial, Helvetica, Sans-Serif; margin:9px;">Select the Indicators that are applicable.</p>  
+</div>-->
+ <apex:messages style="text-align:center;color:Red; overflow:auto; font-family:Helvetica, sans-serif; font-size:9pt;"/>
+ 
+  <apex:variable var="rend" value="var1" rendered="{!isIndicatorExist == true && IMRec.Reporting_Level__c!= null}">
+  
+  <div style="width:97%;text-align:center;">
+              
+                 
+         <apex:actionStatus startText=" Processing the stuff " stopText=" Done " id="counterStatus"  >
+         <apex:facet name="start" >Processing...
+          <img src="/apexpages/devmode/img/saveStatus.gif" />
+         </apex:facet>
+         <apex:facet name="stop">
+         <apex:commandButton rendered="{!isIndicatorExist == true && isReadOnlyUser == false}" value="Save" action="{!doSaveIndicatorForRecordType}" onclick="call02('{!$Component.selectedInd}')"  status="counterStatus" reRender="counterStatus" />
+              
+         </apex:facet>
+        </apex:actionStatus>
+            <apex:commandButton action="{!CancelNGo}" value="Cancel" immediate="true"/>
+          
+                 
+                 </div>                 
+         <div id="gridboxCC" style="width:97%;height:450px; margin: 15px auto 0px auto;"></div>
+         </apex:variable> 
+   <apex:variable var="rend" value="var2"  rendered="{!isIndicatorExist == false && isError != true}">
+         <div id="gridboxCC" style="width:97%;height:250px; margin: 15px auto 0px auto;"></div>
+         </apex:variable>                   
+
+        <apex:repeat value="{!sourceNameList}" var="source">    
+          <apex:repeat value="{!mainnodes}" var="parent">       
+          </apex:repeat>  
+       </apex:repeat>             
+           <br></br><br></br>            
+                 
+            <div style="width:97%;text-align:center;">
+                <apex:inputHidden value="{!selectedSourceIndicators}" id="selectedInd"/>
+              
+                 <apex:actionStatus startText=" Processing the stuff " stopText=" Done " id="counterStatus1"  >
+         <apex:facet name="start" >Processing...
+          <img src="/apexpages/devmode/img/saveStatus.gif" />
+         </apex:facet>
+         <apex:facet name="stop">
+         <apex:commandButton rendered="{!isIndicatorExist == true && isReadOnlyUser == false && IMRec.Reporting_Level__c!= null}" value="Save" action="{!doSaveIndicatorForRecordType}" onclick="call02('{!$Component.selectedInd}')"  status="counterStatus1" reRender="counterStatus" />
+              
+         </apex:facet>
+        </apex:actionStatus>
+                <apex:commandButton rendered="{!isIndicatorExist == true && isReadOnlyUser == false && IMRec.Reporting_Level__c!= null}" action="{!CancelNGo}" value="Cancel" immediate="true"/>
+                 </div>                 
+              <br></br>
+         <apex:pageBlock rendered="{!IMRec.Reporting_Level__c == null && isError != true}" >
+             <div>
+                <p style="text-align:center;color:Red; overflow:auto; font-family:Helvetica, sans-serif; font-size:9pt; font-weight:bold;">Collection Level is Not defined for this IM. Please define a collection level before selecting indicators.</p>
+             </div>
+             <div id="cbBouutons"  style="width:750px;height:50px;margin: 10px auto 0px auto; text-align: center; " >
+                <apex:commandButton value="OK" action="{!CancelNGo}" rendered="true" />
+            </div>
+         </apex:pageBlock>  
+          
+ </apex:form>
+</apex:component>

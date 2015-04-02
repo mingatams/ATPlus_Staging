@@ -1,0 +1,178 @@
+<apex:page id="page" controller="AA_AnnouncementAdminController" tabStyle="Admin__tab" sidebar="false" >
+	
+    <style>
+        .bPageBlock{
+            box-sizing: border-box;
+            float:left;
+            clear:both;
+            width:100%;
+        }
+        .fieldWrapper{
+            box-sizing: border-box;
+            float:left;
+            clear:both;
+            width:100%;
+            padding: 0px 15% 20px 15%;
+            position:relative;
+        }
+        .fieldWrapper label{
+            box-sizing: border-box;
+            float:left;
+            width:17%;
+            text-align: right;
+            padding-right: 20px;
+        }
+        .fieldWrapper .rightPadding,
+        .fieldWrapper .dateInput,
+        .fieldWrapper > input{
+            box-sizing: border-box;
+            float:left;
+            width:83%;
+        }
+        .fieldWrapper input[type="button"]{
+        	width:auto;
+        }
+        .fieldWrapper .rightPadding{
+        	padding-right: 20px;
+        }
+        
+        .fieldWrapper .rightPadding input{
+        	box-sizing: border-box;
+        	width:100%;
+        }
+        
+        .fieldWrapper > a{
+            position:absolute;
+            top:0px;
+            right:15%;
+        }
+        .fieldWrapper .dateInput input,
+        .fieldWrapper .dateInput span{
+            width: 220px;
+            box-sizing: border-box;
+            float: left;
+        }
+        .fieldWrapper #add{
+        	margin-left:17%;
+        }
+        
+        .individualPalette table th + th + th + th + th + th + th{
+            text-align:center;
+            border-left:none !important;
+        }
+        .individualPalette table td + td + td{
+        	text-align:left;
+        }
+    </style>
+    <apex:outputPanel id="AnnouncementForm">
+        <apex:form id="form">        
+            <apex:pageBlock >
+                <apex:pageMessages id="message"/>
+                
+                <!-- Add a new announcement -->
+				<div class="fieldWrapper">                    
+                	<apex:outputLabel style="" for="title">Title</apex:outputLabel>
+                    <div class="rightPadding">
+                		<apex:inputField value="{!announcement.Announcement_Title__c}" id="title"/>
+                    </div>
+                </div>
+                
+                <div class="fieldWrapper">  
+                    <apex:outputLabel for="ancm">Announcement</apex:outputLabel>
+                    <!-- Help icon -->                                               
+                    <apex:commandLink title="Help" onclick="window.open('{!$Page.AA_AnnouncementHelp}','Help','height=200,width=600,scrollbars=yes,top=200px,left=200px');return false;">
+                        <apex:image alt="Help Icon" value="/img/func_icons/util/help16.png" />
+                    </apex:commandLink>
+                    <div class="rightPadding"> 
+                        <apex:inputTextarea richText="true" value="{!announcement.Announcement__c}" id="ancm" />  
+                    </div>
+                </div>
+                <div class="fieldWrapper">  
+                    <apex:outputLabel for="sDate">Start Date&nbsp;&nbsp;</apex:outputLabel>
+                    <apex:inputField value="{!announcement.Start_Date__c}" label="Start Date" id="sDate" />
+                </div>
+                <div class="fieldWrapper">  
+                    <apex:outputLabel for="eDate">End Date&nbsp;&nbsp;&nbsp;</apex:outputLabel>
+                    <apex:inputField value="{!announcement.End_Date__c}" label="End Date" id="eDate" />           
+                </div>
+                <div class="fieldWrapper"> 
+                <!-- add/clear buttons -->
+                    <input type="button" class="btn" id="add" value="Add" onClick="addAnn();"/>   
+                    <input type="button" class="btn" id="clear" value="Clear" onClick="clearAnn();"/>   
+                </div>
+   
+            </apex:pageBlock>
+            <apex:actionFunction name="addAnn" onbeforedomupdate="clearField();" action="{!add}" reRender="announcements,message,title,eDate" /> 
+            <apex:actionFunction name="clearAnn" oncomplete="clearFields();" action="{!reset}" reRender="announcements,message,title,eDate" />  
+            </apex:form>
+            <apex:form >
+            <!-- Table of existing records --> 
+            <apex:pageBlock mode="inlineEdit" >
+                <apex:pageBlockTable value="{!announcementInfo}" var="announcement"                                     
+                                     id="announcements"  columns="7"                                             
+                                     columnsWidth="35px,40px,200px,400px,100px,100px,20px"
+                                     width="100%" frame="border" 
+                                     cellspacing="1"
+                                     >                            
+                    <apex:column >
+                        <apex:commandButton value="Save" id="savebtn" action="{!save}"/>                                                            
+                    </apex:column>
+                    <apex:column >
+                        <!-- delete this record -->
+                        <input type="button" class="btn" id="deletebtn" value="Delete" onClick="javascript: if (window.confirm('Are you sure?'))DeleteAnnouncement('{!announcement.Id}')" />                                    
+                    </apex:column>
+                    <apex:column title="Double-Click to edit">
+                        <apex:facet name="header">Title</apex:facet>
+                        <apex:outputField value="{!announcement.Announcement_Title__c}"/>
+                    </apex:column>
+                    <apex:column title="Double-Click to edit">
+                        <apex:facet name="header">Announcement</apex:facet>
+                        <apex:outputField value="{!announcement.Announcement__c}"/>                        
+                    </apex:column>                    
+                    <apex:column title="Double-Click to edit">
+                        <apex:facet name="header">Start Date</apex:facet>
+                        <apex:outputField value="{!announcement.Start_Date__c}"/>
+                    </apex:column>
+                    <apex:column title="Double-Click to edit">
+                        <apex:facet name="header">End Date</apex:facet>
+                        <apex:outputField value="{!announcement.End_Date__c}"/>
+                    </apex:column>
+                    <apex:column >
+                        <!-- Help icon --> 
+                        <apex:facet name="header">                                           		                       
+                            <apex:commandLink onclick="window.open('{!$Page.AA_AnnouncementHelp}','Help','height=200,width=600,scrollbars=yes,top=200px,left=200px');return false;" title="Help" >                                
+                                <apex:image alt="Help Icon" value="/img/func_icons/util/help16.png" />
+                            </apex:commandLink>
+                        </apex:facet>                       
+                    </apex:column>                    
+                </apex:pageBlockTable>                      
+            </apex:pageBlock> 
+            <!-- button actions -->
+            <apex:actionFunction action="{!deleteAnnouncement}" name="DeleteAnnouncement" reRender="announcements">
+                <apex:param name="announcementid" value="" assignTo="{!SelectedAnnouncementId}"/>
+            </apex:actionFunction>              
+        </apex:form> 
+        <apex:includeScript value="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />
+        <script type="text/javascript">      
+            j$ = jQuery.noConflict();
+            
+            <!--clear "New Announcement" rich-text field on "clear" button-->
+            function clearFields(){  
+           		for (instance in CKEDITOR.instances){
+            		CKEDITOR.instances[instance].setData(" ");
+            	} 
+            	j$('[id*=sDate]').val('');
+            }; 
+
+            <!-- reset "New Announcement" rich-text field on "Add" button click iff a record is added -->
+			function clearField(){  
+            	if(j$('[id*=title]').val().length >0 && j$('[id*=sDate]').val().length >0){
+                    for (instance in CKEDITOR.instances){
+                        CKEDITOR.instances[instance].setData(" ");
+                    }  
+            		j$('[id*=sDate]').val('');
+            	}
+            };            
+        </script>
+    </apex:outputPanel>    
+</apex:page>

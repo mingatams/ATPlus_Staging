@@ -1,0 +1,93 @@
+<apex:page cache="flase" sidebar="false" showHeader="false" controller="ClsSiteLoginController" >
+ <head>
+  <apex:stylesheet value="{!URLFOR($Resource.Partner_Login, 'style.css')}" />
+  <style>
+        #er {    
+                text-align:center;
+                overflow:auto; 
+                padding: 15px; 
+                font-family:Helvetica,sans-serif; 
+                font-size:14pt; 
+                line-height: 1.0em; 
+                width:850px;
+                height=400px;
+            }
+               
+         span ul li {
+                list-style: none;
+                color: #b52828;
+                }
+       </style>    
+ </head>
+ <body>
+  <div id="wrapper">
+   <div id="header">
+    <img src="{!URLFOR($Resource.Partner_Login, 'images/usaid-logo.png')}" />
+   </div> <!-- end header -->
+   <div id="container">
+    <div id="aidtracker-logo"></div>
+     <apex:form forceSSL="true"> <br /><br />       
+                 
+         <div id="login-container">
+          
+          <div id="c-email" class="cc">
+           <span class="text">Username</span>
+           <br />
+           <apex:inputText value="{!username }"/> 
+          </div> <!-- end c-email -->
+          
+          <div id="c-password" class="cc">
+           <span class="text">Password</span>
+           <br />
+           <apex:inputSecret value="{!password}"   /> 
+          </div> <!-- end c-password -->
+          
+          <div id="c-submit" class="cc">
+           <br />
+           <apex:commandButton action="{!Login}" value="Sign In" />
+          </div> <!-- end c-submit -->
+         </div> <!-- end login-container -->
+        </apex:form>
+                  
+     
+         
+         <div id="c-forgot" class="cc" style='width:120px;' >
+                                       
+               <span class="text">&nbsp;<apex:outputPanel rendered="{!NOT(isSubDomain)}"  ><a href="Partners/vfForgotPassword"> Forgot Password?</a></apex:outputPanel>
+               <apex:outputPanel rendered="{!isSubDomain}"  ><a href="vfForgotPassword"> Forgot Password?</a></apex:outputPanel></span>
+           
+           </div><!-- end c-forgot -->
+           
+           <apex:outputPanel rendered="{!(hasError == true && passwordStatus == 'Password Lockout')}">
+                     <div class="clear"></div>
+                     <br />           
+                     <div id="er"> 
+                       <!--  Your account has been temporarily disabled as a result of too many failed login attempts -->
+                        <span><bstyle="color:#b52828"> Your account has been temporarily disabled as a result of too many failed login attempts. Please try after 15 minutes</b></span>
+                        <!--<span><b><apex:messages style="color:#b52828"/></b></span> -->       
+                     </div> <!-- end er --> 
+                     <div class="clear"></div>
+           </apex:outputPanel>
+           
+            <apex:outputPanel rendered="{!(hasError == true && passwordStatus != 'Password Lockout')}">
+                     <div class="clear"></div>
+                     <br />           
+                     <div id="er"> 
+                        <!--<span><b>Password Locked Out</b></span>  -->
+                        <span><b><apex:messages style="color:#b52828"/></b></span>       
+                     </div> <!-- end er --> 
+                     <div class="clear"></div>
+           </apex:outputPanel>
+         
+         
+         <div class="clear"></div>
+          <div id="disclaimer">
+           <span>
+            <b>Disclaimer:</b>   This website is for use by the U.S. Agency for International Development and its partners. All transactions processed on this site may be monitored, recorded, or disclosed to authorized personnel. Do not create, process, store, or transmit classified National security information on this site. Authorized users of this site who accept these terms may log on to this site.               
+           </span>
+          </div> <!-- end disclaimer -->
+        
+   </div> <!-- end container -->
+  </div> <!-- end wrapper -->
+ </body>
+</apex:page>

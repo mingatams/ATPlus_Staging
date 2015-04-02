@@ -1,0 +1,13 @@
+<apex:component controller="AAAnnouncementsController" >
+    <apex:pageBlock rendered="{!Announcements.size == 0}">
+        There are no Announcements currently.
+    </apex:pageBlock>
+    <apex:outputPanel rendered="{!Announcements.size > 0}">
+    	<apex:outputLink rendered="{!administerFlag}" value="{!URLFOR($Page.AA_AnnouncementAdmin)}" target="_blank">Administer Announcements</apex:outputLink>
+        <apex:repeat value="{!Announcements}" var="ann">
+            <apex:pageBlock title="{!ann.Announcement_Title__c}" >
+                <apex:outputText escape="false" value="{!ann.Announcement__c}"></apex:outputText>
+            </apex:pageBlock>
+        </apex:repeat>
+    </apex:outputPanel>
+</apex:component>

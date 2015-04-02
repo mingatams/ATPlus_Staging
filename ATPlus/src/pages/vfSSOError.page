@@ -1,0 +1,157 @@
+<apex:page sidebar="false" showHeader="false" id="page" showChat="false" >
+
+ <head>
+     <style>
+         #error{
+            width: 673px;
+            height: 240px;
+            text-align: center;
+            margin: 0px auto;
+            z-index: 100;
+            position: relative;
+         }
+         #error h1{
+            font-size: 46px;
+            font-family: Abel,"Helvetica Neue Lt Std",Helvetica,Arial,sans-serif;
+            letter-spacing: 5px;
+            font-weight: 100;
+            position: relative;
+            top: 33px;
+            margin: 0px 0px 45px;
+         }
+         #contactInfo{
+            font-size: 16px;
+            text-align: center;
+            margin: 0px auto;
+            z-index: 100;
+            position: relative;
+         }
+         #logos{
+            text-align: center;
+         }
+         
+         #errorContainer{
+            width: 100%;
+            min-height: 100px;
+            background: url('images/crescent-bg.jpg') no-repeat scroll center top transparent;
+         }
+     </style>
+ 
+        <apex:stylesheet value="{!URLFOR($Resource.AAMission_Login, 'style.css')}" />  
+        
+               
+    </head>
+   
+        <body>
+<div id="wrapper">
+    <div id="header"  style="padding-bottom: 20px;" >
+        <img src="{!URLFOR($Resource.AAMission_Login, 'images/usaid-logo.png')}" />
+    </div> <!-- end header -->
+       <div id="errorContainer" style="align:center">
+        <apex:outputPanel id="envIndicator" style="color:red;font-size:400%" layout="block" rendered="{!$Organization.Id != '00Dd0000000cFGXEA2'}">DEV</apex:outputPanel>
+<br></br>
+<br></br>
+
+    <div >
+        <apex:outputPanel rendered="{!$Organization.Id == '00Dd0000000cFGXEA2'}"> 
+        
+        <div >
+            
+          
+            <div id="error">
+                <h1>USAID Login Error</h1>
+                <br></br>
+                <br></br>
+<br></br>
+<br></br>
+                <h2>
+                    <div id="contactInfo">  
+                        Your login attempt using single sign-on through your USAID account has failed.
+                        <br/>
+                        Please contact your application support or the M/CIO HelpDesk for further assistance:
+                        <br/>
+                        A&amp;A Plan: <a href="mailto:aahelpdesk@usaid.gov">aahelpdesk@usaid.gov</a>
+                        <br/>
+                        AIDTracker+: <a href="aidtracker-help@usaid.gov">aidtracker-help@usaid.gov</a>
+                        <br/>
+                        M/CIO HelpDesk: <a href="cio-helpdesk@usaid.gov">cio-helpdesk@usaid.gov</a>
+                        <br/>
+                        Thank you!
+
+                    </div>
+                </h2>
+            </div>
+            
+        </div> <!-- end miniwrap -->
+    </apex:outputPanel>
+
+    <apex:outputPanel rendered="{!$Organization.Id != '00Dd0000000cFGXEA2'}">         
+            
+        <div >
+            
+         
+            <div id="error" >
+                <h1>USAID Login Error</h1>
+                <br></br>
+                <br></br>
+<br></br>
+<br></br>
+                <h2>
+                    <div id="contactInfo">  
+                        Your login attempt using single sign-on through your USAID account has failed.
+                        <br/>
+                        Please contact your application support or the M/CIO HelpDesk for further assistance:
+                        <br/>
+                        A&amp;A Plan: <a href="mailto:aahelpdesk@usaid.gov">aahelpdesk@usaid.gov</a>
+                        <br/>
+                        AIDTracker+: <a href="aidtracker-help@usaid.gov">aidtracker-help@usaid.gov</a>
+                        <br/>
+                        M/CIO HelpDesk: <a href="cio-helpdesk@usaid.gov">cio-helpdesk@usaid.gov</a>
+                        <br/>
+                        Thank you!
+
+                    </div>
+                </h2>
+            </div>
+            
+        </div> <!-- end miniwrap -->
+       
+    </apex:outputPanel>
+    <div id="logos">
+        <span id="plannerLogo" style="margin-top: 0px;">
+            <img src="{!URLFOR($Resource.AAMission_Login, 'images/AAPlanning.png')}" width="40%" height="60%" />
+        </span>
+        <span id="trackerLogo" style="margin-top: 0px;">
+            <img src="{!URLFOR($Resource.AAMission_Login, 'images/ATP_Logo.png')}" width="40%" height="60%" />
+        </span>
+    </div >
+
+    </div> <!-- end fluid -->
+    
+    <div id="disclaimer">
+           
+               <span>
+               
+                    <b>Disclaimer:</b>   This website is for use by the U.S. Agency for International Development and its partners. All transactions processed on this site may be monitored, recorded, or disclosed to authorized personnel. Do not create, process, store, or transmit classified National security information on this site. Authorized users of this site who accept these terms may log on to this site.               
+               
+               </span>
+           
+           
+           
+           
+           
+      </div> <!-- end disclaimer -->
+
+
+
+
+
+
+
+
+</div>
+       </div> 
+
+   
+</body>
+</apex:page>

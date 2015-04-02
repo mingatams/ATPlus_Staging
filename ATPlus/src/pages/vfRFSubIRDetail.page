@@ -1,0 +1,147 @@
+<apex:page standardController="Sub_IR__c" tabStyle="Results_Framework__tab" sidebar="false" extensions="ClsUserProfileFinder,ClsTabController,ClsDeleteControllerExt" id="RFDOSubIRPage" action="{!doAction}">
+ 
+  <head> 
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'project-style.css')}"/>        
+        <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/modernizr.custom.79639.js')}"/>        
+        <noscript><apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'css/noJS.css')}"/></noscript>        
+ </head>
+ <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+        
+     <apex:sectionHeader title="{!$ObjectType.Sub_IR__c.label}" subtitle="{!Sub_IR__c.name}"/>
+    <div style="height:5px; background:#1797C0;"></div> <br></br>
+<apex:outputText style="font-size:12px;font-weight:bold;" value="{!navigationLink}" escape="false"> </apex:outputText> 
+ <br></br>
+  <br></br>
+     <apex:outputPanel rendered="{!HasErrorMessages}">               
+     <apex:pagemessages />        
+  </apex:outputPanel> 
+   <apex:tabPanel switchType="server"  id="RFDOSubIRPanel"  value="{!selectedTab}" onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+      <apex:tab label="Sub-Intermediate Result" name="RFDOSubIRDetails"  id="tabRFDOSubIRdetails" styleClass="activeTabBackground">
+      <apex:pageBlock mode="maindetail" id="RFDOSubIRPageBlock">
+      
+      <apex:pageBlockButtons >
+                <apex:form >
+                        <apex:commandButton action="{!edit}" value="Edit" rendered="{!$ObjectType['Sub_IR__c'].updateable}" />
+                         <apex:commandLink styleClass="btn" rendered="{!$ObjectType['Sub_IR__c'].deletable}" style="text-decoration:none;" reRender="" action="{!customDelete}" value="Delete" onclick="return window.confirm('Are you sure?');">
+                        <apex:param name="deleUrl" assignTo="{!deleUrl}" value="/apex/vfRFDOIRDetail?id={!Sub_IR__c.IR_Id__r.id}"/>
+                        </apex:commandLink>
+                        <apex:commandButton action="{!URLFOR($Action.Sub_IR__c.Overall_Results_Framework,Sub_IR__c.id)}" value="View Results Framework" title="Shows a framework chart including the Goal, all DOs and all IRs."/>
+                        <apex:commandButton action="{!URLFOR($Action.Sub_IR__c.D_O_Results_Framework,Sub_IR__c.id)}" value="View DO Results Framework" title="Shows a detailed framework chart of the selected or related DO with corresponding IRs and Sub-IRs."/>
+                        <apex:commandButton rendered="{!(IsPLTMissionUser== true || IsPLTUserOnly ==true  || IsADMINUser== true) }" action="{!URLFOR($Action.Sub_IR__c.Cross_Linkage,Sub_IR__c.id)}" value="Establish Cross Linkage" title="Create a secondary linkage to one or more superseding components"/>
+                       
+                </apex:form>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection showHeader="true" title="Overview" columns="1">
+                        <apex:outputField value="{!Sub_IR__c.ouName__c}"/>                       
+                        <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Goal Name" for="goalLink"/>
+                        <apex:outputLink value="/apex/vfRFGoalDetail?id={!Sub_IR__c.Goal_Id__c}"  id="goalLink">{!Sub_IR__c.Goal_Name__c}</apex:outputLink>
+                         </apex:pageBlockSectionItem>                    
+                         
+                       
+                         <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="DO Code" for="doLink"/>
+                        <apex:outputLink value="/apex/VFRFDODetail?id={!Sub_IR__c.DO_Id__c}"  id="doLink">{!Sub_IR__c.DO_Code__c}</apex:outputLink>
+                         </apex:pageBlockSectionItem>
+                         <apex:outputField value="{!Sub_IR__c.DO_Title__c}"/> 
+
+                        <apex:outputField value="{!Sub_IR__c.IR_Id__c}"/>
+                        <apex:outputField value="{!Sub_IR__c.IR_Title__c}"/>
+                        
+                        <apex:outputField value="{!Sub_IR__c.Name}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Detailed Information" columns="1">
+                        <apex:outputField value="{!Sub_IR__c.SIR_Title__c}"/>
+                </apex:pageBlockSection>
+                
+                <!--
+                <apex:pageBlockSection showHeader="true" title="Indicator Reporting" columns="2">
+                        <apex:outputField value="{!Sub_IR__c.Indicators_Established__c}"/>
+                        <apex:outputField value="{!Sub_IR__c.Reporting_Periods_Established__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="false" columns="2">
+                </apex:pageBlockSection>
+                -->
+  
+                <apex:pageBlockSection showHeader="true" title="System Information" columns="2"  rendered="{!IsADMINUser}">
+                        <apex:outputField value="{!Sub_IR__c.CreatedById}"/>
+                        <apex:outputField value="{!Sub_IR__c.LastModifiedById}"/>
+                        <apex:pageBlockSectionItem >
+                                <apex:outputLabel value="Sub-Intermediate Result Owner"/>
+                                <apex:outputPanel >
+                                        <apex:outputField value="{!Sub_IR__c.OwnerId}"/>&nbsp;
+                                        <apex:outputLink value="{!URLFOR($Action.Sub_IR__c.ChangeOwner,Sub_IR__c.id)}">[Change]</apex:outputLink>
+                                </apex:outputPanel>
+                        </apex:pageBlockSectionItem>      
+                        </apex:pageBlockSection>                 
+        </apex:pageBlock>
+        
+        <apex:relatedList pageSize="20" title="Notes and Attachments" list="NotesAndAttachments"/>
+        <c:HistoryRelatedListComponent recLimit="50" ObjName="{!Sub_IR__c}"/>
+      </apex:tab>
+ 
+     
+      
+      <apex:tab label="Sub-IR Indicators" name="DO_Sub_IR_OrgUnit_Indicators" 
+                id="tabRFDOSubIROrgIndicators" styleClass="activeTabBackground">
+        <!--  <apex:relatedList pageSize="20" title="" list="OrgUnit_Indicators__r"/> -->
+      
+          <c:Manage_Indicators />
+        
+      </apex:tab>
+      
+     
+        <apex:tab label="Sub-IR Indicator Data" name="DO_Sub_IR_Reporting_Periods" 
+                id="tabRFDOSubIRReportingPeriod" styleClass="activeTabBackground">
+        <!-- <apex:relatedList pageSize="20" title="" list="RF_Reporting_Periods__r"/> -->
+        <c:ManageTargets id="targetcomp_id"/>
+      </apex:tab>
+     
+     
+   </apex:tabPanel>
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['RFDOSubIRPage:RFDOSubIRPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+function addLoadEvent(func) {   
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+
+function hideHeadSesction() {
+ twistSection(document.getElementById('RFDOSubIRPage:RFDOSubIRPageBlock:SysHeadSection').childNodes[0].childNodes[0]);
+}
+
+addLoadEvent(hideHeadSesction);           
+    
+</script>
+</apex:page>

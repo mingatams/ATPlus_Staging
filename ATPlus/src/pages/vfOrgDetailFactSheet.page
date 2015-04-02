@@ -1,0 +1,318 @@
+<apex:page standardController="OrgUnit__c" extensions="ClsTabController1,ClsDeleteControllerExt,ClsUserProfileFinder" tabStyle="Data_Admin__tab" standardStylesheets="false" sidebar="false"  id="orgunit" action="{!doAction}">
+  
+<html>
+
+<head>    
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>AIDtracker | Data Admin Details</title>
+   <apex:includeScript value="{!$Resource.JQuery172_js}" />
+   <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'project-style.css')}"/>
+   <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'IM-style.css')}"/>  
+   <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/modernizr.custom.79639.js')}" />  
+   <noscript><link rel="stylesheet" type="text/css" href="css/noJS.css" /></noscript> 
+  <!-- <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script> -->
+        
+      <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/checkboxes.js')}" />      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+   <script type="text/javascript">
+            function DropDown(el) {
+                this.dd = el;
+                this.placeholder = this.dd.children('span');
+                this.opts = this.dd.find('ul.dropdown > li');
+                this.val = '';
+                this.index = -1;
+                this.initEvents();
+            }
+            DropDown.prototype = {
+                initEvents : function() {
+                    var obj = this;
+
+                    obj.dd.on('click', function(event){
+                        $(this).toggleClass('active');
+                        return false;
+                    });
+
+                    obj.opts.on('click',function(){
+                        var opt = $(this);
+                        obj.val = opt.text();
+                        obj.index = opt.index();
+                        obj.placeholder.text(obj.val);
+                    });
+                },
+                getValue : function() {
+                    return this.val;
+                },
+                getIndex : function() {
+                    return this.index;
+                }
+            }
+
+            $(function() {
+
+                var dd = new DropDown( $('#dd') );
+
+                $(document).click(function() {
+                    // all dropdowns
+                    $('.wrapper-dropdown-3').removeClass('active');
+                });
+
+            });
+            
+    </script>
+    
+    
+    
+    
+    
+    <script language="javascript">
+        function confirmDelete(){
+        
+            if(confirm('Are you sure you want to delete?'))
+                return true;
+            return false;
+        }
+        
+           
+    </script>
+ 
+</head>
+
+<body>
+ 
+<apex:form id="theForm">
+<apex:outputPanel rendered="{!HasErrorMessages}">
+         <apex:pageMessages />      
+        </apex:outputPanel>
+<apex:inputHidden value="{!OrgUnit__c.ouOverview__c}" id="overviewValue"/> 
+<div id="container">
+
+    <!------ HEADER SECTION (ABOVE MAP) ------>
+    <header>
+        <div id="left">       
+            <p>{!$ObjectType.OrgUnit__c.label}</p>
+            <h2>{!OrgUnit__c.name}</h2>            
+        </div>
+        
+        <div id="right">
+        <apex:outputPanel rendered="{!isSTDMissionProfileUser == false}">
+            <div class="dropmenu">
+            
+                 <!--   <div id="dd" class="wrapper-dropdown" tabindex="1">
+                        <span>NAVIGATION</span>
+                        <ul class="dropdown" >
+                            <li class="dropList"><a href="/apex/vfOrgUnitIndListPage?id={!left(OrgUnit__c.id,15)}" onclick="location.href=this.href; return false;"><i class="org-indicator"></i>Organization Indicators</a></li>
+                            
+                        </ul> 
+                    </div> -->
+                ​</div> <!-- end dropmenu -->
+           </apex:outputPanel>     
+               
+               <apex:outputLink title="Organization Edit" value="{!URLFOR($Action.OrgUnit__c.Edit, OrgUnit__c.id,[retURL='/apex/vfOrgDetailFactSheet?id='+OrgUnit__c.id])}" rendered="{!IF(isMissionPartnerUser , false, true) && $ObjectType['OrgUnit__c'].updateable}"><div class="topmenu edit"></div></apex:outputLink>  
+             <!--  <apex:outputLink title="Organization Delete" value="{!URLFOR($Action.OrgUnit__c.Delete, OrgUnit__c.id,[retURL='/apex/vfOrgDetailFactSheet?id='+OrgUnit__c.id])}" onclick="return window.confirm('Are you sure?');" rendered="{!IF($Profile.Name <> 'Mission Partner' , true , false) && $ObjectType['OrgUnit__c'].deletable}"><div class="topmenu delete"></div></apex:outputLink> 
+                 -->
+
+             <apex:commandLink rendered="{!IF(isMissionPartnerUser , false, true) && $ObjectType['OrgUnit__c'].deletable}" action="{!customDelete}" title="Organization Delete"  onclick="return window.confirm('Are you sure?');"><div class="topmenu delete"></div></apex:commandLink> 
+            
+               
+        </div>
+        
+        
+     
+    </header>
+    
+    <div class="clear"></div>
+    
+    
+      <!------ SIDEBAR ------>
+      
+      
+  <div id="sidebarIM">
+    <ul>
+    <!--   <li class="sidebarItem" style="list-style-type: none;">
+         
+        
+         <span >Overview</span> 
+           <p>{!IF(OrgUnit__c.ouOverview__c == null,'N/A','')}      
+            
+           <apex:outputPanel rendered="{!OrgUnit__c.ouOverview__c != null}" >
+                
+                 <p> <a onmousemove="showNarative(this);"></a> </p>      
+                 <p>{!IF(len(OrgUnit__c.ouOverview__c)<= 30,OrgUnit__c.ouOverview__c,'')}</p>
+                <apex:outputLink style="text-transform:none; font-weight:800;" value="javascript: void(0)" onmousemove="showNarative(this);" id="theLink" rendered="{!len(OrgUnit__c.ouOverview__c)> 30}">{!LEFT(OrgUnit__c.ouOverview__c,30)} ...</apex:outputLink>
+        
+            </apex:outputPanel>
+            </p>
+       </li>  
+  -->
+       
+      
+       
+     
+     <!--    
+        <li class="sidebarItem" style="list-style-type: none;">
+           <span >{!$ObjectType.OrgUnit__c.fields.ouCode__c.label}</span>            
+           <p> {!IF(OrgUnit__c.ouCode__c != null,OrgUnit__c.ouCode__c,'N/A')} </p>
+       </li>
+    
+    -->
+      <li class="sidebarItem" style="list-style-type: none;">
+          <!-- <span >{!$ObjectType.OrgUnit__c.fields.Name.label}</span>      -->
+                <span >ORGANIZATION NAME</span> 
+           <p> {!IF(OrgUnit__c.Name != null,OrgUnit__c.Name,'N/A')} </p>
+       </li>  
+       
+      <!-- 
+        <li class="sidebarItem" style="list-style-type: none;">
+           <span >{!$ObjectType.OrgUnit__c.fields.ouDisplayName__c.label}</span>            
+           <p> {!IF(OrgUnit__c.ouDisplayName__c != null,OrgUnit__c.ouDisplayName__c,'N/A')}</p>
+       </li>
+     -->  
+       <li class="sidebarItem" style="list-style-type: none;">
+           <span >{!$ObjectType.OrgUnit__c.fields.burId__c.label}</span>            
+           <p><apex:outputField value="{!OrgUnit__c.burId__c}"/></p>           
+       </li> 
+        <li class="sidebarItem" style="list-style-type: none;">
+         <span >{!$ObjectType.OrgUnit__c.fields.ouWebSiteURL__c.label}</span>          
+           <p> <a style="font-size: 10px;font-weight: bold;letter-spacing: 1px;text-transform: uppercase;"   href="{!OrgUnit__c.ouWebSiteURL__c}">{!OrgUnit__c.ouName__c}</a> </p>
+       </li>
+    
+       <li class="sidebarItem" style="list-style-type: none;">
+           <span >{!$ObjectType.OrgUnit__c.fields.ouType__c.label}</span>            
+           <p>{!IF(OrgUnit__c.ouType__c != null,OrgUnit__c.ouType__c,'N/A')}</p>
+       </li> 
+ 
+         <li class="sidebarItem" style="list-style-type: none;">
+          <p class="grayed">
+            <label class="label_check" for="orgactivecheckbox1">
+              <apex:inputCheckbox disabled="true" value="{!OrgUnit__c.ouActiveInd__c}" id="orgactivecheckbox1"/>
+            </label>{!$ObjectType.OrgUnit__c.fields.ouActiveInd__c.label}
+            </p>
+         </li>     
+      <li class="sidebarItem" style="list-style-type: none;">
+          <p class="grayed">
+            <label class="label_check" for="glaasIndcheckbox1">
+              <apex:inputCheckbox disabled="true" value="{!OrgUnit__c.GLAASIndicator__c}" id="glaasIndcheckbox1"/>
+            </label>{!$ObjectType.OrgUnit__c.fields.GLAASIndicator__c.label}
+            </p>
+         </li>
+    
+    </ul>
+    </div><!-- end sidebar -->
+    
+    
+    
+    
+     <!------ CONTENT AREA ------>
+    <div id="contentIM">
+    
+    
+        <!------ DASHBOARD HTML 
+        <h1 style="color: #1797C0; font-size: 12px;letter-spacing: 1px; margin: 0px 0 5px; text-transform: uppercase;">Overview</h1>
+       ------>
+        <div class="dashboard" style="width:100%;" >
+        
+            <div class="column" style="width:95%">
+           
+             <div  style=" text-align: left;width: 28%;color: rgb(23, 151, 192);font-size:12px;font-weight:bold;text-transform: uppercase;">{!$ObjectType.OrgUnit__c.fields.ouOverview__c.label}</div>               
+               <br></br>
+                   <span style="color: rgb(68, 68, 68);font-size: 12px;font-family: Arial,Helvetica,sans-serif;">
+                   <apex:outputField value="{!OrgUnit__c.ouOverview__c}"  rendered="{!IF(OrgUnit__c.ouCode__c != null, true, false)}"/>                 
+                   </span>
+                    <apex:outputText escape="true" value="N/A" rendered="{!IF(OrgUnit__c.ouCode__c == null, true, false)}"></apex:outputText>
+                
+              <!--  <div style="color: rgb(68, 68, 68);font-size: 12px;">{!IF(OrgUnit__c.ouCode__c != null,HTMLENCODE(OrgUnit__c.ouOverview__c),'N/A')}</div>   
+               -->
+                 <div class="clear"></div>       
+               
+            
+            </div><!-- end first column -->
+            
+           
+
+        </div><!-- end dashboard -->
+    
+    <!--  OFFICE START -->
+    
+      <!------ TASKS TABLE HTML   ------> 
+      <c:RelatedListComponent bTitle="OFFICES WITHIN THE MISSION" pId="{!OrgUnit__c.Id}" parentObj="{!OrgUnit__c}" rowValue="5"  parentWhereColName="ouId__c" relatedListName="{!OrgUnit__c.Office__r}"   childName="Office__c" fSetName="OfficeFactSheetFieldSet"  newActionUrl="{!URLFOR($Action.Office__c.New,null,[CF00Nd000000521y6=OrgUnit__c.Name,CF00Nd000000521y6_lkid=OrgUnit__c.id])}" editActionUrl="apex/vfOfficeDetail?id=" parentUrl="apex/vfOrgDetailFactSheet?id="/>  
+      
+    <!-- OFFICE END -->
+    
+     
+      <!------ Geography TABLE HTML ------>    
+      <apex:outputPanel rendered="{!isMissionPartnerUser}"> 
+       <c:RelatedListComponent bTitle="GEOGRAPHY" pId="{!OrgUnit__c.Id}" parentObj="{!OrgUnit__c}" rowValue="5"  parentWhereColName="orgUnitId__c" relatedListName="{!OrgUnit__c.OrgUnit_Geography__r}"   childName="orgUnitGeography__c" fSetName="OrgGeoFieldSet"  newActionUrl="{!URLFOR('/apex/vfOrgUnitGeography?Lid='+OrgUnit__c.id, null,[retURL='/apex/vfOrgDetailFactSheet?id='+OrgUnit__c.id])}" editActionUrl="apex/vfGeographyDetail?id=" parentUrl="apex/vfOrgDetailFactSheet?id="/>  
+      </apex:outputPanel>
+        
+    
+    <!-- Geography END 
+
+    <c:RelatedListComponent bTitle="SECTOR" pId="{!OrgUnit__c.Id}" rowValue="5" parentObj="{!OrgUnit__c}" parentWhereColName="ouId__c" relatedListName="{!OrgUnit__c.Org_Unit_Sector__r}"   childName="orgUnitSector__c" fSetName="SectorFactsheetList" newActionUrl="{!URLFOR('/apex/vfOrgUnitSector?Lid='+OrgUnit__c.id, null,[retURL='/apex/vfOrgDetailFactSheet?id='+OrgUnit__c.id])}" editActionUrl="apex/vfSectorDetail?id=" parentUrl="apex/vfOrgDetailFactSheet?id="/> 
+         
+     -->
+         
+        <!------ SECTOR TABLE HTML ------>    
+    
+    
+    
+   
+         
+    <!-- Geography END -->
+  <apex:outputPanel rendered="{!isMissionPartnerUser || IsPLTUser}"> 
+ <c:OrgUnitIndList />
+  </apex:outputPanel>
+ 
+ <!-- Track History -->   
+ <c:HistoryRelatedListComponent recLimit="50" ObjName="{!OrgUnit__c}"/> 
+  <!-- Track History End --> 
+ 
+ <!--  NOTES AND ATTACHMENT START -->
+  
+ <c:RelatedListComponent bTitle="NOTES AND ATTACHMENTS" pId="{!OrgUnit__c.Id}" parentObj="{!OrgUnit__c}" parentName="OrgUnit__c"  rowValue="5"   parentWhereColName="OrgUnit__c" relatedListName="{!OrgUnit__c.NotesAndAttachments}"   childName="NoteAndAttachment" fSetName=""  newActionUrl="" editActionUrl="/" parentUrl="apex/vfOrgDetailFactSheet?id="/>  
+       
+    <!-- NOTES AND ATTACHMENT END -->
+    <apex:repeat value="{!OrgUnit__c.NotesAndAttachments}" var="noteAtt" rendered="false"> 
+         
+                <div class="data" style="width:7%">
+                    <p>
+                        <apex:outputText value="Note" rendered="{!noteAtt.IsNote}"></apex:outputText>
+                        <apex:outputText value="Attachment" rendered="{!NOT(noteAtt.IsNote)}"></apex:outputText>                        
+                    </p>
+                </div>
+                <div class="data" style="width:22%"><p><a href="/{!noteAtt.id}">{!noteAtt.Title}</a></p></div>
+                <div class="data" style="width:12%"><p>
+                <apex:outputText value="{0,date,MM/dd/yyyy}"><apex:param value="{!noteAtt.LastModifiedDate}" /></apex:outputText>
+                </p></div>
+                <div class="data" style="width:15%"><p><apex:outputField value="{!noteAtt.LastModifiedById}"></apex:outputField></p></div>
+                <div class="data" style="width:15%"><p><apex:outputField value="{!noteAtt.createdbyid}"></apex:outputField></p></div>
+                
+           
+            </apex:repeat>   
+    
+    </div> <!-- end content area-->
+
+</div><!-- end container  -->
+
+</apex:form>
+
+
+ 
+</body>
+
+</html>
+</apex:page>

@@ -1,0 +1,7 @@
+<apex:page tabStyle="Data_Admin__tab" controller="ClsTabController" action="{!redirectPage}" sidebar="false">
+ <apex:enhancedList type="OrgUnit__c" height="500" rowsPerPage="50"
+        id="OrgUnitUserList" customizable="false" rendered="{!IF($Profile.Name <> 'System Administrator(c)' , true , false)}"  />
+ <apex:enhancedList type="OrgUnit__c" height="500" rowsPerPage="50" 
+        id="OrgUnitAdminList" customizable="true" rendered="{!IF($Profile.Name == 'System Administrator(c)' , true , false)}"  /> 
+          
+</apex:page>

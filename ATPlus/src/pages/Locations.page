@@ -1,0 +1,12 @@
+<apex:page standardController="Location1__c">
+<script>
+    window.location = "/apex/g2maps__RedirectedMap?id={!Location1__c.Id}&height=400px&LayerName=Locations&embedded=1";
+    //    Layer1=Locations
+    //    Filter1=(Technical_Office__c='Health')
+    // Add additional parameters:
+    //   Available=LayerName1,LayerName2,etc - Will restrict the list of layers available to the user
+    //   Layer1=LayerName1
+    //   Filter1=(Technical_Office__c='test1') - Will add a filter to the layer named LayerName1
+    //   Visible=LayerName1,LayerName2,etc - Overrides the list of visible layers by default (other layers may be added dynamically)
+</script>
+</apex:page>

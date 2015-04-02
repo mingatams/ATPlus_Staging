@@ -1,0 +1,16 @@
+<apex:page standardcontroller="Reporting_Period__c" sidebar="false">
+
+<p>
+Dear Partner,  </p>
+<p>
+<br/> Indicator results for the {!Reporting_Period__c.Fiscal_Year__c} {!Reporting_Period__c.Fiscal_Period__c} Reporting Period for {!Reporting_Period__c.Implementing_Mechanism_Id__r.name} ( {!Reporting_Period__c.Implementing_Mechanism_Id__r.Implementing_Mechanism_Name__c}) has been {!Reporting_Period__c.Status__c}.  Please <a href="https://usaid-gov.stg1.cs10.force.com/Partners">Click here </a> to view a recod</p>
+
+
+Should you need any help, please consult the "Help" tab in AIDtracker, or your AOR/COR: {!if(Reporting_Period__c.Implementing_Mechanism_Id__r.AOR__c!=null,Reporting_Period__c.Implementing_Mechanism_Id__r.AOR__r.name,Reporting_Period__c.Implementing_Mechanism_Id__r.COR__r.name)} / {!if(Reporting_Period__c.Implementing_Mechanism_Id__r.AOR__c!=null,Reporting_Period__c.Implementing_Mechanism_Id__r.AOR__r.email,Reporting_Period__c.Implementing_Mechanism_Id__r.COR__r.email)} .
+
+<p>
+Thank you,</p>
+
+AIDtracker Support Team
+
+</apex:page>

@@ -1,0 +1,175 @@
+<apex:page standardController="Project_Location__c" extensions="MassUploadLocationNationalProjectGeo" id="mypage"  sidebar="false" >
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head> 
+  
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxcommon.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgridcell.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/dhtmlxtreegrid.js')}" /> 
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/excells/dhtmlxgrid_excell_link.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_lines.js')}" /> 
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid_skins.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/skins/dhtmlxgrid_dhx_skyblue.css')}"/>
+
+
+<style>
+        .activeTab {background-color: #236FBD; color:white; background-image:none; height:25px;font-size:15px;  }
+        .inactiveTab {background-color: lightgrey; color:black; background-image:none; height:25px;font-size:15px;  }
+    
+</style>
+ 
+<script type="text/javascript">
+   
+   var mygrids;
+   var selectedPrs = new Array() ;
+   
+   window.onload = function dispProvincesGrid(){
+       var xmlStrLocal = '{!xmlStr}';
+       document.getElementById("gridboxS").innerHTML = "";
+        
+        mygrids = new dhtmlXGridObject("gridboxS","100%", "100%");     
+        mygrids.selMultiRows = true;     
+        mygrids.setImagePath("{!URLFOR($Resource.dhtmlxGrid, '/dhtmlxGrid/codebase/imgs/')}"); 
+
+        mygrids.setHeader("Geo Boundary Name,Latitude,Longitude,Select",null,["","","","text-align:center;vertical-align:top"]);
+        mygrids.attachHeader("#text_filter,#text_filter,#text_filter,#rspan");
+      
+        mygrids.setInitWidths("298,145,145,145");
+        mygrids.setColAlign("left,left,left,center");
+        mygrids.setColTypes("tree,rotxt,rotxt,ch");
+        mygrids.setColSorting("str,str,str,str");
+        mygrids.enableAutoHeight(false);
+        mygrids.enableResizing("false,false,false,false");
+        mygrids.enableTooltips("true,false,false,false");
+        mygrids.attachEvent("onCheck",selectChilds);
+        mygrids.init();
+        mygrids.setSkin("dhx_skyblue");
+        mygrids.loadXMLString(xmlStrLocal);     
+   }  
+   
+   function selectChilds(rId, cInd, state){
+       if(state){
+                if (mygrids.hasChildren(rId) > 0 ){
+                    var allChildren = mygrids.getAllSubItems(rId);
+                    var subItemsList = allChildren.split(",");
+                    for(i =0; i<subItemsList.length; i++ ){
+                        mygrids.cells(subItemsList[i],cInd).setValue(1);
+                        var found = false;
+                        for(var j in selectedPrs){                  
+                            if( selectedPrs[j] == subItemsList[i]) {                                
+                                found  = true;
+                            }                      
+                        }
+                        if (!found){
+                            selectedPrs.push(subItemsList[i]);
+                        }    
+                    }
+                } else {                
+                    selectedPrs.push(rId);  
+                }   
+            } else { 
+                if (mygrids.hasChildren(rId) > 0 ){
+                    var allChildren = mygrids.getAllSubItems(rId);
+                    var subItemsList = allChildren.split(",");
+                    for(i =0; i<subItemsList.length; i++ ){
+                        mygrids.cells(subItemsList[i],cInd).setValue(0);
+                        for(var j in selectedPrs){                  
+                            if( selectedPrs[j] == subItemsList[i] ) {
+                                selectedPrs.splice(j,1);
+                                break;
+                            }
+                        }
+                    }                   
+                } else {
+                    for(var i in selectedPrs){                  
+                        if( selectedPrs[i] == rId ) {
+                            selectedPrs.splice(i,1);
+                            break;
+                        }
+                    }
+                }
+            }
+          //alert('Recent Selecttions'+selectedPrs);
+   }
+   
+   function call02(hiddenId){
+           var selectedStr =  selectedPrs.toString(); 
+           document.getElementById(hiddenId).value = selectedStr;
+          //alert('Selected Row Ids::' +selectedStr);
+       }   
+
+    function checkAll(cb){
+         var inputElem = document.getElementsByTagName("input");
+         for(var i=0; i<inputElem.length; i++){
+             if(inputElem[i].id.indexOf("checkedone")!=-1){
+                 inputElem[i].checked = cb.checked;
+             }
+         }
+     }
+ 
+ </script>
+     
+ </head>
+ 
+ <body onload="dispProvincesGrid()">
+ <apex:form id="theform"  >
+ 
+ <div class="bPageTitle">
+     <div class="ptBody">
+         <div class="content">
+             <img src="/s.gif" alt="Location" class="pageTitleIcon" title="Location"/>             
+             <h1 class="pageType">Activity Locations<span class="titleSeparatingColon">:</span></h1>
+             <h2 class="pageDescription">
+                 <apex:outputText value="{!pgBlockTitle}" />
+             </h2>                   
+         </div>
+     </div> 
+ </div>    
+
+ 
+ 
+<apex:outputPanel title="" style="" >
+<apex:pageMessage summary="{!LErrors}" severity="info" strength="3" rendered="{!ShowErrors}"  /> 
+  
+<apex:pageBlock rendered="{!ShowCreateButton}">
+         
+  <div id="gridbixsParent" style="height:500px;margin:10px auto auto auto;">
+      <div id="gridHeader" style="width:750px;height:25px;margin: 0px auto 5px auto; font-size: 120%; text-align: left;">
+          
+          <!-- ***Changed the error message based on AIDTRACKERLITE-293 - RP ***-->
+          
+          <h2 style="color: #000000; font-size: 1.3 em; margin : 0px; font-family: Arial, Helvetica, sans-serif;display: block;" >All Available Administrative 1 Boundaries (states, provinces, etc.)</h2>
+         </div>
+  
+  <div id="gridboxS" style="width:750px;height:425px;margin: auto;background-color:#FCFBFC;"></div>
+  <apex:inputHidden id="selectedProv" value="{!selectedProv}"/>     
+
+ 
+  <div id="cbBouutons"  style="width:750px;height:50px;margin: 10px auto 0px auto; text-align: center; " >
+    
+    <apex:commandButton value="Create" action="{!insertLocations}"  onclick="call02('{!$Component.selectedProv}')" rendered="{!ShowCreateButton}" />
+    
+    <apex:commandButton value="Cancel" action="{!Cancel}" rendered="true" />
+   
+  </div> 
+ 
+   </div>      
+  </apex:PageBlock>
+  
+<apex:pageBlock rendered="{!IF(ShowCreateButton= 'false',true,false)}">
+    <div style="width:750px;margin: auto;">
+        <p style="text-align:center;color:red;font-size:20px;">{!LErrors}</p>
+    </div>
+    <div id="cbBouutons"  style="width:750px;height:50px;margin: 10px auto 0px auto; text-align: center; " >
+        <apex:commandButton value="Cancel" action="{!Cancel}" rendered="true" />
+    </div>   
+</apex:pageBlock>
+</apex:outputPanel>
+</apex:form>  
+</body>
+</html> 
+</apex:page>

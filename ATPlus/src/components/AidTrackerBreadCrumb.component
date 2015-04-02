@@ -1,0 +1,4 @@
+<apex:component controller="AidTrackerBreadCrumbController">
+    <apex:attribute name="from" description="the caller" type="String" required="false"/>
+    <apex:outputText value="{!whereWeWorkLink}" escape="false"/>    
+</apex:component>

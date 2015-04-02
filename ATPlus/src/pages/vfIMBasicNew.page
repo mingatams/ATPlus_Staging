@@ -1,0 +1,143 @@
+<apex:page standardController="Implementing_Mechanism__c" extensions="ClsUserProfileFinder" tabStyle="Project_Implementation__tab" sidebar="false">
+
+<apex:includeScript value="{!$Resource.JQuery172_js}"/>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        
+     
+        
+        var left = (screen.width/2)-(400/2);
+        var top = (screen.height/2)-(500/2);
+        var NWin;    
+         
+             var orgUnitCodeId;    
+        var OrgUnitLookupId;
+        
+      
+        //alert('Message ::' +$("label:contains('OrgUnit Id')").attr('for'));
+        
+         OrgUnitCodeId = $("label:contains('Organization Id')").attr('for');    
+         OrgUnitLookupId = jq($("label:contains('Organization Id')").attr('for') + "_lkwgt");
+
+        
+        $(OrgUnitLookupId).click(function(){
+        
+           $(OrgUnitLookupId).prop("href", "/apex/vfobjectLookup?objectName=OrgUnit&txt="+OrgUnitCodeId +"&frm=" + escapeUTF("{!$Component.myForm}")); 
+          
+             NWin = window.open($(this).prop('href'), '', 'toolbar=no, fullscreen=yes, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, copyhistory=no' );
+            if (window.focus){
+               NWin.focus();
+            }
+           
+            return false;
+        }); 
+        
+        
+        var OfficeId;    
+        var OfficeLookupId;
+        
+         OfficeId = $("label:contains('Office')").attr('for');    
+         OfficeLookupId = jq($("label:contains('Office')").attr('for') + "_lkwgt");
+
+         
+        var left = (screen.width/2)-(400/2);
+        var top = (screen.height/2)-(500/2);
+        var NWin;    
+        
+        
+        $(OfficeLookupId).click(function(){
+           // if ("{!$Profile.Name}" == "Mission Partner"){
+            if ({!IsPartnerUser}){
+                $(OfficeLookupId).prop("href", "/Partners/vfObjectLookup?objectName=Office&orgCode={!Implementing_Mechanism__c.ouId__c}&&txt="+OfficeId +"&frm=" + escapeUTF("{!$Component.myForm}"));                
+            } else {
+                $(OfficeLookupId).prop("href", "/apex/vfObjectLookup?objectName=Office&orgCode="+$(jq(OrgUnitCodeId+'_lkid')).val() +"&txt="+OfficeId +"&frm=" + escapeUTF("{!$Component.myForm}"));                
+            }    
+           // NWin = window.open($(this).prop('href'), '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, height=500, width=600, top='+top+', left='+left );
+           NWin = window.open($(this).prop('href'), '', 'toolbar=no, fullscreen=yes, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, copyhistory=no' );           
+            if (window.focus){
+               NWin.focus();
+            }
+          
+            return false;
+        }); 
+        
+    });
+    
+    function jq( myid ) {  
+      var returnVar = "#" + myid.replace( /:/g, "\\:" );  
+      return returnVar; 
+    }
+    
+    </script>
+
+
+
+    <apex:sectionHeader title="{!$ObjectType.Implementing_Mechanism__c.label} New" />
+    <apex:messages globalOnly="true"  style="text-align:center;color:Red; overflow:auto; font-family:Helvetica, sans-serif; font-size:9pt; font-weight:bold;"/>
+    
+    <apex:form >
+    <apex:pageBlock title="{!$ObjectType.Implementing_Mechanism__c.label} Edit" mode="edit">
+        <apex:pageBlockButtons >
+            <apex:commandButton action="{!save}" value="Save"/>
+            <apex:commandButton action="{!cancel}" value="Cancel"/>
+        </apex:pageBlockButtons>
+        
+         <apex:pageBlockSection showHeader="true" title="Basic Information" columns="2" >
+         <apex:facet name="header">        
+               <span class="pbSubExtra"><span class="requiredLegend">
+               <span class="requiredExampleOuter"></span>
+               <span class="requiredText"> <img src="{!$Resource.PublicIcon}" /> = Public Fields</span> </span></span>
+               <h3>Basic Information</h3>
+         </apex:facet>
+        
+        
+            <apex:inputField required="true" value="{!Implementing_Mechanism__c.Implementing_Mechanism_Name__c}"/>
+            <apex:inputField required="true" value="{!Implementing_Mechanism__c.ouId__c}"/>
+            <apex:inputField value="{!Implementing_Mechanism__c.Award_Number__c}"/>
+            <apex:inputField value="{!Implementing_Mechanism__c.offId__c}"/>
+            <apex:pageBlockSectionItem helpText="{!$ObjectType.Implementing_Mechanism__c.fields.Award_Amount__c.inlineHelpText}">
+            <apex:pageBlockSectionItem >
+                 <apex:image value="{!$Resource.PublicIcon}" /> 
+                 <apex:outputLabel value="{!$ObjectType.Implementing_Mechanism__c.fields.Award_Amount__c.label}"/>
+             </apex:pageBlockSectionItem>    
+            <apex:inputField value="{!Implementing_Mechanism__c.Award_Amount__c}" />     
+           </apex:pageBlockSectionItem>
+            <apex:inputField value="{!Implementing_Mechanism__c.Start_Date__c}"/>
+             <apex:pageBlockSectionItem helpText="{!$ObjectType.Implementing_Mechanism__c.fields.Partner_Name__c.inlineHelpText}">
+            <apex:pageBlockSectionItem >
+                 <apex:image value="{!$Resource.PublicIcon}" /> 
+                 <apex:outputLabel value="{!$ObjectType.Implementing_Mechanism__c.fields.Partner_Name__c.label}"/>
+             </apex:pageBlockSectionItem>    
+            <apex:inputField value="{!Implementing_Mechanism__c.Partner_Name__c}" />     
+           </apex:pageBlockSectionItem>   
+
+            <apex:inputField value="{!Implementing_Mechanism__c.End_Date__c}"/>
+            
+            <apex:pageBlockSectionItem />
+        </apex:pageBlockSection>
+        
+        
+        
+        <apex:pageBlockSection showHeader="true" title="System Information" columns="2">
+        
+ 
+       
+<apex:pageBlockSectionItem helpText="'Name of the AIDtracker user that created the Implementing Mechanism record; this information is automatically generated by the application'">
+            <apex:pageBlockSectionItem >                
+                 <apex:outputLabel value="Owner: "/>
+             </apex:pageBlockSectionItem>    
+            <apex:outputLabel value="{!$User.FirstName & ' ' & $User.LastName}" />     
+           </apex:pageBlockSectionItem>         
+        
+        
+        </apex:pageBlockSection>
+        
+        <!--
+        <apex:pageBlockSection showHeader="true" title="System Information" columns="2">
+        </apex:pageBlockSection>
+        <apex:pageBlockSection showHeader="true" title="Information" columns="2">
+        </apex:pageBlockSection>
+        -->
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

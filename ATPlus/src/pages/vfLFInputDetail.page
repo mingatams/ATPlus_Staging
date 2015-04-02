@@ -1,0 +1,128 @@
+<apex:page standardController="LF_Input__c" tabStyle="Project_Design__tab" extensions="ClsTabController,ClsDeleteControllerExt,ClsUserProfileFinder" sidebar="false" id="LFInputPage" action="{!doAction}">
+ 
+ <head> 
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        
+       
+        <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'project-style.css')}"/>        
+        <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/modernizr.custom.79639.js')}"/>        
+        <noscript><apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'css/noJS.css')}"/></noscript>        
+       
+ </head>
+ <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+        
+     <apex:sectionHeader title="{!$ObjectType.LF_Input__c.label}" subtitle="{!LF_Input__c.name}"/>
+    <div style="height:5px; background:#1797C0;"></div> <br></br>
+<apex:outputText style="font-size:12px;font-weight:bold;" value="{!navigationLink}" escape="false"> </apex:outputText> 
+ <br></br>
+  <br></br>
+  <apex:outputPanel rendered="{!HasErrorMessages}">               
+     <apex:pagemessages />        
+  </apex:outputPanel> 
+   <apex:tabPanel switchType="server"  id="LFInputPanel"  value="{!selectedTab}" onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+      <apex:tab label="Inputs" name="LFInputDetails"  id="tabLFInputdetails" style="margin-left: -1px;" styleClass="activeTabBackground">
+      <apex:pageBlock mode="maindetail"  id="LFInputPageBlock">      
+         <apex:pageBlockButtons >
+                <apex:form >
+                        <apex:commandButton action="{!edit}" value="Edit" rendered="{!$ObjectType['LF_Input__c'].updateable}" />
+                         <apex:commandLink styleClass="btn" rendered="{!$ObjectType['LF_Input__c'].deletable}" style="text-decoration:none;" reRender="" action="{!customDelete}" value="Delete" onclick="return window.confirm('Are you sure?');">
+                    <apex:param name="deleUrl" assignTo="{!deleUrl}" value="/apex/vfLFOutputDetail?id={!LF_Input__c.LF_Output_Id__r.id}"/>
+ </apex:commandLink>                                     
+                </apex:form>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection showHeader="true" title="Project Information" columns="2">
+                        <apex:outputField value="{!LF_Input__c.ouName__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!LF_Input__c.Project_Code__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!LF_Input__c.Project_Name__c}"/>
+                        <apex:pageBlockSectionItem />
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Project LogFrame Information" columns="1">
+                        <apex:outputField value="{!LF_Input__c.LF_Goal_Name__c}"/>                       
+                        <apex:outputField value="{!LF_Input__c.LF_Purpose_Name__c}"/>                       
+                        <apex:outputField value="{!LF_Input__c.LF_SubPurpose_Name__c}"/>                       
+                        <apex:outputField value="{!LF_Input__c.LF_Output_Id__c}"/>
+                        <apex:outputField value="{!LF_Input__c.LF_Output_Name__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Project Input Information" columns="1">
+                        <apex:outputField value="{!LF_Input__c.Name}"/>
+                        <apex:outputField value="{!LF_Input__c.LF_Input_Name__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Indicator Reporting" columns="2">
+                        <apex:outputField value="{!LF_Input__c.Indicators_Established__c}"/>
+                        <apex:outputField value="{!LF_Input__c.Reporting_Periods_Established__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="System Information" columns="2" id="SysHeadSection" rendered="{!IsADMINUser}">
+                        <apex:outputField value="{!LF_Input__c.CreatedById}"/>
+                        <apex:outputField value="{!LF_Input__c.LastModifiedById}"/>
+                </apex:pageBlockSection>                                   
+         </apex:pageBlock>
+         <apex:relatedList pageSize="20"  list="NotesAndAttachments"/>
+         <c:HistoryRelatedListComponent recLimit="50" ObjName="{!LF_Input__c}"/> 
+      </apex:tab>
+        
+         
+      <apex:tab label="Input Indicators" name="LFInput_OrgUnit_Indicators" 
+                id="tabLFInputOrgIndicators" styleClass="activeTabBackground">
+       <!--  <apex:relatedList pageSize="20" title="" list="Organization_Indicators__r"/> -->
+       <c:Manage_Indicators />
+      </apex:tab>
+      
+        <apex:tab label="Input Indicator Data" name="LF_Input_Reporting_Periods" 
+                id="tabLFInputReportingPeriod" styleClass="activeTabBackground">
+        <!-- <apex:relatedList pageSize="20" title="" list="LF_Reporting_Periods__r"/> -->
+         <c:ManageTargets id="targetcomp_id" />
+      </apex:tab>
+     
+     <!-- <apex:tab label="Notes and Attachments" 
+                name="NotesAndAttachmentsLFInput" 
+               id="tabNoteAtt">
+         <apex:relatedList pageSize="20" title="" list="NotesAndAttachments"/>
+      </apex:tab> -->
+   </apex:tabPanel>
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['LFInputPage:LFInputPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+    
+function addLoadEvent(func) {   
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+
+function hideHeadSesction() {
+ twistSection(document.getElementById('LFInputPage:LFInputPageBlock:SysHeadSection').childNodes[0].childNodes[0]);
+}
+
+addLoadEvent(hideHeadSesction);           
+</script>
+</apex:page>

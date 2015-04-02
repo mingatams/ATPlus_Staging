@@ -1,0 +1,198 @@
+<apex:page controller="ClsManageIndicatorTargets" showChat="false" sidebar="false" tabStyle="Indicator_Results__c" >
+
+<!-- <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head> -->  
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxtabbar.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxcommon.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxtabbar.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxtabbar_start.js')}" />
+
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgridcell.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/dhtmlxtreegrid.js')}" /> 
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_group.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_splt.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/excells/dhtmlxgrid_excell_link.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/ext/dhtmlxgrid_selection.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_filter.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTreeGrid, 'dhtmlxTreeGrid/codebase/ext/dhtmlxtreegrid_lines.js')}" />
+
+
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid_skins.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/skins/dhtmlxgrid_dhx_skyblue.css')}"/>
+
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxTabber, 'dhtmlxTabbar/codebase/dhtmlxcontainer.js')}" />
+
+<style>
+    div.gridbox_dhx_skyblue table.obj tr td{font-family:Tahoma; font-size:11px; border-width: 1px 1px 1px 1px; border-color : #FDFDFD #A4BED4 #A4BED4 #FDFDFD;}
+    .rich-tabpanel-content { background-color: #E3EFFF;}    
+    .activeTab {background-color: #002060; color:#E3EFFF; background-image:none; height:36px; font-size:15px; font-weight:bold;font-family:Tahoma;}
+    .inactiveTab {background-color: #E3EFFF; color:#002060; background-image:none; height:36px;font-size:15px; font-weight:bold;font-family:Trebuchet MS;}
+    div.gridbox_dhx_skyblue table.hdr td { Font-size:12px; font-family:Trebuchet MS;}
+    div.gridbox_dhx_skyblue table.obj tr td{ font-size:12px; font-family:Trebuchet MS;}
+    .dhx_combo_select, .gridbox_dhx_skyblue .dhx_combo_edit, .gridbox_dhx_skyblue .dhx_textarea{ font-size:12px;}
+    .bPageBlock .detailList .labelCol { width:9%; }
+    .bPageBlock .detailList .dataCol { width:25%; }
+    div.gridbox_dhx_skyblue table.obj tr td { font-family: Arial, Verdana, sans-serif; font-size:11px; }
+    div.gridbox_dhx_skyblue table.hdr td { font-family:Arial, Verdana, sans-serif; font-size:12px; }
+    body .bPageTitle { padding:0 0 0;}
+    a {color:#1797C0; font-size:11px; font-weight:bold;}
+    span ul li {   list-style: none; color: #b52828; }
+    element.style {  text-align:left;}
+    div.gridbox table.obj td.group_row { background-color: #4B627F; border-color:#FDFDFD #A4BED4 #A4BED4 #FDFDFD; border-width:1px; color: #FFFFFF}
+</style>
+  
+  <script>
+   
+   
+   var mygrids;
+   
+   window.onload = function dispIndicatorsTargetGrid(){        
+        var xmlStrLocal = '{!xmlStr}';
+        alert(xmlStrLocal);
+        document.getElementById("gridboxS").innerHTML = "";
+        mygrids = new dhtmlXGridObject("gridboxS","100%", "100%");
+        mygrids.selMultiRows = true;
+        mygrids.setImagePath("{!URLFOR($Resource.dhtmlxGrid, '/dhtmlxGrid/codebase/imgs/')}");  
+        mygrids.setHeader("Indicator Code,Indicator Name,Baseline, Target, Actuals,Difference,Rating,Notes/ Comments, ,");
+        mygrids.attachHeader("#text_filter,#text_filter,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan");
+        //mygrids.setInitWidths("150,550,75,75,75,80,65,150,55,");
+        mygrids.setInitWidthsP("11,49,6,6,6,6,0,12,4,0");
+        mygrids.setColAlign("left,left,right,right,right,right,right,left,center,center");
+        mygrids.setColTypes("tree,rotxt,ed,ed,ed,rotxt,ro,txttxt,rotxt,rotxt");
+        //mygrids.setColSorting("str,str,str,str,str,str,str");
+        mygrids.enableAutoHeigth(false);
+        mygrids.enableResizing("false,false,false,false,false,false,false,false,false,false");
+        mygrids.enableTooltips("true,true,true,true,true,true,true,true,true,true,false");
+        mygrids.attachEvent("onMouseOver",doonMouseOver);
+        mygrids.enableTreeCellEdit(false);
+        mygrids.init();
+        mygrids.setSkin("dhx_skyblue");
+        mygrids.loadXMLString(xmlStrLocal);
+        mygrids.attachEvent("onEditCell",doOnEditCell);
+        mygrids.attachEvent("onMouseOver",doonMouseOver);
+        mygrids.customGroupFormat=function(name,count){
+          if (name == 'STANDARD') 
+          {  
+              name = 'F / Standard';
+          } 
+          return name;
+        }
+        mygrids.sortRows(9,"str", "des");
+        mygrids.sortRows(0,"str", "asc");
+        mygrids.groupBy(9);
+        mygrids.setColumnHidden(6,true);
+        mygrids.setColumnHidden(9,true);
+        mygrids.attachEvent("onOpenEnd", doonexpand);
+  }
+   
+   function doonexpand(id,state){
+           mygrids.sortRows(9,"str", "des");
+           mygrids.sortRows(0,"str", "asc");
+           mygrids.groupBy(9);
+   }
+   
+   function doonMouseOver(id,index){
+       var val = mygrids.getItemImage(id);
+       if (val == "indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Indicator");
+       }
+       if (val == "sub-indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Disaggregation");
+       }
+       if (val == "custom-indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Custom Indicator");
+       }
+       if (val == "custom-sub-indicator.png") {
+       mygrids.cellById(id,0).setAttribute("title","Custom Disaggregation");
+       }
+       var val = mygrids.cells(id,index).getValue();
+       if (val == "") return false; 
+       return true;
+   }
+   
+   function doOnEditCell(stage,rId,cInd,nValue,oValue){
+      if(stage == 2 && cInd == 7 && nValue.length > 255){
+            var val = mygrids.cells(rId,7).getValue();
+            mygrids.cells(rId,7).setValue(val.substring(0,255));
+        }
+      if (stage == 2 && (cInd == 3 || cInd == 4)){
+          var tar = mygrids.cells(rId,3).getValue();
+          var act = mygrids.cells(rId,4).getValue();
+          var variance = act - tar;
+          var rating = act/tar;
+          if (tar != '' && tar != null && act != null && act != ''){
+              if(variance == 0){
+                  mygrids.cells(rId,5).setValue('0.00');
+              } else {
+                  mygrids.cells(rId,5).setValue(variance);
+              }
+              if (rating > 0.99){
+                  mygrids.cells(rId,6).setCValue('<img src="/resource/varianceImages/arrow-up.png">');
+                  return true;
+              } else if(rating < 0.90){
+                  mygrids.cells(rId,6).setCValue('<img src="/resource/varianceImages/arrow-down.png">');
+                  return true;
+              } else {
+                  mygrids.cells(rId,6).setCValue('<img src="/resource/varianceImages/isomorphic.png">');
+                  return true;
+              }
+          } else if (tar == '' && act != '') {
+            mygrids.cells(rId,5).setValue(null);
+            mygrids.cells(rId,6).setValue('NR');
+          } else if (tar == '' && act == '') {
+            mygrids.cells(rId,5).setValue(null);
+            mygrids.cells(rId,6).setValue(null);
+          } else if (tar != '' && act == '') {
+            mygrids.cells(rId,5).setValue(null);
+            mygrids.cells(rId,6).setValue(null);
+          }
+      }
+      return true;
+   }  
+   
+   function callTargets(hidd1,hidd2){
+       mygrids.editStop();
+       document.getElementById(hidd1).value = mygrids.getChangedRows(true);
+       mygrids.setSerializableColumns("true,false,true,true,true,true,false,true,true,true");
+       mygrids.xml.cell_attrs.push("Id");
+       document.getElementById(hidd2).value = mygrids.serialize();
+   }
+   
+  </script> 
+  
+ 
+ 
+<apex:form id="theform">
+    <apex:sectionHeader title="Manage {!dispName} Indicator Results"/>
+    <div style="height:5px; background:#1797C0;"></div> <br></br>
+    <apex:outputText style="font-size:11px;font-weight:bold;" value="{!breadCrumpsStr}" escape="false"> </apex:outputText> 
+    <br></br>
+    <br></br>
+ <apex:pageBlock rendered="{!ShowErrors}" >
+     <span><b><apex:messages style="width:97%;margin: 10px auto 0px auto; text-align: center;color:#b52828"/></b></span> 
+     <div id="cbBouutons"  style="width:97%;margin: 10px auto 0px auto; text-align: center; " >
+        <apex:commandButton value="OK" action="{!Cancel}" rendered="true" />
+    </div>
+ </apex:pageBlock>       
+ <apex:pageBlock rendered="{!IF(ShowErrors= 'false',true,false)}">
+   <div id="gridbixsParent" style="height:400px;margin:15px auto 0px auto;"> 
+      <div id="gridboxS" style="width:97%;height:350px;margin: 15px auto 0px auto;"></div>
+      <div id="cbBouutons"  style="width:97%;height:50px;margin: 15px auto 0px auto; text-align: center;">
+          <apex:inputHidden value="{!enteredTargets}" id="enteredTargets"/>
+          <apex:inputHidden value="{!changedRowIds}" id="changedRows"/>
+          <apex:inputHidden value="{!xmlStr}" id="savedXML"/>
+          <apex:commandButton style="align:center" value="  Save  "  reRender="theform" action="{!doSaveTargets}" onclick="callTargets('{!$Component.changedRows}','{!$Component.savedXML}')">
+              <apex:Param name="buttonId" value="save" assignTo="{!buttonId}"/>
+          </apex:commandButton>
+          <apex:commandButton style="align:center" value="  Save & Close " reRender="theform" action="{!doSaveTargets}" onclick="callTargets('{!$Component.changedRows}','{!$Component.savedXML}')">
+              <apex:Param name="buttonId" value="saveClose" assignTo="{!buttonId}"/>
+          </apex:commandButton>     
+          <apex:commandButton value=" Cancel " action="{!Cancel}" immediate="true" />
+      </div>
+   </div>   
+ </apex:pageBlock>  
+</apex:form> 
+</apex:page>

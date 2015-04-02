@@ -1,0 +1,139 @@
+<apex:page standardController="Public_IM_Link__c" extensions="ClsUserProfileFinder,ClsProjectIMLinkExtController" sidebar="false"> 
+<html>
+<head>
+<apex:includeScript value="{!$Resource.JQuery172_js}"/>
+
+<script type="text/javascript">
+$(document).ready(function() {
+
+        
+        
+    
+    var projectCodeId = $("label:contains('Project Code')").attr('for');    
+    var projectLookupId = jq($("label:contains('Project Code')").attr('for') + "_lkwgt");
+    if (projectCodeId == null){
+        projectCodeId = $("label:contains('Factsheet Code')").attr('for');    
+        projectLookupId = jq($("label:contains('Factsheet Code')").attr('for') + "_lkwgt");
+    }
+    
+    
+    var imCodeId =  $("label:contains('Implementing Mechanism Id')").attr('for');
+    var imLookupId =  jq($("label:contains('Implementing Mechanism Id')").attr('for')+ "_lkwgt");
+    
+  
+    var left = (screen.width/2)-(400/2);
+    var top = (screen.height/2)-(500/2);
+    var NWin;    
+    
+    
+    $(projectLookupId).click(function(){
+        //if ("{!$Profile.Name}" == "Mission Partner"){
+        if ({!isMissionPartnerUser == true}){
+                $(projectLookupId).prop("href", "/Partners/vfObjectLookup?objectName=Project&imCode={!Public_IM_Link__c.Implementing_Mechanism_Number__c}&txt="+projectCodeId +"&pType={!$CurrentPage.parameters.pType}"+"&frm=" + escapeUTF("{!$Component.myForm}"));                
+        } else {
+                $(projectLookupId).prop("href", "/apex/vfObjectLookup?objectName=Project&imCode={!Public_IM_Link__c.Implementing_Mechanism_Number__c}&txt="+projectCodeId +"&pType={!$CurrentPage.parameters.pType}"+"&frm=" + escapeUTF("{!$Component.myForm}"));                
+        }
+        
+        //NWin = window.open($(this).prop('href'), '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, height=400, width=500, top='+top+', left='+left );
+       NWin = window.open($(this).prop('href'), '', 'toolbar=no, fullscreen=yes, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, copyhistory=no' );                        
+        if (window.focus){
+           NWin.focus();
+        }
+        // $(imLookupId).unbind('click', false);
+        return false;
+    });   
+    
+    
+    $(imLookupId).click(function(){
+   
+        //if ("{!$Profile.Name}" == "Mission Partner"){
+        if ({!isMissionPartnerUser == true}){
+        alert("{!isMissionPartnerUser}");
+                $(imLookupId).prop("href", "/Partners/vfObjectLookup?objectName=Implementing Mechanism&pCode={!Public_IM_Link__c.Project_Code__c}&txt="+imCodeId +"&frm=" + escapeUTF("{!$Component.myForm}"));
+        } else {
+                $(imLookupId).prop("href", "/apex/vfObjectLookup?objectName=Implementing Mechanism&pCode={!Public_IM_Link__c.Project_Code__c}&txt="+imCodeId +"&frm=" + escapeUTF("{!$Component.myForm}"));          
+        }
+        
+       // NWin = window.open($(this).prop('href'), '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, height=400, width=500, top='+top+', left='+left );
+        NWin = window.open($(this).prop('href'), '', 'toolbar=no, fullscreen=yes, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, copyhistory=no' );                       
+        if (window.focus){
+           NWin.focus();
+        }
+        return false;
+    });
+    
+      
+    
+});
+
+function jq( myid ) {  
+  var returnVar = "#" + myid.replace( /:/g, "\\:" );  
+  return returnVar; 
+}
+
+
+</script>
+
+</head>
+<body>
+        <!-- <apex:sectionHeader title="{!$ObjectType.Public_IM_Link__c.label} Edit" subtitle="New {!$ObjectType.Public_IM_Link__c.label}"/> -->
+        <apex:sectionHeader title="Project Link" rendered="{!IF(Public_IM_Link__c.Implementing_Mechanism_Number__c != null,IF($CurrentPage.parameters.pType == 'LF',true,false),false)}"/> 
+        <apex:sectionHeader title="Fact Sheet  Link" rendered="{!IF(Public_IM_Link__c.Implementing_Mechanism_Number__c != null,IF($CurrentPage.parameters.pType == 'IM',true,false),false)}"/>
+        <apex:sectionHeader title="IM Link" rendered="{!IF(Public_IM_Link__c.Implementing_Mechanism_Number__c == null,true,false)}"/>
+        <apex:form id="myForm">      
+       
+        <!-- <apex:pageBlock title="{!$ObjectType.Public_IM_Link__c.label} Edit" mode="new"> -->
+        <apex:pageBlock mode="new">
+
+
+                <apex:pageBlockButtons >
+                        <apex:commandButton action="{!saveAndReturn}"    value="Save"/>                        
+                        <apex:commandButton action="{!cancel}" value="Cancel"/>
+                </apex:pageBlockButtons>                
+                <apex:pageBlockSection showHeader="true" title="Basic Information" columns="2" rendered="{!Public_IM_Link__c.Implementing_Mechanism_Number__c != null}">                                               
+                       
+                         <apex:facet name="header">        
+                        <span class="pbSubExtra"><span class="requiredLegend">
+                        <span class="requiredExampleOuter">
+                        <span class="requiredExample">&nbsp;</span></span>
+                        <span class="requiredText"> = Required Information</span>
+                        </span></span>               
+                        <h3>Basic Information</h3>
+                   </apex:facet>
+                   
+                        <apex:outputField value="{!Public_IM_Link__c.Implementing_Mechanism_Number__c    }"/> 
+                    <apex:pageBlockSectionItem rendered="{!$CurrentPage.parameters.pType == 'IM'}">
+                        <apex:outputLabel value="Factsheet Code" for="pCode"></apex:outputLabel>                       
+                        <apex:inputField id="pCode" value="{!Public_IM_Link__c.Project_Code__c}"/>                            
+                    </apex:pageBlockSectionItem>  
+                                                      
+                    <apex:inputField value="{!Public_IM_Link__c.Project_Code__c}" rendered="{!$CurrentPage.parameters.pType == 'LF'}"/>                            
+                        
+                </apex:pageBlockSection>
+                  <apex:pageBlockSection showHeader="true" title="Basic Information" columns="2" rendered="{!Public_IM_Link__c.Project_Code__c != null}">                                               
+                          <apex:facet name="header">        
+                        <span class="pbSubExtra"><span class="requiredLegend">
+                        <span class="requiredExampleOuter">
+                        <span class="requiredExample">&nbsp;</span></span>
+                        <span class="requiredText"> = Required Information</span>
+                        </span></span>               
+                        <h3>Basic Information</h3>
+                   </apex:facet>
+                        <apex:pageBlockSectionItem rendered="{!$CurrentPage.parameters.pType == 'LF'}">
+                            <apex:outputLabel value="Project Code" for="pCode"></apex:outputLabel>                       
+                            <apex:outputField id="pCode" value="{!Public_IM_Link__c.Project_Code__c}"/>                            
+                        </apex:pageBlockSectionItem>
+                        
+                        <apex:pageBlockSectionItem rendered="{!$CurrentPage.parameters.pType == 'IM'}">
+                            <apex:outputLabel value="Factsheet Code" for="pCode"></apex:outputLabel>                       
+                            <apex:outputField id="pCode" value="{!Public_IM_Link__c.Project_Code__c}"/>                            
+                        </apex:pageBlockSectionItem>
+                         
+                        <apex:inputField value="{!Public_IM_Link__c.Implementing_Mechanism_Number__c    }"/>                        
+                      </apex:pageBlockSection>
+    
+        </apex:pageBlock>
+        </apex:form>
+</body>
+</html>        
+</apex:page>

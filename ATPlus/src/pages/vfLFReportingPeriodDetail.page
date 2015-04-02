@@ -1,0 +1,122 @@
+<apex:page standardController="LF_Reporting_Period__c" tabStyle="Project_Design__tab" extensions="ClsReportingPeriodExtension,ClsTabController" id="LFReportingPeriodPage" sidebar="false" action="{!doAction}">
+ <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+        
+     <apex:sectionHeader title="{!$ObjectType.LF_Reporting_Period__c.label}" subtitle="{!LF_Reporting_Period__c.name}"/>
+    
+   <apex:tabPanel switchType="client"  id="LFReportingPeriodPanel"  value="{!selectedTab}" onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+      <apex:tab label="Overview" name="LFReportingPeriodDetails"  id="tabLFReportingPerioddetails" style="margin-left: -1px;" styleClass="activeTabBackground">
+      <apex:form id="LFReportingPeriodForm">
+      <apex:pageBlock mode="maindetail" id="LFReportingPeriodPageBlock">      
+         <apex:pageBlockButtons >
+               
+                <apex:commandButton action="{!edit}" value="Edit"/>
+                <apex:commandButton action="{!delete}" value="Delete"/>
+            
+        </apex:pageBlockButtons>
+     
+        
+        <apex:pageBlockSection showHeader="true" title="Project LogFrame" columns="1" >                            
+                                                               
+            <apex:outputField value="{!LF_Reporting_Period__c.ouName__c}" />    
+            <apex:outputField value="{!LF_Reporting_Period__c.LF_Goal_Id__c}" rendered="{!showLevel == 1}" />
+            <apex:outputField value="{!LF_Reporting_Period__c.LF_Goal_Name__c}" rendered="{!showLevel >= 1}" />
+            <apex:outputField value="{!LF_Reporting_Period__c.LF_Purpose_Id__c}" rendered="{!showLevel == 2}" />
+            <apex:outputField value="{!LF_Reporting_Period__c.LF_Purpose_Name__c}" rendered="{!showLevel >= 2}" />
+            <apex:outputField value="{!LF_Reporting_Period__c.LF_SubPurpose_Id__c}" rendered="{!showLevel == 3}"/>
+            <apex:outputField value="{!LF_Reporting_Period__c.LF_SubPurpose_Name__c}" rendered="{!showLevel >= 3}"/>
+            <apex:outputField value="{!LF_Reporting_Period__c.LF_Output_Id__c}" rendered="{!showLevel == 4}"/>
+            <apex:outputField value="{!LF_Reporting_Period__c.LF_Output_Name__c}" rendered="{!showLevel >= 4}"/>
+            <apex:outputField value="{!LF_Reporting_Period__c.LF_Input_Id__c}" rendered="{!showLevel == 5}"/>
+            <apex:outputField value="{!LF_Reporting_Period__c.LF_Input_Name__c}" rendered="{!showLevel >= 5}"/>
+                                                              
+        </apex:pageBlockSection>
+        
+        
+        
+        <apex:pageBlockSection showHeader="true" title="Basic Information" columns="2">       
+            
+            <apex:outputField value="{!LF_Reporting_Period__c.Start_Date__c}"/>
+            <apex:outputField value="{!LF_Reporting_Period__c.Fiscal_Period__c}"/>           
+            <apex:outputField value="{!LF_Reporting_Period__c.End_Date__c}"/>
+            <apex:outputField value="{!LF_Reporting_Period__c.Fiscal_Year__c}"/>
+            <apex:outputField value="{!LF_Reporting_Period__c.Status__c}"/>
+            <apex:outputField value="{!LF_Reporting_Period__c.Targets_Established__c}"/>
+          
+        </apex:pageBlockSection>
+        <apex:pageBlockSection showHeader="true" title="Descriptive Information" columns="1">
+           <apex:outputField value="{!LF_Reporting_Period__c.Narrative__c}" />
+           <!--<apex:inputTextArea style="border-color: Transparent;" rows="10" cols="150" disabled="true" required="false" value="{!LF_Reporting_Period__c.Narrative__c}" />-->
+        </apex:pageBlockSection> 
+               
+        <apex:pageBlockSection showHeader="true" title="System Information" columns="2" id="SysHeadSection">
+        
+            <apex:outputField value="{!LF_Reporting_Period__c.CreatedById}"/>
+            <apex:outputField value="{!LF_Reporting_Period__c.LastModifiedById}"/>
+      
+            <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Owner"/>
+                    <apex:outputPanel >
+                            <apex:outputField value="{!LF_Reporting_Period__c.OwnerId}"/>&nbsp;
+                            <apex:outputLink value="{!URLFOR($Action.LF_Reporting_Period__c.ChangeOwner,LF_Reporting_Period__c.id)}">[Change]</apex:outputLink>
+                    </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem />
+        </apex:pageBlockSection>
+        <apex:pageBlockSection showHeader="false" columns="2">
+        </apex:pageBlockSection>                                 
+         </apex:pageBlock>
+         </apex:form>
+      </apex:tab>
+        
+         
+      <apex:tab label="Indicators" name="LFReportingPeriod_IndicatorsResult" 
+                id="tabLFReportingPeriodOrgIndicators" styleClass="activeTabBackground">
+         <apex:relatedList pageSize="20" title="" list="LF_Indicator_Results__r"/>
+      </apex:tab>
+      
+        
+   </apex:tabPanel>
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['LFReportingPeriodPage:LFReportingPeriodPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+function addLoadEvent(func) {   
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+
+function hideHeadSesction() {
+ twistSection(document.getElementById('LFReportingPeriodPage:LFReportingPeriodForm:LFReportingPeriodPageBlock:SysHeadSection').childNodes[0].childNodes[0]);
+}
+
+addLoadEvent(hideHeadSesction);            
+</script>
+</apex:page>

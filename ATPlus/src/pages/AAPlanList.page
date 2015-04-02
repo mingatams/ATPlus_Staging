@@ -1,0 +1,180 @@
+<apex:page standardController="AAPlan__c" extensions="AAPlanListController" recordSetVar="AAMasterResults" showHeader="true" sidebar="false" standardStylesheets="false" tabStyle="AA_Plans__tab" >
+    <apex:styleSheet value="{!URLFOR($Resource.jquery, 'css/plain-theme/jquery-ui-1.10.4.custom.min.css')}" />
+    <apex:styleSheet value="{!URLFOR($Resource.multiselect, 'jquery.multiselect.css')}" />  
+    <c:styles />
+    
+    <style> 
+
+        .btnPadding{
+            padding: 5px;
+        }
+
+        .addPadding{
+            padding: 10px;
+        }
+
+        .resultDiv{
+            width: 74%;
+            float: right;
+        }
+
+        .searchDiv{
+            width: 25%;
+            float: left;
+        }
+
+        .btnDiv{
+            float: left;
+        }
+
+        .mainDiv {
+            border: 1px solid silver;
+            width: 98%;
+            height: 875px;
+            margin: auto;
+            padding: 10px;
+
+            /* Rounded Corners to match Salesforce */
+            border-radius: 4px;
+        }
+        
+		.notice {
+        	color: red;
+        }
+        
+        body .bPageBlock .pbTitle h2 {
+        	white-space: nowrap;
+        }
+        
+    </style>
+    
+    <div id="container">
+    
+        <apex:Messages id="messages" />
+        
+        <div class="mainDiv">
+    
+            <div class="searchDiv">
+            
+                <apex:form html-data-id="SearchFormID" style="overflow:hidden;">
+                    <apex:pageBlock title="Search">
+                        <apex:pageBlockSection collapsible="false" columns="1">
+							
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel value="{!$ObjectType.OperatingUnit__c.label}" for="operatingUnit"/>
+                                <apex:selectList id="operatingUnit" value="{!SearchOperatingUnitId}" size="3" multiselect="true" styleClass="multiselect-operatingunit" >
+                                    <apex:selectOptions value="{!OperatingUnitItems}"/>
+                                </apex:selectList>
+                            </apex:pageBlockSectionItem>
+                       		
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel value="{!$ObjectType.AAPlan__c.fields.FiscalYear__c.label}" for="fiscalYear"/>
+                                <apex:selectList id="fiscalYear" value="{!SearchFiscalYearId}" size="3" multiselect="true" styleClass="multiselect multiselect-fiscalyear" >
+                                    <apex:selectOptions value="{!FiscalYearItems}"/>
+                                </apex:selectList>
+                            </apex:pageBlockSectionItem>
+                            
+                        </apex:pageBlockSection>
+                        <div>
+                            <apex:commandButton action="{!SearchAandAPlanMaster}" value="Search" rerender="resultPanel, messages" />
+                            <apex:commandButton action="{!SearchAandAPlanMaster}" value="Clear" onClick="multiselect.multiselectClearAll();" onComplete="multiselect.loadBindings(); rehack();" rerender="resultPanel, messages" />
+                        </div>
+                    </apex:pageBlock>
+                </apex:form>
+
+                <apex:pageBlock title="Announcement(s)" >
+                	<apex:pageBlockSection columns="1">
+                    	<apex:outputPanel styleClass="notice">
+                        	A&amp;A Plan Users: Please remember to update the Status of actions completed to "Awarded".
+                        </apex:outputPanel>
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+                
+            </div>
+            
+            
+            
+            <div class="resultDiv">
+                        
+                <apex:pageBlock id="resultPanel">
+                	<apex:pageBlockSection columns="1">
+                        <!-- Pagination -->
+                        <apex:form >
+                            <apex:outputPanel layout="block" styleClass="pSearchShowMore">
+                                <apex:commandLink action="{!controller.Previous}" title="View the previous page" value="Previous Page" rendered="{!controller.HasPrevious}" rerender="resultPanel" />
+                                
+                                <apex:outputPanel styleClass="pShowLess noLink" style="color:grey" rendered="{!NOT(controller.HasPrevious)}">Previous Page</apex:outputPanel>
+                                    ({!controller.pageNumber} of {!CEILING(controller.resultSize / controller.pageSize)})&nbsp;
+                                <apex:outputPanel styleClass="pShowLess noLink" style="color:grey" rendered="{!NOT(controller.HasNext)}">Next Page</apex:outputPanel>
+                                
+                                <apex:commandLink action="{!controller.Next}" title="View the next page" value="Next Page" rendered="{!controller.HasNext}" rerender="resultPanel" />
+                            </apex:outputPanel>
+                        </apex:form>
+                        
+                        <!-- Actual Search Table -->
+                        <apex:pageBlockTable value="{!results}" var="rec" rendered="{!controller.resultSize > 0}">
+                            <apex:column headerValue="Plan Name" >
+                            	<a href="{!$Page.AAPlanDetailList}?ParentId={!rec.Id}">{!rec.Name}</a>
+                            </apex:column>
+                            <apex:column headerValue="Fiscal Year" value="{!rec.Year__c}" />
+                            <apex:column headerValue="M/B/IO"  >
+                                <apex:outputText value="{!rec.OperatingUnit__r.Name}" />
+                            </apex:column>
+                        </apex:pageBlockTable>
+                        
+                        <!-- No records -->
+                        <apex:outputPanel rendered="{!controller.resultSize == 0}">
+                            <apex:pageMessage summary="No records found." severity="info" strength="2" />
+                        </apex:outputPanel>
+                        
+                        <!-- Total Records Found -->
+                        <apex:outputPanel layout="block" styleClass="pSearchShowMore">
+                            <apex:form >
+                                <apex:commandLink action="{!controller.Previous}" title="View the previous page" value="Previous" rendered="{!controller.HasPrevious}" rerender="resultPanel" />
+                                    
+                                {!((controller.pageNumber-1) * controller.pageSize)+1} - {!IF(controller.resultSize > controller.pageNumber * controller.pageSize, controller.pageNumber * controller.pageSize, controller.resultSize)}
+                                out of&nbsp;
+                                <apex:outputText value="{!controller.resultSize}" />
+                                <apex:outputText rendered="{!controller.resultSize == queryLimit}">+</apex:outputText>
+                                Record<apex:outputText rendered="{!controller.resultSize != 1}" >s</apex:outputText>&nbsp;
+                                
+                                <apex:commandLink action="{!controller.Next}" title="View the next page" value="Next" rendered="{!controller.HasNext}" rerender="resultPanel" />
+                            </apex:form>
+                        </apex:outputPanel>
+                    </apex:pageBlockSection>
+                    
+                </apex:pageBlock>
+            </div>
+        </div>
+    </div>
+    <script src="{!URLFOR($Resource.jquery, 'js/jquery-1.10.2.js')}"></script>
+    <script src="{!URLFOR($Resource.jquery, 'js/jquery-ui-1.10.4.custom.min.js')}"></script>
+    <c:MultiSelectJS />
+    
+    <script type='text/javascript'>
+    	var j$ = jQuery.noConflict();
+    	
+    	j$(function() {
+    		//drop all the newly minted dom elements from the controller into the page
+    		j$('.multiselect-operatingunit').append( '{!optGroupDOM}' );
+    		
+    		rehack();
+    	});
+    	
+    	//fire after clear to redo all my cool rejiggers
+    	function rehack(){
+    		//refresh the multiselect widget to pick up the dom changes
+    		j$('.multiselect-operatingunit').multiselect('refresh');
+    		//apex componenent adds all the M/B/IOs at the base level for the view state
+    		//we need to hide them all
+    		j$('.ui-multiselect-checkboxes').children('li').slice( 0, {!NumOpUnits} ).css('display','none');
+    		//fix the width on the button to show the list
+    		j$('.multiselect-operatingunit').next().css('width','');
+    		//align all the optgroup headers to the left
+    		j$('.ui-multiselect-optgroup-label').css('text-align','left');
+    		//bump all the options to the right
+    		j$('.ui-corner-all').css('margin-left','15px');
+    	}
+    </script>
+    
+</apex:page>

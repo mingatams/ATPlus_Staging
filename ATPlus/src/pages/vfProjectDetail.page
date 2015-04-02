@@ -1,0 +1,267 @@
+<apex:page standardController="Project__c" tabStyle="Project_Design__tab" extensions="ClsUserProfileFinder,ClsTabController" id="ProjectPage" sidebar="false" action="{!doAction}">
+ <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>  
+    <apex:sectionHeader title="{!$ObjectType.Project__c.label}" subtitle="{!Project__c.name}"/>
+    
+   <apex:tabPanel switchType="client"  id="ProjectPanel" onclick="setSelectedTabOnController()"  value="{!selectedTab}" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+      <apex:tab label="Project" name="ProjectDetails"  id="tabProjectdetails" style="margin-left: -1px;" styleClass="activeTabBackground">
+      <apex:pageBlock mode="maindetail" id="ProjectPageBlock">
+      
+      <apex:pageBlockButtons >
+      
+        <apex:form >
+          
+            <!-- <apex:commandButton action="{!edit}" value="Edit" rendered="{!$Profile.Name =='PLT - Mission Profile' || $Profile.Name =='System Administrator(c)' || $Profile.Name =='STD - AIDtracker Support' || $Profile.Name =='STD - Mission Profile'}"/>
+            <apex:commandButton action="{!delete}" value="Delete" rendered="{!$Profile.Name =='PLT - Mission Profile' || $Profile.Name =='System Administrator(c)' || $Profile.Name =='STD - AIDtracker Support' || $Profile.Name =='STD - Mission Profile'}"/> -->          
+            <apex:commandButton action="{!edit}" value="Edit" rendered="{!(isPLTMissionUser || IsADMINUser || isSTDAidtrackSupportUser || isSTDMissionProfileUser)}"/>
+            <apex:commandButton action="{!delete}" value="Delete" rendered="{!(isPLTMissionUser || IsADMINUser || isSTDAidtrackSupportUser || isSTDMissionProfileUser)}"/>
+            <apex:commandButton action="{!URLFOR($Action.Project__c.Results_Framework_Linkage, Id)}" value="Setup/Change RF Linkage"/>
+            
+        </apex:form>
+        </apex:pageBlockButtons>
+     
+       <apex:form >
+        <apex:pageBlockSection showHeader="true" title="Overview" columns="2" >
+         <apex:facet name="header">        
+               <span class="pbSubExtra"><span class="requiredLegend">
+               <span class="requiredExampleOuter"></span>
+               <span class="requiredText"> <img src="{!$Resource.PublicIcon}" /> = Public Fields</span> </span></span>
+               <!--**AIDC-159**-->
+               <h3>Overview</h3>
+         </apex:facet>
+         
+   
+            
+  <apex:pageBlockSectionItem helpText="{!$ObjectType.Project__c.fields.Project_Code__c.inlineHelpText}">
+            <apex:pageBlockSectionItem >
+                 <apex:image value="{!$Resource.PublicIcon}" /> 
+                 <apex:outputLabel value="{!$ObjectType.Project__c.fields.Project_Code__c.label}"/>
+             </apex:pageBlockSectionItem>    
+            <apex:outputField value="{!Project__c.Project_Code__c}" />     
+           </apex:pageBlockSectionItem> 
+           
+                       
+            <!--<apex:outputField value="{!Project__c.burName__c}"/> -->                       
+          
+             
+ <apex:pageBlockSectionItem helpText="{!$ObjectType.Project__c.fields.Public_Name__c.inlineHelpText}">
+            <apex:pageBlockSectionItem >
+                 <apex:image value="{!$Resource.PublicIcon}" /> 
+                 <apex:outputLabel value="{!$ObjectType.Project__c.fields.Public_Name__c.label}"/>
+             </apex:pageBlockSectionItem>    
+            <apex:outputField value="{!Project__c.Public_Name__c}" />     
+           </apex:pageBlockSectionItem>  
+        
+                               
+                  
+           <!--<apex:outputField value="{!Project__c.ouId__c}"/>  -->    
+                     
+              
+             <apex:outputField value="{!Project__c.Project_Manager__c}" />           
+           
+            <!--<apex:outputField value="{!Project__c.offId__c}"/> **AIDC-159**-->
+           <!-- <apex:outputField value="{!Project__c.Activity_Manager__c}"/> **AIDC-159**-->
+            
+       
+<apex:pageBlockSectionItem helpText="{!$ObjectType.Project__c.fields.Start_Date__c.inlineHelpText}">
+            <apex:pageBlockSectionItem >
+                 <apex:image value="{!$Resource.PublicIcon}" /> 
+                 <apex:outputLabel value="{!$ObjectType.Project__c.fields.Start_Date__c.label}"/>
+             </apex:pageBlockSectionItem>    
+            <apex:outputField value="{!Project__c.Start_Date__c}" />     
+           </apex:pageBlockSectionItem>        
+
+ <!--**AIDC-159** Moved sector to Fact Sheet Information section-- Chaning back as per Radha's request  **AIDC-159**-->       
+ <apex:pageBlockSectionItem helpText="{!$ObjectType.Project__c.fields.Sector_Name__c.inlineHelpText}">
+            <apex:pageBlockSectionItem >
+                 <apex:image value="{!$Resource.PublicIcon}" /> 
+                 <apex:outputLabel value="{!$ObjectType.Project__c.fields.Sector_Name__c.label}"/>
+             </apex:pageBlockSectionItem>    
+            <apex:outputField value="{!Project__c.Sector_Name__c}" />     
+           </apex:pageBlockSectionItem>
+           
+            
+      
+            
+<apex:pageBlockSectionItem helpText="{!$ObjectType.Project__c.fields.End_Date__c.inlineHelpText}">
+            <apex:pageBlockSectionItem >
+                 <apex:image value="{!$Resource.PublicIcon}" /> 
+                 <apex:outputLabel value="{!$ObjectType.Project__c.fields.End_Date__c.label}"/>
+             </apex:pageBlockSectionItem>    
+            <apex:outputField value="{!Project__c.End_Date__c}" />     
+           </apex:pageBlockSectionItem>  
+           
+
+            
+  <!--**AIDC-159** Moved sector to Fact Sheet Information section  **AIDC-159**-->       
+<apex:pageBlockSectionItem helpText="{!$ObjectType.Project__c.fields.Primary_Initiative__c.inlineHelpText}">
+            <apex:pageBlockSectionItem >
+                 <apex:image value="{!$Resource.PublicIcon}" /> 
+                 <apex:outputLabel value="{!$ObjectType.Project__c.fields.Primary_Initiative__c.label}"/>
+             </apex:pageBlockSectionItem>    
+            <apex:outputField value="{!Project__c.Primary_Initiative__c}" />     
+           </apex:pageBlockSectionItem>  
+           
+                   
+           <!-- <apex:outputField value="{!Project__c.Verified__c}"/> **AIDC-159**-->
+            <apex:outputField value="{!Project__c.Status__c}"/> 
+            <apex:outputField value="{!Project__c.Project_Subtype__c}"/>
+                      
+            <apex:outputField value="{!Project__c.PublishStatus__c}"/>            
+            <apex:outputField value="{!Project__c.Project_Type__c}"/>    
+             <apex:outputField value="{!Project__c.Host_Government_Organization__c}"/> 
+              <apex:outputField value="{!Project__c.Publicly_Disclosable__c}"/>       
+            <apex:pageBlockSectionItem />
+            
+            
+            <apex:pageBlockSectionItem />
+           
+        </apex:pageBlockSection>
+         </apex:form>
+        <!-- **AIDC-159**-->
+        <apex:pageBlockSection showHeader="true" title="Fact Sheet Information" columns="1">
+        
+        <apex:pageBlockSectionItem helpText="{!$ObjectType.Project__c.fields.Project_Description__c.inlineHelpText}">
+            <apex:pageBlockSectionItem >
+                 <apex:image value="{!$Resource.PublicIcon}" /> 
+                 <apex:outputLabel value="{!$ObjectType.Project__c.fields.Project_Description__c.label}"/>
+             </apex:pageBlockSectionItem>    
+            <apex:outputField value="{!Project__c.Project_Description__c}" />     
+           </apex:pageBlockSectionItem>  
+            
+           <!-- <apex:pageBlockSectionItem helpText="{!$ObjectType.Project__c.fields.Sector_Name__c.inlineHelpText}">
+            <apex:pageBlockSectionItem >
+                 <apex:image value="{!$Resource.PublicIcon}" /> 
+                 <apex:outputLabel value="{!$ObjectType.Project__c.fields.Sector_Name__c.label}"/>
+             </apex:pageBlockSectionItem>    
+            <apex:outputField value="{!Project__c.Sector_Name__c}" />     
+           </apex:pageBlockSectionItem> -->
+           
+           
+            <!-- <apex:pageBlockSectionItem helpText="{!$ObjectType.Project__c.fields.Primary_Initiative__c.inlineHelpText}">
+            <apex:pageBlockSectionItem >
+                 <apex:image value="{!$Resource.PublicIcon}" /> 
+                 <apex:outputLabel value="{!$ObjectType.Project__c.fields.Primary_Initiative__c.label}"/>
+             </apex:pageBlockSectionItem>    
+            <apex:outputField value="{!Project__c.Primary_Initiative__c}" />     
+           </apex:pageBlockSectionItem> -->
+                   
+             <!--<apex:outputField value="{!Project__c.Project_Subtype__c}"/> -->
+            
+            <!-- <apex:outputField value="{!Project__c.Host_Government_Organization__c}"/> >
+             <apex:outputField value="{!Project__c.Beneficiary_Description__c}" />  
+             <apex:outputField value="{!Project__c.AdditionalLinksRelatedInfo__c}" />            
+             
+              
+        <apex:pageBlockSectionItem helpText="{!$ObjectType.Project__c.fields.Public_Photo__c.inlineHelpText}">
+            <apex:pageBlockSectionItem >
+                 <apex:image value="{!$Resource.PublicIcon}" /> 
+                 <apex:outputLabel value="{!$ObjectType.Project__c.fields.Public_Photo__c.label}"/>
+             </apex:pageBlockSectionItem>    
+            <apex:outputField value="{!Project__c.Public_Photo__c}" />  
+            </apex:pageBlockSectionItem> 
+            
+        <!-- ******AIDC-157******  -->
+             <apex:pageBlockSectionItem helpText="{!$ObjectType.Project__c.fields.Results__c.inlineHelpText}">
+           <apex:pageBlockSectionItem >
+           <apex:image value="{!$Resource.PublicIcon}" />
+           <apex:outputLabel value="{!$ObjectType.Project__c.fields.Results__c.label}"/> 
+           </apex:pageBlockSectionItem> 
+           <apex:outputField value="{!Project__c.Results__c}" />        
+           </apex:pageBlockSectionItem>  
+     
+        
+        </apex:pageBlockSection>
+        
+  <!-- ******************* System Information to be displayed only to SysAdmins******************* -->       
+        <!-- <apex:pageBlockSection showHeader="true" title="System Information" columns="2" id="SysHeadSection" rendered="{!$Profile.Name =='System Administrator(c)'}"> -->
+        <apex:pageBlockSection showHeader="true" title="System Information" columns="2" id="SysHeadSection" rendered="{!IsADMINUser}">
+            <apex:outputField value="{!Project__c.CreatedById}"/>
+            <apex:outputField value="{!Project__c.LastModifiedById}"/>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Project Owner"/>
+                <apex:outputPanel >
+                    <apex:outputField value="{!Project__c.OwnerId}"/>&nbsp;
+                    <apex:outputLink value="{!URLFOR($Action.Project__c.ChangeOwner,Project__c.id)}">[Change]</apex:outputLink>
+                </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem />
+        </apex:pageBlockSection>
+        <apex:pageBlockSection showHeader="false" columns="2">
+        </apex:pageBlockSection>
+         
+         
+          </apex:pageBlock>
+           <apex:relatedList pageSize="20" list="ImpMechs_Projects__r"/>
+         <apex:relatedList pageSize="20"  list="NotesAndAttachments"/>
+         
+      </apex:tab>
+      
+    
+    <!--  <apex:tab label="IM Link" name="Project-IM" 
+                id="tabProjectIM">
+         <apex:relatedList pageSize="20" title="" list="ImpMechs_Projects__r"/>
+      </apex:tab> -->
+      
+      <apex:tab label="LogFrame" name="LFGoals" 
+                id="tabLFGoals" styleClass="activeTabBackground">
+           <apex:relatedList pageSize="20" title="" list="LogFrame_Goals__r" rendered="{!$ObjectType.LF_Goal__c.accessible}"/>
+        
+      </apex:tab>
+      
+     
+     <!--  <apex:tab label="Notes and Attachments" 
+                name="NotesAndAttachmentsProject" 
+               id="tabNoteAtt">
+         <apex:relatedList pageSize="20" title="" list="NotesAndAttachments"/>
+      </apex:tab> -->
+   </apex:tabPanel>
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction"  reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>              
+        <apex:actionFunction id="lf" name="selectLFTabActionFunction" action="/apex/vfLogFrameOverview?id={!project__c.Id}"  reRender="">
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['ProjectPage:ProjectPanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {               
+        selectTabActionFunction(getSelectedTabName());       
+        if(getSelectedTabName() == 'LFGoals'){
+           // alert('LFGoalsTab');
+            selectLFTabActionFunction();
+        }
+    }
+function addLoadEvent(func) {   
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+
+function hideHeadSesction() {
+ twistSection(document.getElementById('ProjectPage:ProjectPageBlock:SysHeadSection').childNodes[0].childNodes[0]);
+}
+
+addLoadEvent(hideHeadSesction);    
+</script>
+</apex:page>

@@ -1,0 +1,142 @@
+<apex:page sidebar="false" showHeader="false" id="page" showChat="false" >
+
+ <head>
+ 
+        <apex:stylesheet value="{!URLFOR($Resource.AAMission_Login, 'style.css')}" />  
+        
+            <script>  
+    var count =10; 
+    //var redirect="https://aidtracker--STG1.cs9.my.salesforce.com" 
+    //var redirect="https://aidtracker.my.salesforce.com"  
+    //var redirect="https://cs20.salesforce.com/apex/AAPlanList";
+    //var redirect="https://aidtracker--aaplandev.cs20.my.salesforce.com/apex/AAPlanList";
+    var redirect="{!IF($Organization.Id == '00Dd0000000cFGXEA2', 'https://aidtracker.my.salesforce.com/', 'https://aidtracker--aaplandev.cs20.my.salesforce.com/')}";
+      //var PingSpURL = "https://aidtracker--STG1.cs9.my.salesforce.com";
+     //var siteLoginPage = "&TargetResource={!$Site.CurrentSiteUrl}siteLogin?startUrl={!$Site.OriginalUrl}";
+     
+     
+     
+    function countDown(){  
+   
+     if (count <=0){  
+      window.location = redirect;  
+      //window.location = PingSpURL+siteLoginPage;
+     }else{  
+      count--;  
+      document.getElementById("timer").innerHTML = "AUTO-REDIRECT IN "+count+" SECONDS"  
+      setTimeout("countDown()", 1000)  
+     }  
+    }  
+    </script>    
+    </head>
+   
+        <body>
+<div id="wrapper">
+   <div id="header"  style="padding-bottom: 20px;" >
+    <img src="{!URLFOR($Resource.AAMission_Login, 'images/usaid-logo.png')}" />
+      </div> <!-- end header -->
+       <div id="container" style="align:center">
+        <apex:outputPanel id="envIndicator" style="color:red;font-size:400%" layout="block" rendered="{!$Organization.Id != '00Dd0000000cFGXEA2'}">DEV</apex:outputPanel>
+        <div id="aidplanner-logo" style="margin-top:0px;"></div> 
+        
+<br></br>
+<br></br>
+<br></br>
+<br></br>
+
+    <div id="fluid">
+        <apex:outputPanel rendered="{!$Organization.Id == '00Dd0000000cFGXEA2'}"> 
+        <a href="https://aidtracker.my.salesforce.com">
+        
+        <div id="miniwrap">
+            
+            <div id="enter-hidden">
+            </div>
+            <div id="enter">
+                <h1>ENTER</h1>
+                <br></br>
+                <br></br>
+<br></br>
+<br></br>
+                <h2><span id="timer">  
+                <script>  
+                 countDown();  
+                </script>  
+                </span>  </h2>
+            </div>
+            
+        </div> <!-- end miniwrap -->
+        </a>
+    </apex:outputPanel>
+
+    <apex:outputPanel rendered="{!$Organization.Id != '00Dd0000000cFGXEA2'}">         
+            <a href="https://cs20.salesforce.com/">
+        <div id="miniwrap">
+            
+            <div id="enter-hidden">
+            </div>
+            <div id="enter">
+                <h1>ENTER</h1>
+                <br></br>
+                <br></br>
+<br></br>
+<br></br>
+                <h2><span id="timer">  
+                <script>  
+                 countDown();  
+                </script>  
+                </span>  </h2>
+            </div>
+            
+        </div> <!-- end miniwrap -->
+        </a>
+    </apex:outputPanel>
+
+    </div> <!-- end fluid -->
+    
+    <div id="disclaimer">
+           
+               <span>
+               
+                    <!-- <b>Disclaimer:</b>   This website is for use by the U.S. Agency for International Development and its partners. All transactions processed on this site may be monitored, recorded, or disclosed to authorized personnel. Do not create, process, store, or transmit classified National security information on this site. Authorized users of this site who accept these terms may log on to this site. -->
+                    <b>Disclaimer:</b> You are accessing a U.S. Government information system, which includes (1) this computer, (2) this computer network, (3) all computers connected to this network, and (4) all devices and storage media attached to this network or to a computer on this network. This information system is provided for U.S. Government-authorized use only. Unauthorized or improper use of this system may result in disciplinary action, as well as civil and criminal penalties.
+                    <br/>
+                   <br/>
+                   By using this information system, you understand and consent to the following:
+                 
+                   <ul>
+                        <li>
+                            You have no reasonable expectation of privacy regarding communications or data transiting or stored, or activity conducted on this information system.
+                        </li>
+                        <li>
+                            At any time, and for any lawful government purpose, the Government may monitor, intercept, and search any communication or data transiting or stored on this information system.
+                        </li>
+                        <li>
+                            Any communications or data transiting or stored, or activity conducted on this information system may be disclosed or used for any official government purpose.
+                        </li>
+                        <li>
+                            Your consent is final and irrevocable. You may not rely on any statements or informal policies purporting to provide you with any expectation of privacy regarding communications on this system, whether oral or written, by your supervisor or any other official, except USAID CIO.
+                        </li>
+                   </ul>  
+               
+               </span>
+           
+           
+           
+           
+           
+      </div> <!-- end disclaimer -->
+
+
+
+
+
+
+
+
+</div>
+       </div> 
+
+   
+</body>
+</apex:page>

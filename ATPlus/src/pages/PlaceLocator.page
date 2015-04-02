@@ -1,0 +1,342 @@
+<apex:page StandardController="Project_Location__c" extensions="PlaceLocatorController" tabStyle="Project_Location__c">
+  
+    
+    <apex:includeScript value="{!URLFOR($Resource.USAIDTrackerStatic, 'USAIDTrackerStatic.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.Dojo161, 'dojo.js')}"/>
+    <apex:includeScript value="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false" />
+
+    <apex:form id="form">
+    
+        <apex:actionFunction action="{!doLocation}" name="jsLocation" rerender="searchForm, errorMessages"  >
+            <apex:param name="Latitude" assignTo="{!Latitude}" value="" />
+            <apex:param name="Longitude" assignTo="{!Longitude}" value="" /> 
+            <apex:param name="Country" assignTo="{!Country}" value="" />
+            <apex:param name="State" assignTo="{!State}" value="" />
+            <apex:param name="Region" assignTo="{!Region}" value="" />
+            <apex:param name="City" assignTo="{!City}" value="" />
+            <apex:param name="Location_Name" assignTo="{!Location_Name}" value="" />
+            <apex:param name="Extent" assignTo="{!Extent}" value="" />
+        </apex:actionFunction>  
+        <apex:pageMessages id="errorMessages"/>  
+        <table width="99%"> 
+        <tr>
+        <td valign='top' style='width:45%'>
+            <div dojotype="dijit.layout.BorderContainer" design="headline" gutters="false" style="width: 100%; height: 100%; margin: 0;"> 
+                <div id="map" dojotype="dijit.layout.ContentPane" region="center" style="width:450px; height:400px;position:relative;overflow:hidden;"></div> 
+            </div> 
+        </td>
+        <td valign='top' style='width:45%'>
+            <apex:outputPanel id="searchForm">
+                <input type="hidden" id="performSearch" value="{!autoSearch}"/>
+                <input type="text" id="place" size="60" value="{!addressOrName}"/>
+                <input type="button" onclick="locate()" value="Search"/>
+                <img src= "/img/loading32.gif" alt="Loading" style="display: none;width:16px;" id="loader" align="right" />
+                <table id="resultsTable" style="width:100%;overflow:auto;"></table>
+                <div id='_searchResults'></div>            
+            </apex:outputPanel>
+        </td>
+        </tr>
+        </table>
+    </apex:form>  
+
+
+    <!-- Places Locator and Map -->
+    <script type="text/javascript" charset="utf-8">
+        dojo.addOnLoad(initialize);
+
+        var map, geocoder, googlePolygonLayer;
+        
+        function initialize() {
+            geocoder = new google.maps.Geocoder();
+            var latitude = "{!obj.Latitude__c}";
+            var longitude = "{!obj.Longitude__c}";
+            var mapOptions = {
+              center: new google.maps.LatLng(10, 20),
+              zoom: 1,
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+            }; 
+            map = new google.maps.Map(document.getElementById("map"), mapOptions);
+            
+            //create polygons
+            var p;            
+            for(p in USAIDProjectPolygons) {
+                if (dojo.isFunction(p)) {
+                    return;            
+                }
+                var allpaths = [];
+                var polyArray = USAIDProjectPolygons[p].paths;              
+                for (var i = 0; i < polyArray.length; i++) {
+                    var coords = [];
+                    var polys = polyArray[i];
+                    for (var j = 0; j < polys.length; j++) {
+                        coords.push(new google.maps.LatLng(polys[j][1], polys[j][0]));
+                    }
+                    allpaths.push(coords);
+                }
+                var polygon = new google.maps.Polygon({"paths":allpaths});
+                USAIDProjectPolygons[p].polygon = polygon;
+            } 
+
+            if(latitude && longitude) {
+                var point = new google.maps.LatLng(latitude,longitude);
+                map.setCenter(point);
+                map.setZoom(8);
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: point
+                });
+            } else {
+                locate();
+            }
+        }
+
+       
+            function locate() {
+                var terms = dojo.byId("place").value;
+                googleLocateGeolocationsFromAddress(terms);
+            }
+
+            function googleLocateGeolocationsFromAddress(address) {
+                showLoader();                
+                geocoder.geocode({'address': address}, googleShowData);
+            }
+            
+            var rowTemplate = "<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>";
+            
+            function googleShowData(results, status) {
+
+                var table = dojo.byId('resultsTable');
+                dojo.empty(table);
+                if (status == google.maps.GeocoderStatus.ZERO_RESULTS || results.length === 0) {
+                    var s = "<tr style='vertical-align:top'><td>Please refine your search, no location found with that name.</td></tr>"; 
+                    dojo.place(s, table, "last");
+                    hideLoader();
+                    return;
+                }
+                /*
+                if (status == google.maps.GeocoderStatus.UNKNOWN_ERROR) { 
+                    var s = "<tr style='vertical-align:top'><td>An error prevented us from running your search. Please try again, and contact your System Administrator if the problem persists.</td></tr>"; 
+                    console.log('Geocode was not successful for the following reason: ' + status)
+                    dojo.place(s, table, "last");
+                    hideLoader();
+                    return;                        
+                }
+                */
+                if (status != google.maps.GeocoderStatus.OK) { 
+                    var s = "<tr style='vertical-align:top'><td>An error prevented us from running your search. Please try again, and contact your System Administrator if the problem persists.</td></tr>"; 
+                    console.log('Geocode was not successful for the following reason: ' + status)
+                    dojo.place(s, table, "last");
+                    hideLoader();
+                    return;                        
+                }
+                
+                var theadinnerHTML = " <tr id=\"header\">\
+                <th width=\"25%\">Name</th>\
+                <th width=\"20%\">City</th>\
+                <th width=\"20%\">State</th>\
+                <th width=\"22%\">Country</th>\
+                <th width=\"10%\"></th>\
+                </tr>";
+                dojo.place(theadinnerHTML, table, "last");
+
+                dojo.forEach(results, function(d, index) {
+                    var ndata = googleNormalizeData(d);
+                    if (!ndata.country) return;//TODO
+                    
+                    var trinnerHTML = dojo.replace(rowTemplate, [ndata.address, 
+                                                              ndata.city, 
+                                                              ndata.state, 
+                                                              ndata.country, 
+                                                              googleCreateSelectButton(ndata)
+                    ]);
+                    dojo.place(trinnerHTML, table, "last");       
+                });
+
+                hideLoader(); 
+            }
+            function googleNormalizeData(input) {
+                var output = {};
+                console.log(input);
+                if(input.geometry.location_type === 'ROOFTOP') {
+                    output.extent = '1 - Exact';
+                } else if(input.geometry.location_type === 'RANGE_INTERPOLATED') {
+                    output.extent = '2 - Near Exact'
+                }
+                if (input.address_components) {//TODO 
+
+                    dojo.forEach(input.address_components, function(component, index) {
+                        if(component.types.length === 0) {
+                            output.address = component.long_name || component.short_name;
+                            if(output.extent === undefined)
+                                    output.extent = '2 - Near Exact';
+                        } else {
+                            if((output.address == undefined || output.address === null) && (component.types[0] === 'point_of_interest' || component.types[0] === 'colloquial_area')) {
+                                output.address = component.long_name || component.short_name;
+                                if(output.extent === undefined)
+                                    output.extent = '2 - Near Exact';
+                            }
+                            if(component.types[0] === 'locality' || component.types[0] === 'sublocality' || component.types[0] === 'neightborhood') {
+                                output.city = component.long_name || component.short_name;
+                                if(output.extent === undefined)
+                                    output.extent = '2 - Near Exact';
+                            }
+                            if(component.types[0] === 'administrative_area_level_2' || component.types[0] === 'administrative_area_level_3' || component.types[0] === 'locality') {
+                                output.region = component.long_name || component.short_name;
+                                if(output.extent === undefined)
+                                    output.extent = '3 - Second Order Admin';
+                            }                       
+                            if(component.types[0] === 'administrative_area_level_1' || component.types[0] === 'administrative_area_level_2') {
+                                output.state = component.long_name || component.short_name;
+                                if(output.extent === undefined)
+                                    output.extent = '4 - First Order Admin';
+                            }
+                            if(component.types[0] === 'country') {
+                                output.country = component.long_name || component.short_name;
+                                if(output.extent === undefined)
+                                    output.extent = '11 - National';
+                            }
+                        }   
+      
+                    });
+                    
+                    if(output.city === undefined) {
+                        output.city = '';
+                    }
+                    if(output.region === undefined) {
+                        output.region = '';
+                    }
+                    if(output.state === undefined) {
+                        output.state = '';
+                    }
+                    if(output.country === undefined) {
+                        output.country = '';
+                    }
+                    
+                    if(output.address === undefined && output.city !== '') {
+                        output.address = output.city;
+                    } else if(output.address === undefined && output.region !== '') {
+                        output.address = output.region;
+                    } else if(output.address === undefined && output.state !== '') {
+                        output.address = output.state;
+                    } else if(output.address === undefined && output.country !== '') {
+                        output.address = output.country;
+                    }
+                    output.lat = input.geometry.location.lat();
+                    output.lon = input.geometry.location.lng();
+                    
+                }
+                return output;
+            }
+            var googleSelectButtonTemplate = "<div title=\"{title}\" onclick=\"googleOnSelect({lat}, {lon}, '{country}', '{state}', '{region}', '{city}', '{name}', '{extent}')\" style=\"text-align:center;cursor:pointer;border-radius:5px;height:16px;width:45px;font-style:italic;text-decoration:underline;\">Select</div>";
+            function googleCreateSelectButton(data) {
+                    var html = dojo.replace(googleSelectButtonTemplate, {
+                        title: data.lat + "," + data.lon,
+                        lat: data.lat,
+                        lon: data.lon,
+                        country: data.country,
+                        state: data.state,
+                        region: data.region,
+                        city: data.city,
+                        name: data.address,
+                        extent: data.extent
+                    });
+                    return html;
+            }  
+            function showLoader() {
+                dojo.byId("loader").style.display = 'block';
+                dojo.byId("resultsTable").style.display = 'none';
+            } 
+            
+            function hideLoader() {
+                dojo.byId("loader").style.display = 'none';
+                dojo.byId("resultsTable").style.display = 'block';
+            }
+            
+            function enterKey(evt) {
+                if (evt.keyCode == 13) locate();
+            }
+           
+            function googleOnSelect(lat,lon,country,state,region,city, name,extent) {
+                var loc = null;
+                try {
+                    showLoader();                               
+
+                    var point = new google.maps.LatLng(lat,lon);
+                   
+                    // Center Map on Selected location  
+                    map.setCenter(point);
+                    map.setZoom(8);
+                    var marker = new google.maps.Marker({
+                        map: map,
+                        position: point
+                    });
+
+                    var p, c;
+                    for (p in USAIDProjectPolygons) {
+                        c = USAIDProjectPolygons[p].polygon;
+                        if (google.maps.geometry.poly.containsLocation(point, c) === true) {
+                            loc = p;
+                            break;
+                        }
+                    }
+
+                    if(loc === null) {
+                        var lat_1 = parseFloat(lat) + parseFloat("0.005");
+                        var lon_1 = parseFloat(lon) + parseFloat("0.005");;
+                        var lat_2 = parseFloat(lat) - parseFloat("0.005");;
+                        var lon_2 = parseFloat(lon) - parseFloat("0.005");;
+                     
+                        var point_1 = new google.maps.LatLng(lat,lon_1);
+                        var point_2 = new google.maps.LatLng(lat,lon_2);
+                        var point_3 = new google.maps.LatLng(lat_1,lon);
+                        var point_4 = new google.maps.LatLng(lat_2,lon);
+                       
+                        var pol, a;
+                        for (pol in USAIDProjectPolygons) {
+                            a = USAIDProjectPolygons[pol].polygon;
+                            if (google.maps.geometry.poly.containsLocation(point_1, a) === true) {
+                                loc = pol;
+                                break;
+                            } else if (google.maps.geometry.poly.containsLocation(point_2, a) === true) {
+                                loc = pol;
+                                break;
+                            } else if (google.maps.geometry.poly.containsLocation(point_3, a) === true) {
+                                loc = pol;
+                                break;
+                            } else if (google.maps.geometry.poly.containsLocation(point_4, a) === true) {
+                                loc = pol;
+                                break;
+                            }
+                        }
+                    } 
+                                       
+                    if(loc != null) {
+                        var provinceCountry = loc.split(","); 
+                        if (provinceCountry.length === 2) {
+                            state = dojo.trim(provinceCountry[0]);
+                            country = dojo.trim(provinceCountry[1]);
+                        }                   
+                    } else {
+                        state = '';  
+                    } 
+                    jsLocation(lat,lon,country,state,region,city, name,extent);
+
+                    window.parent.postMessage("G2Maps::Page::Refresh", "*");
+                    window.parent.location = window.parent.location + "?" + Math.random();
+
+                } catch (err){}//TODO: handle err
+            }
+
+            dojo.ready(function() {
+                if (dojo.byId("performSearch").value === "true") {                
+                    setTimeout(function() {locate();}, 2000);   
+                } else {
+                    var table = dojo.byId('resultsTable');
+                    dojo.empty(table);
+                    var s = "<tr style='vertical-align:top'><td>Please type in a name or address and click Search button to search the location.</td></tr>"; 
+                    dojo.place(s, table, "last");
+                }
+            });
+    </script>        
+    
+</apex:page>

@@ -1,0 +1,61 @@
+<apex:page cache="true" expires="600" title="USAID Portfolio Map" showHeader="false" doctype="html-5.0" controller="AidTrackerMapDataController" readOnly="true" standardStylesheets="false" >
+
+<html>
+    <head>        
+        <title>USAID Portfolio Map</title>
+         <script type="text/javascript">
+            var USAIDTrackerApp;
+            function initialize() {               
+               USAIDTrackerApp = new USAIDTracker.App({
+                   internal: {!IF($User.Alias=='guest',false, true)},
+                   mapDataUrl: "{!IF($User.Alias=='guest','/AidTrackerMapData', '/apex/AidTrackerMapData')}",
+                   polygonDataUrl: "{!URLFOR($Resource.AidTrackerMapPolygons)}",
+                   defaultPhotoUrl: "{!URLFOR($Resource.DefaultLogo)}",
+                   missionFlagUrl: "{!URLFOR($Resource.MissionFlags)}",
+                   locationRange: "{!$CurrentPage.parameters.l}",
+                   locationFocus: "{!$CurrentPage.parameters.w}",
+                   orgUnit: "{!$CurrentPage.parameters.m}",    
+                   viewMode: "{!$CurrentPage.parameters.v}" || "{!IF(AND($CurrentPage.parameters.l == 'local',$CurrentPage.parameters.w != 'KO'),'cluster','flag')}" || "flag",                  
+                   sector: "{!$CurrentPage.parameters.s}",                                   
+                   debug: true
+               });
+               USAIDTrackerApp.present(dojo.byId("map_canvas"));
+            }
+            dojo.ready(initialize);            
+        </script> 
+        
+        <link href='https://fonts.googleapis.com/css?family=Abel' rel='stylesheet' type='text/css'/>
+        <link rel="stylesheet" href="{!URLFOR($Resource.Dojo161, 'dijit/themes/tundra/tundra.css')}" type='text/css' />
+        <link rel="stylesheet" href="{!URLFOR($Resource.Dojo161, 'dojox/form/resources/RangeSlider.css')}" type='text/css' />
+        <apex:includeScript value="https://maps.googleapis.com/maps/api/js?v=3&sensor=true"/>
+        <!-- Production Only  
+        <apex:includeScript value="https://maps.googleapis.com/maps/api/js?client=gme-usaid&sensor=false" />
+        -->
+        <apex:includeScript value="{!URLFOR($Resource.Dojo161, 'dojo.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.Dojo161, 'usaid-dojo.js')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.AidTrackerMapFrontEnd, 'resources/USAIDTracker.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.AidTrackerMapFrontEnd, 'resources/USAIDTrackerDefaultTheme.css')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.AidTrackerMapFrontEnd, 'USAIDTracker.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.AidTrackerMapPolygons, 'USAIDTrackerStatic.js')}"/>
+        <script type="text/javascript">
+        
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-30663658-1']);
+          _gaq.push(['_setDomainName', 'usaid.gov']);
+          _gaq.push(['_trackPageview']);
+        
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            
+          })();
+        
+        </script>
+    </head>
+    <body>
+    <div id="map_canvas" style="width: 100%; height: 500px;"></div>
+
+    </body>
+</html>
+</apex:page>

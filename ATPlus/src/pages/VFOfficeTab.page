@@ -1,0 +1,7 @@
+<apex:page tabStyle="Office__c" controller="ClsUserProfileFinder" sidebar="false">
+ <apex:enhancedList type="Office__c" height="500" rowsPerPage="50"
+        id="OfficeUserList" customizable="false" rendered="{!IF(IsADMINUser , false, true)}"  />
+ <apex:enhancedList type="Office__c" height="500" rowsPerPage="50" 
+        id="OfficeAdminList" customizable="true" rendered="{!IF(IsADMINUser , true , false)}"  /> 
+          
+</apex:page>

@@ -1,0 +1,997 @@
+<apex:page controller="AidTrackerBulkGeocodingController" cache="true" expires="600" title="AidTracker Bulk Geocoding Wizard" showHeader="true" doctype="html-5.0" tabStyle="Project_Location__c">
+<apex:includeScript value="{!URLFOR($Resource.Dojo161, 'dojo.js')}"/>
+<apex:includeScript value="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false" />
+<apex:includeScript value="{!URLFOR($Resource.AidTrackerMapPolygons, 'USAIDTrackerStatic.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxcommon.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgridcell.js')}" />
+
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/dhtmlxgrid_skins.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.dhtmlxGrid, 'dhtmlxGrid/codebase/skins/dhtmlxgrid_dhx_skyblue.css')}"/>
+
+  
+<apex:sectionHeader title="Project Locations" subtitle="Bulk Geocode Project Locations"/>
+<apex:pageBlock >
+<apex:form >
+<apex:pageBlockSection title="Basic Information">
+
+    <apex:pageBlockSectionItem > 
+        <apex:outputLabel value="Country" for="locCountry" style="font-weight:bold;padding:10px;"/>
+        <apex:selectList id="locCountry" size="1" required="true" onchange="onCountryChange(this.value);console.log(this.options[this.selectedIndex].label);">
+            <apex:selectOptions value="{!countries}"/>
+        </apex:selectList>
+    </apex:pageBlockSectionItem>
+    <apex:pageBlockSectionItem > 
+        <apex:outputLabel value="Org Unit Name" for="activityOrg" style="font-weight:bold;padding:10px;"/>
+        <apex:outputField id="activityOrg" value="{!theActivity.ouName__c}"/>
+    </apex:pageBlockSectionItem>
+    <apex:pageBlockSectionItem > 
+       <!-- Project Code is re-named as Activity Code as per PPL as of June 3rd--> 
+        <apex:outputLabel value="Activity Code" for="projectCode" style="font-weight:bold;padding:10px;"/>
+        <apex:outputField id="projectCode" value="{!theActivity.Project_Code__c}"/>
+    </apex:pageBlockSectionItem>
+    <apex:pageBlockSectionItem > 
+        <!-- Project Name is re-named as Activity Name as per PPL as of June 3rd--> 
+        <apex:outputLabel value="Activity Name" for="projectName" style="font-weight:bold;padding:10px;"/>
+        <apex:outputField id="projectName" value="{!theActivity.Project_Name__c}"/>
+    </apex:pageBlockSectionItem> 
+    <apex:pageBlockSectionItem > 
+        <apex:outputLabel value="Task ID" for="activityId" style="font-weight:bold;padding:10px;"/>
+        <apex:outputField id="activityCode" value="{!theActivity.Activity_Code__c}"/>
+    </apex:pageBlockSectionItem>      
+    <apex:pageBlockSectionItem > 
+        <apex:outputLabel value="Task Name" for="activityCode" style="font-weight:bold;padding:10px;"/>
+        <apex:outputField id="activityCode" value="{!theActivity.Activity_Name__c}"/>
+    </apex:pageBlockSectionItem>
+    
+   <apex:pageBlockSectionItem > 
+        <apex:outputLabel value="Implementing Mechanism Name" for="ImpMechName" style="font-weight:bold;padding:10px;"/>
+        <apex:outputField id="ImpMechName" value="{!theActivity.ImpMech_Name__c}"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem > 
+        <apex:outputLabel value="Implementing Mechanism Number" for="ImpMechID" style="font-weight:bold;padding:10px;"/>
+        <apex:outputField id="ImpMechId" value="{!theActivity.ImpMech_Id__c}"/>
+    </apex:pageBlockSectionItem>
+    
+    
+
+</apex:pageBlockSection>
+</apex:form>      
+
+
+<style>  
+    #errorMessage {
+    line-height: 20px;
+    color: red;
+    font-size: 16px;  
+    }
+    .primaryButton {
+        color: #ffffff;background-color: #0044cc;background-image: -webkit-linear-gradient(top, #0088cc, #0044cc);
+        padding: 4px 12px;margin-bottom: 0;
+        font-size: 12px;line-height: 16px;
+        text-align: center;vertical-align: middle;
+        cursor: pointer;border-radius: 4px; border: 1px;
+    }
+
+    .Button {
+      display: inline-block;
+      *display: inline;
+      padding: 4px 12px;
+      margin-bottom: 0;
+      *margin-left: .3em;
+      font-size: 12px;
+      line-height: 16px;
+      color: #333333;
+      text-align: center;
+      text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #f5f5f5;
+      *background-color: #e6e6e6;
+      background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
+      background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
+      background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
+      background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
+      background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
+      background-repeat: repeat-x;
+      border: 1px solid #cccccc;
+      *border: 0;
+      border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+      border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+      border-bottom-color: #b3b3b3;
+      -webkit-border-radius: 4px;
+         -moz-border-radius: 4px;
+              border-radius: 4px;
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
+      filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+      *zoom: 1;
+      -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+         -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+              box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+    }    
+    div.gridbox_dhx_skyblue table.hdr td {
+        font-family: Arial,Helvetica,sans-serif;
+        font-size: 10px;
+    }
+    #loader1, #loader3 {
+        width: 16px; margin-top: 5px; float: none;
+    }
+    #loader2, #loader4 {
+        width: 16px; margin-right: 12px; margin-top: 5px; float: none;
+    }
+     
+</style>
+<apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+ <apex:pageBlockSection title="Geocode Project Locations" columns="1">    
+ <div id='errorMessage' style="display:none;"></div>
+
+<apex:tabPanel switchType="client" selectedTab="name1" id="theTabPanel" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+    <div id='legend' style="position:absolute;right:36px;font-size:11px;">
+        <span><img src='/img/icon/unresolved16.png' style="vertical-align: middle;padding-right: 4px;"/><label>No matching Admin 1 boundary</label></span>
+        <span><img src='/img/permissions_deny16.gif'  style="vertical-align: middle;padding-right: 4px;padding-left:12px;"/><label>The location already exists</label></span>
+    </div>
+    <apex:tab label="Geocoding Locations" name="name1" id="tabOne" ontabenter="tabSelected(1);">
+        <table style="width:100%;">
+            <tr>
+                <td colspan='2'>
+                    <label> 
+                    Enter locations below manually. Each location must be in a separate line. You may copy and paste the locations.</label>
+                </td>
+            </tr> 
+            <tr>
+                <td>
+                    <textarea style="font-size:8pt; font-family:Arial; width:150px; height:315px;" id="geoinputs"></textarea>
+                </td>
+                <td>
+                    <div id="gridbox" style="width:auto; height:320px; background-color:white;"></div>
+                </td>
+            </tr> 
+            <tr>
+                <td>
+                    <input type='button' class='Button' id='btnGeocode' value='Geocode' onclick='serverStartGeocoding(GeoCountryName);'/>
+                    <img align="right" alt="Loading" id="loader1" src="/img/loading32.gif"  style='display: none; '/>
+                </td>
+                <td align='center'>
+                    <input type='button' class='Button' value='Save Locations' id='save1' style="display:none" onclick='saveLocation(this);'/>
+                    <img align="right" alt="Loading" id="loader2" src="/img/loading32.gif" style='display: none; '/>
+                    <input type='button' class='Button' style='margin-left:24px;' value='Clear' onclick='clearAll();'/> 
+                    <input type='button' class='Button' style='margin-left:24px;' value='Cancel' id='cancel1' onclick='serverCancel();'/>                    
+                </td>                    
+            </tr>       
+            <tr>
+               <td colspan='2'></td>
+            </tr>                    
+        </table>
+       <!-- <div id='map1' style="height:400px;display:none;"></div> -->
+    </apex:tab>
+    <apex:tab label="Reverse Geocoding" name="name2" id="tabTwo" ontabenter="tabSelected(2);">
+        <table>
+            <tr>
+                <td colspan='2'>
+                    <label>Enter Geolocations (latitude, longitude) manually and separate latitude and longitude by a comma. Each geolocation must be in a separate line. You may copy and paste the geolocations.</label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <textarea style="font-size:8pt; font-family:Arial; width:150px; height:315px;" id="geolocationinputs"></textarea>
+                </td>
+                <td>
+                    <div id="gridbox2" style="width:auto; height:320px; background-color:white;"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type='button'  class='Button' id='btnReverseGeocode'  value='Reverse Geocode' onclick='serverStartReverseGeocoding(GeoCountryName);'/>
+                    <img align="right" alt="Loading" id="loader3" src="/img/loading32.gif" style='display: none; ' />
+                </td>
+                <td align='center'>
+                    <input type='button' class='Button' value='Save Locations' id='save2' style="display:none" onclick='saveLocation(this)'/>
+                    <img align="right" alt="Loading" id="loader4" src="/img/loading32.gif"  style='display: none; ' />
+                    <input type='button' class='Button' style='margin-left:24px;' value='Clear' onclick='reverseGeoCodingResultGrid.clearAll();'/>                                        
+                    <input type='button' class='Button' style='margin-left:24px;' value='Cancel' id='cancel2' onclick='serverCancel();'/>                    
+                </td>            
+            </tr>
+            <tr>
+               <td colspan='2'></td>
+            </tr>
+        </table>
+       <!-- <div id='map2' style="height:400px;display:none;"></div> -->
+    </apex:tab>
+</apex:tabPanel>
+
+<apex:form >
+    <apex:actionFunction name="serverCancel" action="{!cancel}" >
+    </apex:actionFunction>
+    <apex:actionFunction name="serverStartGeocoding" action="{!startGeocoding}" reRender="enableGeocoding" >
+        <apex:param name="countryName" value="" />
+    </apex:actionFunction>    
+    <apex:actionFunction name="serverStartReverseGeocoding" action="{!startGeocoding}" reRender="enableReverseGeocoding" >
+        <apex:param name="countryName" value="" />
+    </apex:actionFunction>    
+    <apex:actionFunction name="serverSaveLocation" action="{!saveLocation}" reRender="jobStatus, errorMessages" >
+        <apex:param name="rowId" value="" />
+        <apex:param name="locationName" value="" />
+        <apex:param name="address" value="" />
+        <apex:param name="city" value="" />
+        <apex:param name="boundary" value="" />
+        <apex:param name="latitude" value="" />
+        <apex:param name="longitude" value="" />
+        <apex:param name="admin2boundary" value="" />
+        <apex:param name="funding" value="" />
+        <apex:param name="info" value="" />
+        <apex:param name="extent" value="" />
+        <apex:param name="method" value="" />
+    </apex:actionFunction>      
+</apex:form>
+    <apex:outputPanel id="jobStatus">
+        <script>
+            if ('{!jobId}') updateSavingResult('{!jobId}', {!jobDone}, '{!jobError}');
+        </script>
+    </apex:outputPanel>
+</apex:pageBlockSection>   
+ </apex:pageBlock>
+ 
+ 
+ 
+    <script type="text/javascript" charset="utf-8">
+        var polygonDataUrl = "{!URLFOR($Resource.AidTrackerMapPolygons)}";    
+        var GeoCountryName = "{!IF(!ISNULL(countries) && countries.size > 0, countries[0].value, '')}";
+        var GridPermission = "{!$CurrentPage.parameters.p}" || 'ed';
+        var ADDRESSES = [];
+        var GEOLOCATIONS = [];
+        var geoinputs = document.getElementById('geoinputs');
+        geoinputs.value = ADDRESSES.join('\n');
+        var geolocationinputs = document.getElementById('geolocationinputs');
+        geolocationinputs.value = GEOLOCATIONS.join('\n');
+        var geocoder, numGeocodeReplies, geoCodingResultGrid, reverseGeoCodingResultGrid, savingType,  savingCount, totalDelay = 0;
+        var geocodeResultJSON = [];
+        var reverseGeocodeResultJSON = [];
+        var hasError = false;
+        var map1, map2;
+        var countryBounds = ({!CountryBoundJSON}) || {};
+        
+        function tabSelected(id) {
+           // window.setTimeout(function () {
+           //     google.maps.event.trigger((id === 1) ? map1: map2, "resize");
+           // }, 500);
+        }
+        function onCountryChange(newValue) {
+            GeoCountryName = newValue;
+            loadPolygonData(GeoCountryName, polygonDataUrl);
+            setMapBounds();
+        }
+        String.prototype.padding = function(padchar,length){
+            return String(new Array(length).join(padchar) + this.toString()).slice(-length);
+        };
+
+        dojo.ready(function() {
+            initialize();
+        });
+                    
+        function initialize() {            
+            loadPolygonData(GeoCountryName, polygonDataUrl);//sync block call            
+            geocoder = new google.maps.Geocoder();   
+            geoCodingResultGrid = enableGrid();   
+            reverseGeoCodingResultGrid = enableGrid2(); 
+            var mapOptions1 = {
+              center: new google.maps.LatLng(10, 20),
+              zoom: 3,
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            var mapOptions2 = {
+              center: new google.maps.LatLng(11, 21),
+              zoom: 4,
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+            };             
+           // map1 = new google.maps.Map(document.getElementById("map1"), mapOptions1);     
+           // map2 = new google.maps.Map(document.getElementById("map2"), mapOptions2);
+           // google.maps.event.trigger(map1, "resize");
+           // google.maps.event.trigger(map2, "resize");     
+            //setMapBounds();
+        }
+        function setMapBounds(whichMap) {
+            var b = countryBounds[GeoCountryName];
+            if (b) {
+                var bs = b.split(',');
+                if (bs && bs.length >=4) {
+                    var bn = new google.maps.LatLngBounds(new google.maps.LatLng(bs[0],bs[1]), new google.maps.LatLng(bs[2],bs[3]));
+                    if (!whichMap) {
+                        map1.fitBounds(bn);
+                        map2.fitBounds(bn);
+                    } else {
+                        whichMap.fitBounds(bn);
+                    }
+                }
+            }          
+        }
+        function saveLocationInAction(type, isRunning) {
+            if (savingType === 'save1') {
+                document.getElementById('loader2').style.display = isRunning ? '' : 'none';
+                document.getElementById('btnGeocode').disabled = isRunning;
+                document.getElementById('save1').disabled = isRunning;
+                //document.getElementById('save1').style.display = isRunning ? 'none' : '';
+                document.getElementById('cancel1').disabled = isRunning;
+            } else {
+                document.getElementById('loader4').style.display = isRunning ? '' : 'none';
+                document.getElementById('btnGeocode').disabled = isRunning;
+                document.getElementById('save2').disabled = isRunning;
+                //document.getElementById('save2').style.display = isRunning ? 'none' : '';
+                document.getElementById('cancel1').disabled = isRunning;                
+            }
+        }        
+        function saveLocation(type) {
+            savingType = type.id;
+            var grid = (savingType === 'save1') ? geoCodingResultGrid : reverseGeoCodingResultGrid;
+            var allIds = grid.getAllRowIds(','); 
+            if (!allIds) return;
+            saveLocationInAction(savingType, true);
+            showError(false);
+            hasError = false;
+
+            savingCount = allIds.split(',').length;
+            locationsNotSaved = 0;
+            validAndSaveLocation(savingCount,//rowid  
+                                grid.cells(savingCount, 2).getValue(),//location name
+                                grid.cells(savingCount, 3).getValue(),//address
+                                grid.cells(savingCount, 4).getValue(),//city
+                                grid.cells(savingCount, 8).getValue().split(',')[0],//admin 1 boundary
+                                grid.cells(savingCount, 5).getValue(),//lat
+                                grid.cells(savingCount, 6).getValue(),//long
+                                grid.cells(savingCount, 7).getValue(),//admin 2
+                                grid.cells(savingCount, 11).getValue(),//funding
+                                grid.cells(savingCount, 12).getValue(),//info
+                                grid.cells(savingCount, 13).getValue(),//extent
+                                (savingType === 'save1') ? 'Bulk Geocoding' : 'Bulk Reverse Geocoding');//method            
+        }
+        function updateSavingResult(rowId, jobDone, jobError) {
+            var grid = (savingType === 'save1') ? geoCodingResultGrid : reverseGeoCodingResultGrid;
+            if (!jobDone) {
+                grid.setRowTextStyle(rowId, "color:red");
+                grid.cells(rowId, 0).setValue('/img/permissions_deny16.gif');
+                grid.cells(rowId, 0).cell.title = jobError;
+                if (jobError != null && jobError.indexOf('boundary') != -1) {
+                    grid.cells(rowId, 0).setValue('/img/icon/unresolved16.png');
+                }
+                hasError = true;
+                locationsNotSaved++;
+            } else {
+                grid.deleteRow(rowId);
+            }
+            if (--savingCount <= 0) {
+                //if (hasError) { window.alert('Not all locations are saved.'); }
+                saveLocationInAction(savingType, false);
+                if (locationsNotSaved === 0) {
+                    serverCancel();//redirect
+                } else {
+                    showError(true);
+                }
+                return; 
+            }
+            validAndSaveLocation(savingCount,//rowid  
+                                grid.cells(savingCount, 2).getValue(),//location name
+                                grid.cells(savingCount, 3).getValue(),//address
+                                grid.cells(savingCount, 4).getValue(),//city
+                                grid.cells(savingCount, 8).getValue().split(',')[0],//admin 1 boundary
+                                grid.cells(savingCount, 5).getValue(),//lat
+                                grid.cells(savingCount, 6).getValue(),//long
+                                grid.cells(savingCount, 7).getValue(),//admin 2
+                                grid.cells(savingCount, 11).getValue(),//funding
+                                grid.cells(savingCount, 12).getValue(),//info
+                                grid.cells(savingCount, 13).getValue(),//extent 
+                                (savingType === 'save1') ? 'Bulk Geocoding' : 'Bulk Reverse Geocoding');// method
+        }
+        function showError(yes) {      
+            var me = document.getElementById("errorMessage");
+            me.style.display =  yes ? '' : 'none';
+            me.innerHTML = yes ? 'All locations have been saved except the following ' + locationsNotSaved + ' locations as shown below.' : '';
+        }
+        function validAndSaveLocation(a,b,c,d,e,f,g,h,i,j,k,l) {
+            serverSaveLocation(a,
+                               b,//location name
+                               (c === '') ? null : c,//address
+                               (d === '') ? null : d,//city
+                               e,//admin 1
+                               f,//lat
+                               g,//lng
+                               (h === '') ? null : h,//admin2
+                               (i === '') ? null : i,//funding
+                               (j === '') ? null : j,//info
+                               (k === '') ? null : k,//extent
+                               l);//method
+        }
+        function doOnEditCell(stage, id, index) {
+            var mygrid = this; 
+            var ind = mygrid.getRowIndex(id);
+            if ((index == 8) && (stage == 0)) {
+                var combo = mygrid.getCombo(index);
+                if (combo.size() <= 1) {
+                    combo.clear();
+                    var keys = Object.keys(boundaries).sort();
+                    for (var i = 0; i < keys.length; i++) {
+                      combo.put(keys[i], keys[i]);
+                    }
+                    combo.save();
+                }
+            }
+            if (stage == 2) {
+                var cellObj = mygrid.cellByIndex(ind, index);
+                if (cellObj.wasChanged()) {
+                    mygrid.setCellTextStyle(id, index, "color:blue");
+                }
+                if (index === 8) {
+                    var geoloc = boundaries[cellObj.getValue()].split(',', 2);
+                    mygrid.cellByIndex(ind, index+1).setValue(geoloc[0]);
+                    mygrid.cellByIndex(ind, index+2).setValue(geoloc[1]);
+                }
+            }
+            var v = validateRecord(mygrid, id, index);
+            if (v && stage == 2 && (index === 5 || index === 6)) {
+                var map = (this === geoCodingResultGrid) ? map1 : map2;
+                var markers = (this === geoCodingResultGrid) ? markers1 : markers2;
+                if (map && markers[id]){
+                   var p = new google.maps.LatLng(+mygrid.cells(id, 5).getValue(), +mygrid.cells(id, 6).getValue());
+                   markers[id].setPosition(p);
+                   map.setCenter(p);
+                }
+            }
+            return v;
+        }
+        function validateRecord(mygrid, rowId, columnIndex) {
+            var valid = true;
+            if (columnIndex === 5 || columnIndex === 6 || columnIndex === 9 || columnIndex === 10) {//numbers
+                var c = mygrid.cells(rowId, columnIndex);
+                var v = +c.getValue();
+                if (!v) {
+                    valid= false;
+                } else if (columnIndex === 5 || columnIndex === 9) {
+                    valid = (v >= -90 && v <= 90);
+                } else if (columnIndex === 6 || columnIndex === 10) {
+                    valid = (v >= -180 && v <= 180);
+                }
+            }
+            //c.setTextColor('red');
+            return valid;            
+        }
+        var markers1 = {};
+        var bounds1 = new google.maps.LatLngBounds();
+        var markers2 = {};
+        var bounds2 = new google.maps.LatLngBounds();
+        
+        function doOnRowSelect(rowId, columnIndex) {
+            var mygrid = this; 
+            var map = (this === geoCodingResultGrid) ? map1 : map2;
+            var markers = (this === geoCodingResultGrid) ? markers1 : markers2;
+            if (map && markers[rowId]){
+               map.setCenter(markers[rowId].getPosition());
+            }
+        }
+        function deleteRow1(btn) {
+            var rowId = geoCodingResultGrid.getRowId(btn.parentNode.parentNode.rowIndex-1);
+            geoCodingResultGrid.deleteRow(rowId);
+            geoCodingResultGrid.clearSelection();
+        }
+        function deleteRow2(btn) {
+            var rowId = reverseGeoCodingResultGrid.getRowId(btn.parentNode.parentNode.rowIndex-1);
+            reverseGeoCodingResultGrid.deleteRow(rowId);
+            reverseGeoCodingResultGrid.clearSelection();
+        }      
+        function clearAll() {
+            geoCodingResultGrid.clearAll();
+            clearOverlays();
+            markers1 = {};
+            bounds1 = new google.maps.LatLngBounds();
+            document.getElementById('save1').style.display = 'none' ;
+            showError(false);
+        }
+        function clearAll2() {
+            reverseGeoCodingResultGrid.clearAll();
+            clearOverlays2();
+            markers1 = {};
+            bounds1 = new google.maps.LatLngBounds();
+            document.getElementById('save2').style.display = 'none' ;
+            showError(false);
+        }        
+
+        function doRowAdded(rowId) {
+            var mygrid = this;
+            var map = (this === geoCodingResultGrid) ? map1 : map2;
+            var markers = (this === geoCodingResultGrid) ? markers1 : markers2;
+            var bounds = (this === geoCodingResultGrid) ? bounds1 : bounds2;
+            var lat = +mygrid.cells(rowId, 5).getValue();
+            var lng = +mygrid.cells(rowId, 6).getValue();
+            var inx = +mygrid.cells(rowId, 1).getValue();
+            var validb = mygrid.cells(rowId, 8).getValue();
+            if (lat && lng && map && validb) {
+                var marker = new google.maps.Marker({
+                  position: new google.maps.LatLng(lat,lng),
+                  map: map,
+                  icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=' + (inx) + '|00FF00|0000FF',
+                  title: mygrid.cells(rowId, 2).getValue() || ''
+                });
+                map.setCenter(marker.getPosition());
+                markers[rowId] = marker;
+                google.maps.event.addListener(marker, 'click', function(event) {
+                    mygrid.selectRowById(rowId,true);
+                });     
+                bounds = bounds.extend(marker.getPosition());
+                map.fitBounds(bounds);           
+            }
+        }
+        function clearOverlays() {
+          if (markers1) {
+            for (i in markers1) {
+              markers1[i].setMap(null);
+              delete markers1[i];
+            }
+          }
+        }
+        function clearOverlays2() {
+          if (markers2) {
+            for (i in markers2) {
+              markers2[i].setMap(null);
+              delete markers2[i];
+            }
+          }
+        }       
+        function doRowDeleted(rowId) {
+            var mygrid = this;
+            var map = (this === geoCodingResultGrid) ? map1 : map2;
+            var markers = (this === geoCodingResultGrid) ? markers1 : markers2;
+            if (markers[rowId]) {
+                markers[rowId].setMap(null);
+                delete markers[rowId];
+            }            
+        }                  
+        function enableGrid() {
+            var mygrid = new dhtmlXGridObject('gridbox');
+            // 15 columns
+            mygrid.setHeader(",#,Location Name,Address,City,Location Latitude,Location Longitude,Admin 2 Boundary,Admin 1 Boundary,Admin 1 Latitude,Admin 1 Longitude,Location Funding,Additional Information,Precision Extent,");
+            mygrid.setInitWidths("22,28,95,65,65,60,60,95,125,65,65,65,125,90,22");
+            mygrid.setColAlign("center,center,left,left,left,right,right,left,left,right,right,right,left,left,center");
+            mygrid.setColTypes("img,ro,ed,ed,ed,ed,ed,ed,coro,ro,ro,price,ed,ed,ro");
+            mygrid.attachEvent("onEditCell", doOnEditCell);
+            mygrid.attachEvent("onRowSelect", doOnRowSelect);
+            mygrid.attachEvent("onMouseOver", function(){return false});
+            mygrid.attachEvent("onRowAdded", doRowAdded);
+            mygrid.attachEvent("onAfterRowDeleted", doRowDeleted);
+            mygrid.setEditable(GridPermission === 'ed' ? true : false);
+            mygrid.init();
+            mygrid.setSkin("dhx_skyblue");
+            return mygrid;
+        }
+        
+        function enableGrid2() {
+            var mygrid = new dhtmlXGridObject('gridbox2');
+            // 15 columns
+            mygrid.setHeader(",#,Location Name,Address,City,Location Latitude,Location Longitude,Admin 2 Boundary,Admin 1 Boundary,Admin 1 Latitude,Admin 1 Longitude,Location Funding,Additional Information,Precision Extent,");
+            mygrid.setInitWidths("22,28,95,65,65,60,60,95,125,65,65,65,125,90,22");
+            mygrid.setColAlign("center,center,left,left,left,right,right,left,left,right,right,right,left,left,center");
+            mygrid.setColTypes("img,ro,ed,ed,ed,ed,ed,ed,coro,ro,ro,price,ed,ed,ro");
+            mygrid.attachEvent("onEditCell", doOnEditCell);
+            mygrid.attachEvent("onRowSelect", doOnRowSelect);
+            mygrid.attachEvent("onMouseOver", function(){return false});
+            mygrid.attachEvent("onRowAdded", doRowAdded);
+            mygrid.attachEvent("onAfterRowDeleted", doRowDeleted);
+            mygrid.setEditable(GridPermission === 'ed' ? true : false);
+            mygrid.init();
+            mygrid.setSkin("dhx_skyblue");
+            return mygrid;
+        }      
+          
+        function loadPolygonData(countryName, polygonDataUrl) {
+            var filename = countryName.replace(/\s/g, '_');
+            filename = filename.replace(/\&/g, '_');
+            var op = {
+                url : polygonDataUrl + '/Countries/' + filename + '.js',
+                handleAs: 'javascript',
+                sync: true // sync call
+            };
+            var d = dojo.xhrGet(op).then(function(data) {
+                return data;
+            }, function (err) {
+                return err;
+            });      
+            dojo.when(d, function() {
+                var p;            
+                for (p in USAIDProjectPolygons) {
+                    if (dojo.isFunction(p)) {
+                        return;            
+                    }
+                    var allpaths = [];
+                    var polyArray = USAIDProjectPolygons[p].paths;              
+                    for (var i = 0; i < polyArray.length; i++) {
+                        var coords = [];
+                        var polys = polyArray[i];
+                        for (var j = 0; j < polys.length; j++) {
+                            coords.push(new google.maps.LatLng(polys[j][1], polys[j][0]));
+                        }
+                        allpaths.push(coords);
+                    }
+                    var polygon = new google.maps.Polygon({"paths":allpaths});
+                    USAIDProjectPolygons[p].polygon = polygon;
+                }           
+            }, function (error) {
+                window.alert(countryName + ' does not have polygon information.');
+            });
+        }
+
+   </script>
+       
+  <script type="text/javascript" charset="utf-8">
+            var unableToGeocodeCount = 0;
+            function geocodeInAction(isRunning) {
+                document.getElementById('loader1').style.display = isRunning ? '' : 'none';
+                document.getElementById('btnGeocode').disabled = isRunning;
+                document.getElementById('save1').disabled = isRunning;
+                document.getElementById('save1').style.display = isRunning ? 'none' : '';
+                document.getElementById('cancel1').disabled = isRunning;
+                if (isRunning) {
+                  //  document.getElementById('map1').style.display = '';
+                  //  google.maps.event.trigger(map1, "resize");
+                  //  setMapBounds(map1);
+                }
+            }
+            function startGeocoding() {
+                ADDRESSES = geoinputs.value.split('\n').filter(function(e){return e});
+                if (ADDRESSES.length === 0) return;
+                geocodeInAction(true);
+                geocodeResultJSON = [];                
+                numGeocodeReplies = 0;
+                //geoCodingResultGrid.clearAll();
+                window.setTimeout(geocodeAll, 50);
+            }
+            
+            function geocodeAll() {
+                if (numGeocodeReplies < ADDRESSES.length) {
+                    var address = ADDRESSES[numGeocodeReplies] + ',' + GeoCountryName;
+                    geocoder.geocode({'address': address}, googleShowData);
+                } else {
+                    geocodeInAction(false);
+                }
+            }
+    
+            function googleShowData(results, status){
+                var delay = 500;
+                var ids = geoCodingResultGrid.getAllRowIds().split(',');
+                var rowId = +ids[ids.length-1] + 1;
+                //var rowId = geoCodingResultGrid.getRowsNum();
+                if (status === google.maps.GeocoderStatus.OK) { // Success. Do something with the address.
+                    var ndata = googleNormalizeData(results[0]);
+                    ndata = googleVerifyData(ndata);          
+                    if (!ndata.country || ndata.country.toUpperCase() !== GeoCountryName.toUpperCase()) {                       
+                        console.log( ADDRESSES[numGeocodeReplies] + '    Expecting ' + GeoCountryName + '; got ' + ndata.country + '\n');
+                        unableToGeocodeCount++;
+                    }               
+                    geocodeResultJSON.push(ndata);
+                    var rowdata = [];
+                    rowdata.push((ndata.verified ? '/img/permissions_confirm16.gif': '/img/icon/unresolved16.png'),
+                                  (rowId),
+                                  ADDRESSES[numGeocodeReplies],
+                                  (ndata.address || ''),
+                                  (ndata.city || ''),
+                                  ndata.lat,
+                                  ndata.lon,
+                                  (ndata.region || ''),//admin 2 boundary
+                                  (ndata.boundaryName || ''),
+                                  (ndata.boundaryLat || ''),
+                                  (ndata.boundaryLon || ''),
+                                  (''),//funding
+                                  (''),//info
+                                  (ndata.extent || ''),//extent
+                                  '<img src="/img/func_icons/remove12_on.gif" alt="Delete" title="Delete" onclick="deleteRow1(this);">'
+                                  );
+                    
+                    geoCodingResultGrid.addRow(rowId, rowdata);
+                    geoCodingResultGrid.cells(rowId, 0).cell.title = ndata.verified ? 'Verified' : 'No matching Admin 1 boundary';                    
+                    numGeocodeReplies++;                                     
+                } else if (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+                    delay = 2550;
+                } else {// Bad geocode.
+                    geoCodingResultGrid.addRow(rowId, ['/img/icon/unresolved16.png',
+                                                          (rowId),
+                                                          ADDRESSES[numGeocodeReplies],
+                                                          '','','','','','','','','','','','<img src="/img/func_icons/remove12_on.gif" alt="Delete" title="Delete" onclick="deleteRow1(this);">'
+                                                         ]);
+                    geoCodingResultGrid.cells(rowId, 0).cell.title = 'Location not found';                              
+                    numGeocodeReplies++;
+                    unableToGeocodeCount++;
+                }
+                if (numGeocodeReplies < ADDRESSES.length) {
+                    totalDelay += delay;
+                    window.setTimeout(geocodeAll, delay);
+                } else {
+                    geoinputs.value = '';
+                    geocodeInAction(false);
+                }
+            }
+    
+            function googleNormalizeData(input) {
+                var output = {};
+                if(input.geometry.location_type === 'ROOFTOP') {
+                    output.extent = '1 - Exact';
+                } else if(input.geometry.location_type === 'RANGE_INTERPOLATED') {
+                    output.extent = '2 - Near Exact'
+                }
+                if (input.address_components) {//TODO 
+                    dojo.forEach(input.address_components, function(component, index) {
+                        if(component.types.length === 0) {
+                            output.address = component.long_name || component.short_name;
+                            if(output.extent === undefined)
+                                    output.extent = '2 - Near Exact';
+                        } else {
+                            if((output.address == undefined || output.address === null) && (component.types[0] === 'point_of_interest' || component.types[0] === 'colloquial_area')) {
+                                output.address = component.long_name || component.short_name;
+                                if(output.extent === undefined)
+                                    output.extent = '2 - Near Exact';
+                            }
+                            if(component.types[0] === 'locality' || component.types[0] === 'sublocality' || component.types[0] === 'neightborhood') {
+                                output.city = component.long_name || component.short_name;
+                                if(output.extent === undefined)
+                                    output.extent = '2 - Near Exact';
+                            }
+                            if(component.types[0] === 'administrative_area_level_2' || component.types[0] === 'administrative_area_level_3' || component.types[0] === 'locality') {
+                                output.region = component.long_name || component.short_name;
+                                if(output.extent === undefined)
+                                    output.extent = '3 - Second Order Admin';
+                            }                       
+                            if(component.types[0] === 'administrative_area_level_1' || component.types[0] === 'administrative_area_level_2') {
+                                output.state = component.long_name || component.short_name;
+                                if(output.extent === undefined)
+                                    output.extent = '4 - First Order Admin';
+                            }
+                            if(component.types[0] === 'country') {
+                                output.country = component.long_name || component.short_name;
+                                if(output.extent === undefined)
+                                    output.extent = '11 - National';
+                            }
+                        }   
+      
+                    });
+                    if(output.city === undefined) {
+                        output.city = '';
+                    }
+                    if(output.region === undefined) {
+                        output.region = '';
+                    }
+                    if(output.state === undefined) {
+                        output.state = '';
+                    }
+                    if(output.country === undefined) {
+                        output.country = '';
+                    }
+                    if(output.address === undefined && output.city !== '') {
+                        output.address = output.city;
+                    } else if(output.address === undefined && output.region !== '') {
+                        output.address = output.region;
+                    } else if(output.address === undefined && output.state !== '') {
+                        output.address = output.state;
+                    } else if(output.address === undefined && output.country !== '') {
+                        output.address = output.country;
+                    }
+                    output.lat = (+input.geometry.location.lat());
+                    output.lon = (+input.geometry.location.lng());
+                    output.lat = output.lat.toFixed(5);
+                    output.lon = output.lon.toFixed(5);                 
+                    output.address = removeAllSpecialChars(output.address);
+                    output.state = removeAllSpecialChars(output.state);
+                    output.region = removeAllSpecialChars(output.region);
+                    output.city = removeAllSpecialChars(output.city) || output.state;
+                }
+                return output;
+            }
+            
+            function removeAllSpecialChars(input) {
+                if (input) {
+                    var re = /[`|\'|\"]/gi;
+                    input = input.replace(re, '');
+                }
+                return input || '';
+            }
+            
+            function googleVerifyData(data) {    
+                var loc = null;
+                if (!data.lat || !data.lon) return data;
+                var point = new google.maps.LatLng(data.lat,data.lon);    
+                for (p in USAIDProjectPolygons) {
+                    c = USAIDProjectPolygons[p].polygon;
+                    if (google.maps.geometry.poly.containsLocation(point, c)) {
+                        loc = p;
+                        break;
+                    }
+                }
+                if(loc === null) {// retry to larger extend
+                    var lat_1 = parseFloat(data.lat) + parseFloat("0.005");
+                    var lon_1 = parseFloat(data.lon) + parseFloat("0.005");;
+                    var lat_2 = parseFloat(data.lat) - parseFloat("0.005");;
+                    var lon_2 = parseFloat(data.lon) - parseFloat("0.005");;             
+                    var point_1 = new google.maps.LatLng(data.lat,lon_1);
+                    var point_2 = new google.maps.LatLng(data.lat,lon_2);
+                    var point_3 = new google.maps.LatLng(lat_1,data.lon);
+                    var point_4 = new google.maps.LatLng(lat_2,data.lon);               
+                    var pol, a;
+                    for (pol in USAIDProjectPolygons) {
+                        a = USAIDProjectPolygons[pol].polygon;
+                        if (google.maps.geometry.poly.containsLocation(point_1, a) === true) {
+                            loc = pol;
+                            break;
+                        } else if (google.maps.geometry.poly.containsLocation(point_2, a) === true) {
+                            loc = pol;
+                            break;
+                        } else if (google.maps.geometry.poly.containsLocation(point_3, a) === true) {
+                            loc = pol;
+                            break;
+                        } else if (google.maps.geometry.poly.containsLocation(point_4, a) === true) {
+                            loc = pol;
+                            break;
+                        }
+                    }
+                }                                       
+                if (loc != null) {
+                    if (boundaries[loc]) {
+                       var latlng = boundaries[loc].split(',');
+                       if (latlng.length === 2) {
+                           data.boundaryLat = latlng[0];
+                           data.boundaryLon = latlng[1];
+                           data.boundaryName = loc;
+                       }
+                       data.verified = true; 
+                    }
+                    var provinceCountry = loc.split(","); 
+                    if (provinceCountry.length === 2) {
+                        data.state = dojo.trim(provinceCountry[0]);
+                        data.country = dojo.trim(provinceCountry[1]);                   
+                    }                  
+                }
+                
+                return data;    
+            }    
+            
+            var unableToReverseGeocodeCount = 0;
+            function reverseGeocodeInAction(isRunning) {
+                document.getElementById('loader3').style.display = isRunning ? '' : 'none';
+                document.getElementById('btnReverseGeocode').disabled = isRunning;
+                document.getElementById('save2').disabled = isRunning;
+                document.getElementById('save2').style.display = isRunning ? 'none' : '';
+                document.getElementById('cancel2').disabled = isRunning;
+                if (isRunning) {
+                    //document.getElementById('map2').style.display = '';
+                    //google.maps.event.trigger(map2, "resize");
+                    //setMapBounds(map2);
+                }
+            }
+            function startReverseGeocoding() {
+                GEOLOCATIONS = geolocationinputs.value.split('\n').filter(function(e){return e});
+                if (GEOLOCATIONS.length === 0) return;
+                reverseGeocodeInAction(true);
+                reverseGeocodeResultJSON = [];
+                numGeocodeReplies = 0;
+                window.setTimeout(reverseGeocodeAll, 50);
+            }
+            
+            function reverseGeocodeAll() {
+                if (numGeocodeReplies < GEOLOCATIONS.length) {
+                    var latlngStr = GEOLOCATIONS[numGeocodeReplies].split(",",2);
+                    var lat = parseFloat(latlngStr[0]);
+                    var lng = parseFloat(latlngStr[1]);
+                    var ndata = googleVerifyData({lat: lat, lon: lng});
+                    var ids = reverseGeoCodingResultGrid.getAllRowIds().split(',');
+                    var rowId = +ids[ids.length-1] + 1;
+                    //
+                    if (ndata.verified) {
+                        reverseGeocodeResultJSON.push(ndata);
+                        var rowdata = [];
+                        rowdata.push((ndata.verified ? '/img/permissions_confirm16.gif': '/img/icon/unresolved16.png'),
+                                  (rowId),
+                                  (ndata.state || ''),
+                                  (ndata.address || ndata.state || ''),
+                                  (ndata.city  || ndata.state || ''),
+                                  ndata.lat,
+                                  ndata.lon,
+                                  (ndata.region || ''),//admin 2 boundary
+                                  (ndata.boundaryName || ''),
+                                  (ndata.boundaryLat || ''),
+                                  (ndata.boundaryLon || ''),
+                                  (''),//funding
+                                  (''),//info
+                                  ('2 - Near Exact'),//extent
+                                  '<img src="/img/func_icons/remove12_on.gif" alt="Delete" title="Delete" onclick="deleteRow2(this);">'
+                                  );
+                        reverseGeoCodingResultGrid.addRow(rowId, rowdata);
+                        reverseGeoCodingResultGrid.cells(rowId, 0).cell.title = ndata.verified ? 'Verified' : 'No matching Admin 1 boundary';
+                        if (numGeocodeReplies++ < GEOLOCATIONS.length) {
+                            window.setTimeout(reverseGeocodeAll, 50);
+                        } else {
+                            geolocationinputs.value = '';
+                            reverseGeocodeInAction(false);
+                        }
+                    } else {
+                        var latlng = new google.maps.LatLng(lat, lng);
+                        geocoder.geocode({'latLng': latlng}, googleShowReverseData);
+                    }
+                } else {
+                    geolocationinputs.value = '';
+                    reverseGeocodeInAction(false);
+                }
+            }   
+            
+            function googleShowReverseData(results, status){
+                var delay = 500;
+                var ids = reverseGeoCodingResultGrid.getAllRowIds().split(',');
+                var rowId = +ids[ids.length-1] + 1;                
+                if (status === google.maps.GeocoderStatus.OK) { // Success. Do something with the address.
+                    if (results[0] && results[0].address_components) {
+                        var c = results[0].address_components;
+                        var ndata = {};
+                        ndata.country = (c.length >= 1) ? c[c.length-1].long_name : '';
+                        ndata.state = (c.length >= 2) ? c[c.length-2].long_name : '';
+                        ndata.city = (c.length >= 3) ? c[c.length-3].long_name : '';
+                        ndata.address = c.formatted_address || ndata.state;
+                        ndata.lat = results[0].geometry.location.lat().toFixed(5);
+                        ndata.lon = results[0].geometry.location.lng().toFixed(5);
+                        reverseGeocodeResultJSON.push(ndata);
+                        var rowdata = [];
+                        rowdata.push((ndata.verified ? '/img/permissions_confirm16.gif': '/img/icon/unresolved16.png'),
+                                  (rowId),
+                                  (ndata.state || ''),
+                                  (ndata.address || ''),
+                                  (ndata.city || ''),
+                                  ndata.lat,
+                                  ndata.lon,
+                                  (ndata.region || ''),//admin 2 boundary
+                                  (ndata.boundaryName || ''),
+                                  (ndata.boundaryLat || ''),
+                                  (ndata.boundaryLon || ''),
+                                  (''),//funding
+                                  (''),//info
+                                  (ndata.extent || ''),//extent
+                                  '<img src="/img/func_icons/remove12_on.gif" alt="Delete" title="Delete" onclick="deleteRow2(this);">'
+                                  );
+                        reverseGeoCodingResultGrid.addRow(rowId, rowdata);  
+                        reverseGeoCodingResultGrid.cells(rowId, 0).cell.title = ndata.verified ? 'Verified' : 'No matching Admin 1 boundary';                                                                   
+                    }
+                    numGeocodeReplies++;
+                } else if (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+                    delay = 2550;
+                } else {
+                    var str = GEOLOCATIONS[numGeocodeReplies].split(",",2);                
+                    reverseGeoCodingResultGrid.addRow(rowId, ['/img/permissions_deny16.gif',
+                                                          (rowId),
+                                                          '','','','','','','','','','','','','<img src="/img/func_icons/remove12_on.gif" alt="Delete" title="Delete"  onclick="deleteRow2(this);">'
+                                                         ]);
+                    reverseGeoCodingResultGrid.cells(rowId, 0).cell.title = 'Location not found';
+                    numGeocodeReplies++;      
+                    unableToReverseGeocodeCount++;          
+                }
+                if (numGeocodeReplies < GEOLOCATIONS.length) {
+                    window.setTimeout(reverseGeocodeAll, delay);
+                } else {
+                    geolocationinputs.value = '';
+                    reverseGeocodeInAction(false);        
+                }                
+            }
+        </script>   
+             
+   <apex:outputPanel id="enableGeocoding">
+       <script type="text/javascript" charset="utf-8">   
+            var boundaries = {!GeoBoundaryJSON};  
+            if (Object.keys(boundaries).length !== 0) {
+                startGeocoding();
+            } else if ("{!$CurrentPage.parameters.countryName}"){
+                window.alert(GeoCountryName + ' does not have any GeoBoundaries.');
+            }
+       </script>
+  </apex:outputPanel>
+  
+   <apex:outputPanel id="enableReverseGeocoding">
+       <script type="text/javascript" charset="utf-8">   
+            var boundaries = {!GeoBoundaryJSON};  
+            if (Object.keys(boundaries).length !== 0) {
+                startReverseGeocoding();
+            } else if ("{!$CurrentPage.parameters.countryName}"){
+                window.alert(GeoCountryName + ' does not have any GeoBoundaries.');
+            }
+       </script>
+  </apex:outputPanel>  
+</apex:page>

@@ -1,0 +1,352 @@
+<!-- <apex:page standardcontroller="IR__c" extensions="ClsCDCSTree" standardstylesheets="False" > -->
+<apex:page controller="ClsCDCSTree" renderAs="html" standardstylesheets="False" sidebar="false" showheader="false">
+
+<html>
+<head>
+
+
+<c:orgchart />
+
+<style type="text/css">
+
+body .bodyDiv .outer .oRight, body .bodyDiv .outerNoSidebar {
+    background-color: #F7F7F7;
+    }
+    
+.jOrgChart .node a {
+    color:#f0f0f0;
+    font-family: helvetica, arial, sans-serif;
+    text-align: left;  
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-decoration:none;
+    }
+    
+    
+    
+//.jOrgChart .node a:hover {color:#FFD967;}
+
+.jOrgChart .node {    
+    font-size           : 14px;
+    background-color    : #5591C0 !important;     
+    border              : 2px solid #414141 !important ;    
+    color               : #F2F0E9 !important;  
+    border-radius       : 8px;          
+    -webkit-border-radius: 8px;
+    -moz-border-radius  : 8px;            
+    width               : 150px !important;
+    line-height         : 1em !important;
+    padding             : 5px;
+    -shadow           : 1px 1px 1px #333333;
+    box-shadow         : 0px 0px 2px rgba(0, 0, 0, 0.80);
+    -moz-box-shadow     : 0px 0px 2px rgba(0, 0, 0, 0.80);
+     
+
+    }
+
+.jOrgChart .gnode { background-color    : #5482bb  !important; }
+.jOrgChart .inode { background-color    : #e16c20  !important; }
+.jOrgChart .dnode { background-color    : #ccc1d9  !important; }
+.jOrgChart .dnode a { color             : #353535 !important; }
+//.jOrgChart .dnode a:hover {color      : #FFFFFF !important; }
+
+.jOrgChart .gnode:hover, 
+.jOrgChart .secondarysi:hover { 
+    background-color: #31609a !important; 
+} 
+.jOrgChart .dnode:hover { 
+    background-color: #b3a0c9 !important; 
+} 
+.jOrgChart .inode:hover, 
+.jOrgChart .secondaryi:hover { 
+    background-color: #c45208 !important; 
+} 
+
+.jOrgChart .currentRF { 
+    border            : 2px solid #993300 !important ; 
+    box-shadow        : 0px 0px 2px rgba(0, 0, 0, 0.80);
+    -moz-box-shadow   : 0px 0px 2px rgba(0, 0, 0, 0.80);
+    }
+    
+.jOrgChart .secondaryi {  
+    background-color    : #e16c20 !important; 
+    background-image    : URL("{!URLFOR($Resource.CDCSStatic,'images/corner.png')}");  
+    background-repeat   : no-repeat;
+    background-position : left top;
+    }
+    
+.jOrgChart .secondarysi { 
+    background-color    : #5482bb !important; 
+    background-image    : URL("{!URLFOR($Resource.CDCSStatic,'images/corner.png')}");  
+    background-repeat   : no-repeat;
+    background-position : left top;
+    }
+    
+.legend {
+    background-image    : URL("{!URLFOR($Resource.CDCSStatic,'images/Legend.png')}");
+    float               : left;
+    background-repeat   : no-repeat;
+    background-position : left top;
+    margin              : 3px 3px 10px 3px;
+    }   
+.heading {
+    background-image    : URL("{!URLFOR($Resource.CDCSStatic,'images/Aidtracker.png')}");
+    background-repeat   : no-repeat;
+    background-position : right top;
+    }      
+
+</style>
+
+
+
+<!-- 
+        <apex:datatable value="{!RFList}" var="rf">
+            <apex:column value="{!rf.rfId}" style="width:200px;" />
+            <apex:column value="{!rf.RF.name}"  style="width:100px;" />
+            <apex:column value="{!rf.RF.RF_Name__c}"  style="width:100px;" />
+            <apex:column value="{!rf.RF.Parent_RF__c}"  style="width:100px;" />
+        </apex:datatable>
+ -->
+  
+    
+<script type="text/javascript">
+var sourceRFId;
+var rfList = { "RF": [
+
+    <apex:repeat value="{!lnkTree}" var="rf">
+        {
+        "id": "{!rf.nodeId}",
+        "name": "{!rf.nodeName}",        
+        "Title": "{!rf.nodeTitle}",
+        "parent": "{!rf.nodeParent}",
+        "flag": false,
+        "sflag": "{!rf.secondary}",
+        "nType":"{!rf.nType}"
+        },
+    </apex:repeat>
+        {
+        "id": "dummyId",
+        "name": "dummyName",
+        "Title": "dummyTitle",
+        "parent": "dummyParent",
+        "flag": false,
+        "sflag": "dummyFlag",
+        "nType":"dummynType"
+        }
+        ]}; 
+
+$(document).ready(function(){    
+    traverseList();
+
+    $("#org").jOrgChart({
+        chartElement : '#chart'
+    });
+   
+      for(var i=0; i<rfList.RF.length;i++){
+            var id = rfList.RF[i].id;
+            
+            if(rfList.RF[i].nType == 'D'){
+                var n = id.substring(0,id.length-3);
+                $("#chart .node #"+n).parent().addClass("dnode");
+                //$("#chart .node #"+n).parent().addClass("dnode a");
+                //$("#chart .node #"+n).parent().addClass("cnode a:hover");
+             }
+             if(rfList.RF[i].nType == 'I'){
+                var n = id.substring(0,id.length-3);
+                $("#chart .node #"+n).parent().addClass("inode");
+             }
+             if(rfList.RF[i].nType == 'S'){
+                var n = id.substring(0,id.length-3);
+                $("#chart .node #"+n).parent().addClass("gnode");
+             }
+              if(rfList.RF[i].nType == 'G'){
+                var n = id.substring(0,id.length-3);
+                $("#chart .node #"+n).parent().addClass("gnode");
+             }
+                       
+            if(rfList.RF[i].sflag && rfList.RF[i].nType == 'I'){
+                //alert ('secondary::::' +rfList.RF[i].sflag+':::::::::'+rfList.RF[i].id);
+                // $("#chart .node #"+id).parent().addClass("currentRF");    
+               //$("#chart .node #"+id).parent().attr("class","snode");
+             $("#chart .node #"+id).parent().addClass("secondaryi");
+            } 
+            
+           if(rfList.RF[i].sflag && rfList.RF[i].nType == 'S'){
+             $("#chart .node #"+id).parent().addClass("secondarysi");
+            } 
+            
+             
+               
+         }   
+       
+       
+   // sourceRFId = '{!paramId}';
+    
+    //$("#chart .node #"+sourceRFId).parent().addClass("currentRF");
+});
+
+function traverseList(){
+
+    var id = rfList.RF[0].id;   
+    var name = rfList.RF[0].name;
+    var RFname = rfList.RF[0].Title;
+    var parent = rfList.RF[0].parent;
+    var sflag = rfList.RF[0].sflag;
+    var nType = rfList.RF[0].nType;
+
+    if(id.length==18){
+        id = id.substring(0,id.length-3);
+    }
+    
+    if(RFname.length>80){
+            RFname = RFname.substring(0,80);
+            RFname += '...'; 
+    }
+    
+    if(parent.length==18){
+        parent = parent.substring(0,parent.length-3);
+    }
+   
+      
+    $('#org').append('<li id="'+id+'"><a id="'+id+'" href="/'+id+'">'+name+'<br />'+RFname+'</a></li>');
+    rfList.RF[0].flag = true;
+    for(var i=0; i<rfList.RF.length;i++){
+        var id = rfList.RF[i].id;
+        if(id.length==18){
+            id = id.substring(0,id.length-3);
+        }
+        
+        drawChild(id);
+    }
+}
+
+function drawChild(parentId){
+    for(var i=0; i<rfList.RF.length;i++){
+        var id = rfList.RF[i].id;
+        var name = rfList.RF[i].name;
+        var RFname = rfList.RF[i].Title;
+        var parent = rfList.RF[i].parent;
+        var sflag = rfList.RF[i].sflag;
+        var nType = rfList.RF[i].nType;
+        
+        if(id.length==18){
+            id = id.substring(0,id.length-3);
+        }
+        
+        if(RFname.length>80){
+            RFname = RFname.substring(0,80);
+            RFname += '...'; 
+        }
+        
+        if(parent.length==18){
+            parent = parent.substring(0,parent.length-3);
+        }
+        if(id.length==21){
+        var n = id.substring(3,id.length-3);
+        //alert ('test:::' +n);
+        } 
+        else {
+        var n = id;}        
+        if(parent == parentId){
+            //alert('Testing the orgChart Parent = ParentID::' +parent+'::ParentId::'+parentId);
+            if($('#'+parent+'').has("ul").length ? true : false){
+                //alert('Testing the orgChart: Parent Has UL::')
+                if(!rfList.RF[i].flag){
+                    //alert('Testing the orgChart: RF Flag is not true::')
+                    $('#'+parent+' ul').append('<li id="'+id+'"><a id="'+id+'" href="/'+n+'">'+name+'<br />'+RFname+'</a></li>');
+                    rfList.RF[i].flag = true;
+                }
+            } else {
+                //alert('Testing the orgChart: Parent does not have UL::')
+                if(!rfList.RF[i].flag){
+                    $('#'+parent+'').append('<ul><li id="'+id+'"><a id="'+id+'" href="/'+n+'">'+name+'<br />'+RFname+'</a></li></ul>');
+                    rfList.RF[i].flag = true;
+                }
+            }           
+        }
+    }
+}
+
+function redirectBack(){
+alert('Sending you back to ' + id);
+window.location.href = "/'+id+'";
+}
+</script>
+</head>
+<body>
+<apex:form >
+ <apex:pageBlock rendered="{!ShowErrors}">
+
+ <div>
+        <p style="text-align:center;color:blue;font-size:30px;">No Results Framework to display. Please create Development Objectives.</p>
+    </div>
+    <div id="cbBouutons"  style="width:750px;height:50px;margin: 10px auto 0px auto; text-align: center; " >
+        <apex:commandButton value="OK" action="{!Cancel}" rendered="true" />
+    </div>   
+ </apex:PageBlock>
+ 
+ <apex:pageBlock rendered="{!IF(ShowErrors= 'false' && Legend='OLegend',true,false)}">
+ 
+ <div style="height:auto;width:100%;">
+     <div style="float:left;height:auto;width:25%;">
+         <apex:image url="{!URLFOR($Resource.CDCSStatic,'images/Aidtracker.png')}"/>
+     </div>
+     <div style="float:left;height:auto;width:50%;">
+          <p style="color:#580000  ;font-size:25px; border-width:0px 0px 0px 0px; border-style:solid; border-color:#464646; align:center;font-family: helvetica, arial, sans-serif;">
+          {!Title} 
+          </p>
+     </div>
+     <div style="margin-left:85%;">
+         <apex:image style="height:99px; width:230px; border:0px solid #000;" url="{!URLFOR($Resource.CDCSStatic,'images/OLegend.png')}"/>
+     </div>
+ </div>
+ <div id="cbBouutons"  style="width:100%;height:auto;margin: 10px auto 0px auto; text-align: left; " >
+        <!--<apex:commandButton value=" Back " action="{!Cancel}" rendered="true" />-->
+        <a style="font-family: helvetica, arial, sans-serif;" href="{!$CurrentPAge.Parameters.retURL}">Back</a>
+ </div> 
+  
+  
+<div class="main_wrapper" style="margin-top: 25px;">
+
+    <ul id="org" style="display:none;">
+    </ul>   
+    <div id="chart"></div>
+    
+</div>
+
+</apex:PageBlock>
+
+<apex:pageBlock rendered="{!IF(ShowErrors= 'false' && Legend='DLegend',true,false)}">
+ 
+ <div style="height:auto;width:100%;">
+     <div style="float:left;height:auto;width:25%;">
+         <apex:image url="{!URLFOR($Resource.CDCSStatic,'images/Aidtracker.png')}"/>
+     </div>
+     <div style="float:left;height:auto;width:50%;">
+          <p style="color:#580000  ;font-size:25px; border-width:0px 0px 0px 0px; border-style:solid; border-color:#464646; align:center;font-family: helvetica, arial, sans-serif;">
+          {!Title} 
+          </p>
+     </div>
+     <div style="margin-left:85%;">
+         <apex:image style="height:99px; width:230px; border:0px solid #000;" url="{!URLFOR($Resource.CDCSStatic,'images/DLegend.png')}"/>
+     </div>
+ </div>
+ <div id="cbBouutons"  style="width:100%;height:auto;margin: 10px auto 0px auto; text-align: left; " >
+        <!--<apex:commandButton value=" Back " action="{!Cancel}" rendered="true" />-->
+        <a style="font-family: helvetica, arial, sans-serif;" href="/{!paramId}">Back</a>
+ </div> 
+  
+<div class="main_wrapper" style="margin-top: 25px;">
+
+    <ul id="org" style="display:none;">
+    </ul>   
+    <div id="chart"></div>
+    
+</div>
+</apex:PageBlock>
+
+
+</apex:form>
+</body>
+</html>
+</apex:page>

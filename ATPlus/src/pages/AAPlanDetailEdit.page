@@ -1,0 +1,515 @@
+<apex:page controller="AAPlanDetailViewController" showHeader="true" sidebar="false" docType="html-5.0" tabStyle="AA_Plans__tab" >
+    
+    <c:styles />
+    
+    <style>
+
+        .activeTab {
+            background-color: #1796bf;
+            color: white;
+            background-image: none;
+            padding: 5px;
+            font-style: bold;
+            cursor: pointer;
+        }
+        
+        .inactiveTab { 
+            background-color: #d3d3d3;
+            color: black;
+            background-image: none;
+            padding: 5px;
+            font-style: bold;
+            cursor: pointer;
+        }
+        
+        textarea {
+            width: 97%;
+        }
+        
+        .commandButtonContainer {
+            text-align: center;
+            margin: 10px;
+        }
+        
+        .title {
+            font-weight: bold;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            display: block;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        /*Controlling the width of the DropDowns*/
+        select{
+            width: 200px;
+            text-overflow: ellipsis;
+        }
+    </style>
+    
+    <div id="container">
+    	
+        <apex:Messages id="pageMessages" />
+        <!-- Form Begin-->
+        <apex:outputPanel rendered="{!currentAandARecord == null}">
+            This ID doesn't exist. The record may have been deleted or this is an incorrect ID.
+        </apex:outputPanel>
+        <apex:form id="AandAPlanFormID" rendered="{!currentAandARecord != null}">
+            <div class="title">
+                <a href="{!$Page.AAPlanDetailView}?id={!currentAandARecord.id}">
+                    <c:Truncate title="{!currentAandARecord.AwardTitle__c}" maxLength="80" />
+                </a>
+            </div>
+            <div class="commandButtonContainer">
+                <apex:commandButton rendered="{!currentAandARecord.UserRecordAccess.HasEditAccess || $ObjectType.AAPlanDetail__c.createable}" action="{!save}" value="Save" html-formnovalidate="formnovalidate"/>
+                <apex:commandButton action="{!cancel}" value="Cancel" immediate="true" html-formnovalidate="formnovalidate"/>
+            </div>
+            <apex:tabPanel switchType="client" html-data-id="AandAPlanTabPanelID" tabClass="activeTab" inactiveTabClass="inactiveTab">
+
+                <apex:tab label="Award Info" id="awardInfoTab">
+                    <apex:pageBlock >
+                        <apex:pageBlockSection columns="2">
+                            <!-- add the quarter by itself so we can set a default value -->
+                            <!-- Go back to just using Field sets
+                            <apex:inputField rendered="false" id="quarter" value="{!currentAandARecord.Quarter__c}"/>
+                            <apex:inputField value="{!currentAandARecord.AandAPlan__c}"/>
+                            <apex:inputField value="{!currentAandARecord.Award_Length__c}"/>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.CO_AO_Signature_Required__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.CO_AO_Signature_Required__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.CO_AO_Signature_Required__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.AwardNumber__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.AwardNumber__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.AwardNumber__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.CORorAORName__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.CORorAORName__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.CORorAORName__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.Status__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.Status__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.Status__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.Is_this_Action_using_Expiring_Funds__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.Is_this_Action_using_Expiring_Funds__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.Is_this_Action_using_Expiring_Funds__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.FiscalYearOfAward__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.FiscalYearOfAward__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.FiscalYearOfAward__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:inputField value="{!currentAandARecord.AandASpecialistName__c}"/>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.Anticipated_Start_Date__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.Anticipated_Start_Date__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.Anticipated_Start_Date__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:inputField value="{!currentAandARecord.GLAASReqNo__c}"/>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.ActionOrAwardType__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.ActionOrAwardType__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.ActionOrAwardType__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.Anticipated_Solicitation_Release_Date__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.Anticipated_Solicitation_Release_Date__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.Anticipated_Solicitation_Release_Date__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:inputField required="true" value="{!currentAandARecord.AwardTitle__c}"/>
+                            <apex:inputField value="{!currentAandARecord.Award_Description__c}"/>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.Small_Business_Set_Aside__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.Small_Business_Set_Aside__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.Small_Business_Set_Aside__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.Is_the_action_over_25K__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.Is_the_action_over_25K__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.Is_the_action_over_25K__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:inputField value="{!currentAandARecord.OSDBU_Tracking_Number__c}"/>
+                            <apex:inputField value="{!currentAandARecord.Sr_Procurement_Executive_Approval__c}"/>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.TotalEstimateCost__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.TotalEstimateCost__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.TotalEstimateCost__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            -->
+                          
+                            <apex:repeat value="{!AwardBucketFieldSet}" var="f">
+                                <apex:inputField value="{!currentAandARecord[f.fieldPath]}" required="{!OR(f.required, f.dbrequired)}"/>
+                            </apex:repeat>
+                           
+                        </apex:pageBlockSection>
+                    </apex:pageBlock>
+                </apex:tab>
+                
+                <apex:tab label="Additional Award Info" id="additionalAwardInfoTab">
+                    <apex:pageBlock >
+                        <apex:pageBlockSection columns="2">
+                        	<!-- Go back to just using Field sets
+                            <apex:inputField value="{!currentAandARecord.Implementing_Partner__c}"/>
+                            <apex:inputField value="{!currentAandARecord.Congressional_Notification_Required__c}"/>
+                            <apex:inputField value="{!currentAandARecord.CN_Expiration_Date__c}"/>
+                            <apex:inputField value="{!currentAandARecord.CN_Transmittal_Number__c}"/>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.AwardPriority__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.AwardPriority__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.AwardPriority__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.ObligatedAmount__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.ObligatedAmount__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.ObligatedAmount__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.IsAwardCompetitive__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.IsAwardCompetitive__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.IsAwardCompetitive__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:inputField value="{!currentAandARecord.IsNonCompetitiveAward__c}"/>
+                            <apex:inputField value="{!currentAandARecord.Remarks__c}"/>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.IsAwardSupported__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.IsAwardSupported__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.IsAwardSupported__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:inputField value="{!currentAandARecord.NAICSCode__c}"/>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.InstitutionalSupportContract__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.InstitutionalSupportContract__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.InstitutionalSupportContract__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            -->
+                            
+                            <apex:repeat value="{!AdditionalAwardInfoBucketFieldSet}" var="f">
+                                <apex:inputField value="{!currentAandARecord[f.fieldPath]}" required="{!OR(f.required, f.dbrequired)}"/>
+                            </apex:repeat>
+                            
+                        </apex:pageBlockSection>
+                        
+                    </apex:pageBlock>
+                </apex:tab>
+<!-- Aug 14 2014 - Added A&A Reporting Questions Tab - Brian Mason -->
+                <apex:tab label="A&A Reporting Questions" id="aAndAReportingQuestionsTab">
+                    <apex:pageBlock >
+                        <apex:pageBlockSection columns="2">
+                            <!-- Go back to just using Field sets
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.Local_Host_Country_Organization__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.Local_Host_Country_Organization__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.Local_Host_Country_Organization__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:inputField value="{!currentAandARecord.Business_Forecast_Listing__c}"/>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.Construction__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.Construction__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.Construction__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.Sector__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.Sector__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.Sector__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            -->
+                            
+                            <apex:repeat value="{!AandAReportingQuestionsBucketFieldSet}" var="f">
+                                <apex:inputField value="{!currentAandARecord[f.fieldPath]}" required="{!OR(f.required, f.dbrequired)}"/>
+                            </apex:repeat>
+                            
+                        </apex:pageBlockSection>
+                    </apex:pageBlock>
+                </apex:tab>
+
+<!-- Aug 14 2014 - Added AARAD Info Tab - Brian Mason -->
+                <apex:tab label="AARAD Info" id="aaradInfoTab">
+                    <apex:pageBlock >
+                        <apex:pageBlockSection columns="2">
+                            <!-- Go back to just using Field sets
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.AAPlanDetail__c.fields.A_A_Review_Approval_Document_AARAD__c.inlineHelpText}">
+                                <apex:outputLabel value="{!$ObjectType.AAPlanDetail__c.fields.A_A_Review_Approval_Document_AARAD__c.Label}" />
+                                <apex:outputpanel layout="block" styleClass="requiredInput">
+                                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                                    <apex:inputField value="{!currentAandARecord.A_A_Review_Approval_Document_AARAD__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:inputField value="{!currentAandARecord.AARAD_Approval__c}"/>
+                            <apex:inputField value="{!currentAandARecord.Anticipated_AARAD_Submission_Date__c}"/>
+                            -->
+                            
+                            <apex:repeat value="{!AARADInfoBucketFieldSet}" var="f">
+                                <apex:inputField value="{!currentAandARecord[f.fieldPath]}" required="{!OR(f.required, f.dbrequired)}"/>
+                            </apex:repeat>
+                            
+                        </apex:pageBlockSection>
+                    </apex:pageBlock>
+                </apex:tab>
+
+<!-- Aug 14 2014 - Added Free Fields Tab - Brian Mason --> 
+                <apex:tab label="Free Fields" id="freeFieldsTab">
+                    <apex:pageBlock >
+                        <apex:pageBlockSection columns="1">
+                        
+                            <apex:inputText id="lblFirstFreeField" value="{!currentAandARecord.Free_Field_1_for_M_B_IO_Use_Label__c}" />
+                            <apex:inputTextarea id="firstFreeField" value="{!currentAandARecord.Free_Field_1_for_M_B_IO_Use__c}"/>
+
+                            <apex:inputText id="lblSecondFreeField" value="{!currentAandARecord.Free_Field_2_for_M_B_IO_Use_Label__c}" />
+                            <apex:inputTextarea id="secondFreeField" value="{!currentAandARecord.Free_Field_2_for_M_B_IO_Use__c}"/>
+                            
+                            <apex:inputText id="lblThirdFreeField" value="{!currentAandARecord.Free_Field_3_for_M_B_IO_Use_Label__c}" />
+                            <apex:inputTextarea id="thirdFreeField" value="{!currentAandARecord.Free_Field_3_for_M_B_IO_Use__c}"/>
+                            
+                            <apex:inputText id="lblFourthFreeField" value="{!currentAandARecord.Free_Field_4_for_M_B_IO_Use_Label__c}" />
+                            <apex:inputTextarea id="fourthFreeField" value="{!currentAandARecord.Free_Field_4_for_M_B_IO_Use__c}"/>
+                            
+                            <apex:inputText id="lblFifthFreeField" value="{!currentAandARecord.Free_Field_5_for_M_B_IO_Use_Label__c}" />
+                            <apex:inputTextarea id="fifthFreeField" value="{!currentAandARecord.Free_Field_5_for_M_B_IO_Use__c}"/>
+                            
+                            <apex:inputText id="lblSixthFreeField" value="{!currentAandARecord.Free_Field_6_for_M_B_IO_Use_Label__c}" />
+                            <apex:inputTextarea id="sixthFreeField" value="{!currentAandARecord.Free_Field_6_for_M_B_IO_Use__c}"/>
+                            
+                        </apex:pageBlockSection>
+                    </apex:pageBlock>
+                </apex:tab>
+
+            </apex:tabPanel>
+            
+            <div class="commandButtonContainer">
+                <apex:commandButton rendered="{!currentAandARecord.UserRecordAccess.HasEditAccess || $ObjectType.AAPlanDetail__c.createable}" action="{!save}" value="Save" html-formnovalidate="formnovalidate"/>
+                <apex:commandButton action="{!cancel}" value="Cancel" immediate="true" html-formnovalidate="formnovalidate"/>
+            </div>
+            
+            <!-- autosave form element, declined after developement -->
+            <!-- <apex:actionFunction name="commitSave" action="{!save}"/> -->
+        </apex:form>
+    </div>
+
+    <apex:includeScript value="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />
+    <apex:includeScript value="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js" />
+    <apex:includeScript value="{!$Resource.jQueryCookies}" />
+
+    <script>
+        
+        var j$ = jQuery.noConflict();
+        
+        j$(document).ready(function(){
+            constructTabObjArray(); // Load all the tab Infomation for a given page.
+            loadActiveTab();//If Cookies are present, use cookie configuration
+            clearCookies();//Clear cookies immediately
+            addHooks();//Add Click hooks for TabChanges
+            findActiveTab();//Get Active tab and set Cookies
+            /* Timer function to implement "Autosave and redirect" */
+            //setupAutosaveTimer();//set up for timer that will trigger auto save
+            checkPagesMessages();
+        });
+        
+        /* Timer function to implement "Autosave and redirect"
+        // disabled due to being declined for now.
+        var seconds = 300;
+        var timer;
+        
+        var setupAutosaveTimer = function(){
+            j$("*").keyup(resetTimer);
+            j$("*").keydown(resetTimer);
+            j$("*").focus(resetTimer);
+            j$("*").mousemove(resetTimer);
+            j$(resetTimer);
+        }
+        
+        var resetTimer = function(){
+            clearInterval(timer);
+            timer = setInterval(
+                function(){
+                    clearInterval(timer); 
+                    //alert("timeout");
+                    commitSave();
+                },
+                seconds * 1000);
+        }
+        */
+    	
+        var checkPagesMessages = function(){
+            j$.each(j$("[id$='pageMessages'] > li"), function(){
+                j$(this).text( HtmlDecode( j$(this).text() ) );
+            });
+        }
+        
+        function HtmlDecode(html) {
+            var div = document.createElement("div");
+            div.innerHTML = html;
+            return div.childNodes[0].nodeValue;
+        }
+    
+        var constructTabObjArray = function(){
+            tabObjArray = [];
+            j$.each(j$('td.rich-tab-header'), function(index, value){
+                getAllTabInfo(this, 'objConstruction');
+            });
+        }
+
+        var findActiveTab = function(){
+            var activeTab = j$('td.rich-tab-header.rich-tab-active');
+            getAllTabInfo(activeTab[0], 'activeTab');
+
+            console.log('View Page Active Tab Cookie: ' + j$.cookie('apex_tab'));
+        }
+
+
+        var clearCookies = function(){
+            j$.removeCookie('apex_tab', { path: '/'});
+        }
+
+        var addHooks = function(){
+            j$('td.rich-tab-header').click(function(){
+                
+                var currentTab = this;
+                if(currentTab){
+                    getAllTabInfo(currentTab, 'click');
+                }
+            });
+        };
+
+        var getAllTabInfo = function(currentTab, event){
+
+            if(event == 'click' || event == 'activeTab'){
+                var tabId = currentTab.id;
+                if(tabId){
+                    tabId = tabId.replace('_lbl',''); 
+                    var rawValue = tabId.split(':');
+                }
+                if(rawValue){
+                    var valueId = rawValue[2]; 
+                }
+                if(valueId){
+                    setCookies(valueId);
+                }
+            }
+
+            if(event == 'objConstruction'){
+                //Step 1: Get paneId
+                var rawPane = j$('[data-id = AandAPlanTabPanelID]');
+                if(rawPane){
+                    var paneId = rawPane[0].id; 
+                }
+
+                //Step 2: Get tabId
+                var tabId = currentTab.id;
+                if(tabId){
+                    tabId = tabId.replace('_lbl',''); 
+                }
+                
+                //Step 3: Get valueId
+                if(tabId){
+                    var rawValue = tabId.split(':');
+                }
+                if(rawValue){
+                    var valueId = rawValue[2]; 
+                }
+
+                //Create a TabObj
+                var tabObj = {
+                    tPaneId : paneId,
+                    tTabId : tabId,
+                    tValueId : valueId
+                }
+                tabObjArray.push(tabObj);
+            }
+            
+        };
+
+        var setCookies = function(value){
+            j$.cookie('apex_tab', value, { path: '/'});
+            console.log('Setting cookies from Edit Page: ' + j$.cookie('apex_tab'));
+        };
+
+        var loadActiveTab = function(){
+            var valueId = j$.cookie('apex_tab');
+            console.log('View Page cookie: ' + valueId);
+
+            if(valueId){
+                for(var i=0; i< tabObjArray.length; i++){
+                    if(tabObjArray[i].tValueId == valueId){
+
+                        //(pane, tab, value) 
+                        RichFaces.switchTab(tabObjArray[i].tPaneId, tabObjArray[i].tTabId, tabObjArray[i].tValueId);
+                    }
+                }
+            }
+        }
+    </script>
+    
+</apex:page>

@@ -1,0 +1,4 @@
+<apex:page action="/sfc/#workspaces" >
+
+ <!-- <src="http://cs10.salesforce.com/_ui/core/chatter/files/FileTabPage" /> -->
+</apex:page>

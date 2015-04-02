@@ -1,0 +1,462 @@
+<apex:page standardController="Implementing_Mechanism__c" extensions="clsIMEditController,ClsUserProfileFinder" tabStyle="Implementing_Mechanism__c" sidebar="false">
+
+<apex:includeScript value="{!$Resource.JQuery172_js}"/>
+    <script type="text/javascript">
+    $(document).ready(function() {
+    
+        
+         var OrgUnitCodeId = $("label:contains('Organization Id')").attr('for');        
+         var OrgUnitLookupId = jq($("label:contains('Organization Id')").attr('for') + "_lkwgt");
+        
+        
+        var corId = $("label:contains('COR')").attr('for');
+        corId = corId.replace('_top','');    
+        var corLookupId = jq(corId + "_lkwgt");
+        
+        
+        var aorId =  $("label:contains('AOR')").attr('for');
+        aorId = aorId.replace('_top','');
+        var aorLookupId =  jq(aorId + "_lkwgt");
+        
+        
+        var altCorId =  $("label:contains('Alternate COR')").attr('for');
+        altCorId = altCorId.replace('_top','');
+        var altCorLookupId =  jq(altCorId + "_lkwgt");
+        
+        
+        var altAorId = $("label:contains('Alternate AOR')").attr('for');  
+        altAorId = altAorId.replace('_top','');  
+        var altAorLookupId = jq(altAorId + "_lkwgt");
+        
+        
+        var prtUsr1Id =  $("label:contains('Chief of Party')").attr('for');
+        prtUsr1Id = prtUsr1Id.replace('_top','');
+        var prtUsr1LookupId =  jq(prtUsr1Id + "_lkwgt");
+        
+        
+        var prtUsr2Id =  $("label:contains('Partner 2')").attr('for');
+        prtUsr2Id = prtUsr2Id.replace('_top','');
+        var prtUsr2LookupId =  jq(prtUsr2Id + "_lkwgt");
+        
+        
+        var prtUsr3Id =  $("label:contains('Partner 1')").attr('for');
+        prtUsr3Id = prtUsr3Id.replace('_top','');
+        var prtUsr3LookupId =  jq(prtUsr3Id + "_lkwgt");
+        
+        
+        var prtUsr4Id =  $("label:contains('Partner 3')").attr('for');
+        prtUsr4Id = prtUsr4Id.replace('_top','');
+        var prtUsr4LookupId =  jq(prtUsr4Id+ "_lkwgt");
+        
+        var left = (screen.width/2)-(400/2);
+        var top = (screen.height/2)-(500/2);
+        var NWin;    
+         
+        
+        $(corLookupId).click(function(){
+          //  alert("ID:::" +corId);
+          //  alert(" Lookup ID:::" +corLookupId);
+            $(corLookupId).prop("href", "/apex/vfObjectLookup?objectName=MissionUser&txt="+corId +"&orgUnit={!Implementing_Mechanism__c.ouId__c}" +"&frm=" + escapeUTF("{!$Component.myForm}"));
+          // NWin = window.open($(this).prop('href'), '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, height=400, width=500, top='+top+', left='+left );
+             NWin = window.open($(this).prop('href'), '', 'toolbar=no, fullscreen=yes, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, copyhistory=no' );
+            if (window.focus){
+               NWin.focus();
+            }
+            // $(imLookupId).unbind('click', false);
+            return false;
+        });   
+        
+        
+        $(aorLookupId).click(function(){
+            $(aorLookupId).prop("href", "/apex/vfObjectLookup?objectName=MissionUser&txt="+aorId +"&orgUnit={!Implementing_Mechanism__c.ouId__c}"  +"&frm=" + escapeUTF("{!$Component.myForm}"));
+            //NWin = window.open($(this).prop('href'), '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, height=400, width=500, top='+top+', left='+left );
+             NWin = window.open($(this).prop('href'), '', 'toolbar=no, fullscreen=yes, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, copyhistory=no' );
+            if (window.focus){
+               NWin.focus();
+            }
+            return false;
+        });
+        
+        
+        $(altCorLookupId).click(function(){
+            $(altCorLookupId).prop("href", "/apex/vfObjectLookup?objectName=MissionUser&txt="+altCorId +"&orgUnit={!Implementing_Mechanism__c.ouId__c}" +"&frm=" + escapeUTF("{!$Component.myForm}"));
+            //NWin = window.open($(this).prop('href'), '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, height=400, width=500, top='+top+', left='+left );
+             NWin = window.open($(this).prop('href'), '', 'toolbar=no, fullscreen=yes, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, copyhistory=no' );
+            if (window.focus){
+               NWin.focus();
+            }
+            return false;
+        });
+        
+        $(altAorLookupId).click(function(){
+            $(altAorLookupId).prop("href", "/apex/vfObjectLookup?objectName=MissionUser&txt="+altAorId +"&orgUnit={!Implementing_Mechanism__c.ouId__c}" +"&frm=" + escapeUTF("{!$Component.myForm}"));
+            //NWin = window.open($(this).prop('href'), '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, height=400, width=500, top='+top+', left='+left );
+             NWin = window.open($(this).prop('href'), '', 'toolbar=no, fullscreen=yes, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, copyhistory=no' );
+            if (window.focus){
+               NWin.focus();
+            }
+            return false;
+        });
+        
+        $(prtUsr1LookupId).click(function(){
+            $(prtUsr1LookupId).prop("href", "/apex/vfObjectLookup?objectName=PortalUser&txt="+prtUsr1Id +"&accId={!Implementing_Mechanism__c.Partner_Id__c}" +"&frm=" + escapeUTF("{!$Component.myForm}"));
+            //NWin = window.open($(this).prop('href'), '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, height=400, width=500, top='+top+', left='+left );
+             NWin = window.open($(this).prop('href'), '', 'toolbar=no, fullscreen=yes, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, copyhistory=no' );
+            if (window.focus){
+               NWin.focus();
+            }
+            return false;
+        });
+        
+        $(prtUsr2LookupId).click(function(){
+            $(prtUsr2LookupId).prop("href", "/apex/vfObjectLookup?objectName=PortalUser&txt="+prtUsr2Id +"&accId={!Implementing_Mechanism__c.Partner_Id__c}" +"&frm=" + escapeUTF("{!$Component.myForm}"));
+            //NWin = window.open($(this).prop('href'), '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, height=400, width=500, top='+top+', left='+left );
+             NWin = window.open($(this).prop('href'), '', 'toolbar=no, fullscreen=yes, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, copyhistory=no' );
+            if (window.focus){
+               NWin.focus();
+            }
+            return false;
+        });
+        
+        $(prtUsr3LookupId).click(function(){
+            $(prtUsr3LookupId).prop("href", "/apex/vfObjectLookup?objectName=PortalUser&txt="+prtUsr3Id +"&accId={!Implementing_Mechanism__c.Partner_Id__c}" +"&frm=" + escapeUTF("{!$Component.myForm}"));
+            //NWin = window.open($(this).prop('href'), '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, height=400, width=500, top='+top+', left='+left );
+             NWin = window.open($(this).prop('href'), '', 'toolbar=no, fullscreen=yes, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, copyhistory=no' );
+            if (window.focus){
+               NWin.focus();
+            }
+            return false;
+        });
+        
+        $(prtUsr4LookupId).click(function(){
+            $(prtUsr4LookupId).prop("href", "/apex/vfObjectLookup?objectName=PortalUser&txt="+prtUsr4Id +"&accId={!Implementing_Mechanism__c.Partner_Id__c}" +"&frm=" + escapeUTF("{!$Component.myForm}"));
+            //NWin = window.open($(this).prop('href'), '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, height=400, width=500, top='+top+', left='+left );
+             NWin = window.open($(this).prop('href'), '', 'toolbar=no, fullscreen=yes, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, copyhistory=no' );
+            if (window.focus){
+               NWin.focus();
+            }
+            return false;
+        });
+        
+             
+        
+        
+        var OfficeId;    
+        var OfficeLookupId;
+        
+         OfficeId = $("label:contains('Office')").attr('for');    
+         OfficeLookupId = jq($("label:contains('Office')").attr('for') + "_lkwgt");
+
+         
+        var left = (screen.width/2)-(400/2);
+        var top = (screen.height/2)-(500/2);
+        var NWin;    
+        
+        
+        $(OfficeLookupId).click(function(){
+            //if ("{!$Profile.Name}" == "Mission Partner"){
+            if ({!IsPartnerUser}){
+                $(OfficeLookupId).prop("href", "/Partners/vfObjectLookup?objectName=Office&orgCode={!Implementing_Mechanism__c.ouId__c}&&txt="+OfficeId +"&frm=" + escapeUTF("{!$Component.myForm}"));                
+            } else {
+                $(OfficeLookupId).prop("href", "/apex/vfObjectLookup?objectName=Office&orgCode={!Implementing_Mechanism__c.ouId__c}&&txt="+OfficeId +"&frm=" + escapeUTF("{!$Component.myForm}"));                
+            }    
+            //NWin = window.open($(this).prop('href'), '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, height=500, width=600, top='+top+', left='+left );
+            NWin = window.open($(this).prop('href'), '', 'toolbar=no, fullscreen=yes, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, copyhistory=no' );          
+            if (window.focus){
+               NWin.focus();
+            }
+          
+            return false;
+        });
+        
+        
+    });
+    
+    function jq( myid ) {  
+      var returnVar = "#" + myid.replace( /:/g, "\\:" );  
+      return returnVar; 
+    }
+    
+    function collectionLevelAndFrequencyWarn(){
+        alert('Once Collection Level is set  values cannot be changed later.');
+    }
+    
+    </script>
+<!-- ************************************************************* --> 
+<!-- ************************************************************* --> 
+<!-- This is the IM page that is displayed to the user -->
+<!-- ************************************************************* --> 
+<!-- ************************************************************* --> 
+
+    <apex:sectionHeader title="{!$ObjectType.Implementing_Mechanism__c.label}" subtitle="{!Implementing_Mechanism__c.name}"/>
+    <apex:form >
+    <apex:pageBlock title="{!$ObjectType.Implementing_Mechanism__c.label} Edit" mode="edit">
+        <apex:pageBlockButtons >
+            <apex:commandButton action="{!save}" value="Save"/>
+            <apex:commandButton action="{!cancel}" value="Cancel"/>
+        </apex:pageBlockButtons>
+
+
+<!-- ******************* Basic Section ******************** -->
+        
+ <apex:pageBlockSection showHeader="true" title="Basic Information" columns="2">        
+             <apex:facet name="header">        
+                <span class="pbSubExtra"><span class="requiredLegend">
+                <span class="requiredExampleOuter">
+                <span class="requiredExample">&nbsp;</span></span>
+                <span class="requiredText"> = Required Information</span>
+                <span class="requiredText"> <img src="{!$Resource.PublicIcon}" /> = Public Fields</span> </span></span>
+              <!--<h3>Basic Information</h3> -->
+                <h3>Overview</h3>
+      </apex:facet>        
+        
+        
+        
+            <apex:inputField required="true" value="{!Implementing_Mechanism__c.Name}"/>
+            <apex:outputField value="{!Implementing_Mechanism__c.ouId__c}"/>
+            <apex:inputField required="true" value="{!Implementing_Mechanism__c.Implementing_Mechanism_Name__c}"/>
+            <apex:inputField value="{!Implementing_Mechanism__c.Publish_Status__c}"/>
+            <apex:pageBlockSectionItem helpText="Total obligated amount for the Award Id">
+            <apex:pageBlockSectionItem > 
+                 <apex:image value="{!$Resource.PublicIcon}" /> 
+                 <!--<apex:outputLabel value="{!$ObjectType.Implementing_Mechanism__c.fields.Award_Amount__c.label}"/> -->
+                 <apex:outputLabel value="{!$ObjectType.Implementing_Mechanism__c.fields.Award_Amount__c.label}"/>
+             </apex:pageBlockSectionItem>    
+            <apex:inputField value="{!Implementing_Mechanism__c.Award_Amount__c}" />  
+            
+           </apex:pageBlockSectionItem> 
+           
+           <apex:inputField value="{!Implementing_Mechanism__c.offId__c}" /> 
+          <!--  <apex:outputField value="{!Implementing_Mechanism__c.Award_Type__c}"/>            
+            <apex:outputField value="{!Implementing_Mechanism__c.Start_Date__c}"/>
+            <apex:outputField value="{!Implementing_Mechanism__c.Contract_Grant__c}"/>
+            <apex:outputField value="{!Implementing_Mechanism__c.End_Date__c}"/> -->
+        </apex:pageBlockSection>
+        
+        
+<!-- *******************Award Reference Section ******************** -->
+
+    <!--    <apex:pageBlockSection showHeader="true" title="Award Reference" columns="2" id="IMPBS">
+
+         <apex:outputField id="glassRef" value="{!Implementing_Mechanism__c.Award_Key__c}"/>
+             <apex:inputField value="{!Implementing_Mechanism__c.Award_Id__c}"/>
+             < span dir="LTR" value="Change Award" style="cursor:pointer;" onclick="openPopUpWindow('{!Implementing_Mechanism__c.Id}');">
+            < span dir="LTR" style="cursor:pointer;" onclick="YAHOO.force.com.showMe();" >
+             < img class="lookupIcon" alt="Award Key Lookup (New Window)" src="/s.gif" />
+             < /span>
+        <apex:inputField value="{!Implementing_Mechanism__c.Award_Id__c}" rendered="false" />
+        <apex:outputField value="{!Implementing_Mechanism__c.Document__c}"/>
+        <apex:outputField value="{!Implementing_Mechanism__c.totAward__c}"/>
+        <apex:outputField value="{!Implementing_Mechanism__c.OrderNum__c}"/>
+        <apex:outputField value="{!Implementing_Mechanism__c.totObl__c}"/>
+        <apex:outputField value="{!Implementing_Mechanism__c.Last_Modification__c}"/>  
+        <apex:outputField value="{!Implementing_Mechanism__c.totDisb__c}"/>
+        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+        <apex:outputField value="{!Implementing_Mechanism__c.totAccr__c}"/>
+        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+        <apex:outputField value="{!Implementing_Mechanism__c.totExp__c}"/>
+        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+        <apex:outputField value="{!Implementing_Mechanism__c.TotAdv__c}"/>
+        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+        <apex:outputField value="{!Implementing_Mechanism__c.TotMortgage__c}"/>
+        </apex:pageBlockSection> -->
+
+<!-- ******************* COR/AOR ******************** -->
+
+        <apex:pageBlockSection showHeader="true" title="COR/AOR" columns="2">      
+       
+        <apex:inputField value="{!Implementing_Mechanism__c.COR__c}"/>
+        <apex:inputField value="{!Implementing_Mechanism__c.AOR__c}"/>
+        <apex:inputField value="{!Implementing_Mechanism__c.Alternate_COR__c}"/>
+        <apex:inputField value="{!Implementing_Mechanism__c.Alternate_AOR__c}"/>
+        
+        </apex:pageBlockSection>
+
+<!-- ******************* Partner Accessibility ******************** -->        
+        <apex:pageBlockSection showHeader="true" title="Partner Accessibility" columns="2">
+        
+
+
+<apex:pageBlockSectionItem helpText="{!$ObjectType.Implementing_Mechanism__c.fields.Partner_Name__c.inlineHelpText}">
+          
+            <apex:pageBlockSectionItem >
+                 <apex:image value="{!$Resource.PublicIcon}" /> 
+                 <apex:outputLabel value="{!$ObjectType.Implementing_Mechanism__c.fields.Partner_Name__c.label}"/>
+             </apex:pageBlockSectionItem>    
+              <apex:outputField value="{!Implementing_Mechanism__c.Partner_Name__c}" />
+           </apex:pageBlockSectionItem> 
+        
+        
+        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+        <apex:inputField value="{!Implementing_Mechanism__c.Partner_User_1__c}"/>
+        <apex:inputField value="{!Implementing_Mechanism__c.Partner_User_2__c}"/>                  
+        <apex:inputField value="{!Implementing_Mechanism__c.Partner_User_3__c}"/>
+        <apex:inputField value="{!Implementing_Mechanism__c.Partner_User_4__c}"/>
+                                        
+        </apex:pageBlockSection>
+        
+     <apex:pageBlockSection showHeader="true" title="Indicator Reporting" columns="2" rendered="{!IF (Implementing_Mechanism__c.Reporting_Level__c == null,true,false)}">
+        
+        
+        <!--<apex:inputField required="true" value="{!Implementing_Mechanism__c.Reporting_Frequency__c}" onchange="collectionLevelAndFrequencyWarn()"/>-->
+        <apex:inputField required="true" value="{!Implementing_Mechanism__c.Reporting_Level__c}" onchange="collectionLevelAndFrequencyWarn()"/>
+        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>              
+        <apex:OutputField value="{!Implementing_Mechanism__c.Indicators_Established__c}" />
+        <apex:OutputField value="{!Implementing_Mechanism__c.Reporting_Periods_Established__c}" />
+        
+                                        
+     </apex:pageBlockSection>   
+        
+      <apex:pageBlockSection showHeader="true" title="Indicator Reporting" columns="2" rendered="{!IF (Implementing_Mechanism__c.Reporting_Level__c != null,true,false)}">
+        
+        
+        <!--<apex:outputField value="{!Implementing_Mechanism__c.Reporting_Frequency__c}"/>-->
+        
+        <apex:outputField value="{!Implementing_Mechanism__c.Reporting_Level__c}"/> 
+        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+        <apex:OutputField value="{!Implementing_Mechanism__c.Indicators_Established__c}" />
+        <apex:OutputField value="{!Implementing_Mechanism__c.Reporting_Periods_Established__c}" />             
+        
+                                        
+     </apex:pageBlockSection>
+     
+        
+        
+<!-- ******************* System Information ******************** -->        
+        <!-- <apex:pageBlockSection showHeader="true" title="System Information" columns="2" rendered="{!$Profile.Name =='System Administrator(c)'}"> -->
+         <apex:pageBlockSection showHeader="true" title="System Information" columns="2" rendered="{!IsAdminUser}">
+            <apex:outputField value="{!Implementing_Mechanism__c.createdById}" />
+            <apex:outputField value="{!Implementing_Mechanism__c.LastModifiedById}" />
+            <apex:outputField value="{!Implementing_Mechanism__c.ownerId}" />
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+    </apex:form>
+    
+    <!-- ************************************************************* --> 
+<!-- This is the content of the modal dialog -->
+<!-- ************************************************************* --> 
+<div id="myPanel" style="display: none" >
+  <div class="hd">
+    <apex:outputText value="Award Search" />
+  </div> 
+  <div class="bd">
+      <apex:form >
+       
+       <apex:pagemessages id="Errors"/>
+
+<apex:actionFunction name="searchAwards" action="{!runSearch}" reRender="results,debug,errors">
+        <apex:param name="AwardDocNum" value=""/>
+        <apex:param name="AwardOrderNum" value=""/>
+        <apex:param name="AwardProjTitle" value=""/>
+        <apex:param name="AwardOrgUnit" value=""/>
+        <apex:param name="AwardPartnerName" value=""/>        
+</apex:actionFunction>
+
+
+
+  <table width="100%" border="0" bordercolor="red">
+  <tr>  
+<!-- ************************************************************* -->  
+<!-- This is the left side table cell where you make the selection -->  
+<!-- ************************************************************* -->
+
+<td width="100%" valign="top">
+ <apex:pageBlock mode="edit" id="criteria">
+ 
+   <table cellpadding="1" cellspacing="1" border="0" bordercolor="blue" width="100%">
+        
+      <tr>
+        <td style="font-weight:bold;"><b> Document Number: </b><br/>
+        <input type="text" size="46" id="AwardDocNum" onkeyup="typewatch(function(){doSearch();},450);"/>
+         </td>
+         <td style="font-weight:bold;">Org Unit:<br/>
+         <select id="AwardOrgUnit" onchange="doSearch();">
+            <option value=""></option>
+            <apex:repeat value="{!orgUnits}" var="OUnit">
+              <option value="{!OUnit.OUCode}">{!OUnit.OUName}</option>
+            </apex:repeat>
+          </select>
+           </td>
+        <td style="font-weight:bold;"><b> Order Number: </b><br/>
+        <input type="text" size="46" id="AwardOrderNum" onkeyup="typewatch(function(){doSearch();},450);"/>
+        </td>
+        </tr>
+      <tr>
+        <td style="font-weight:bold;"><b> Partner Name: </b><br/>
+            <input value="{!Implementing_Mechanism__c.Partner_Name__c}" type="text" size="46" id="AwardPartnerName" onkeyup="typewatch(function(){doSearch();},450);"/>
+        </td>
+        <td style="font-weight:bold;"><b> Project Title: </b><br/>
+        <input type="text" size="46" id="AwardProjTitle" onkeyup="typewatch(function(){doSearch();},450);"/>
+        </td>
+        <td style="font-weight:bold;">
+        <br/>
+        </td>
+      </tr>
+   
+   </table>
+
+</apex:pageBlock>
+</td>
+
+<!-- ************************************************************* -->  
+<!-- End of left side table cell where you make the selection      -->  
+<!-- ************************************************************* -->
+<!--Remove this to make top down.  --> </tr><tr>
+
+<td valign="top">
+
+<apex:pageBlock Title="Award Search Results"  mode="edit" id="results">
+<apex:pageblockTable value="{!awards}" var="award"> 
+<!-- 
+Award key       AWARD_KEY__c
+Project Title   PROJECTTITLE__c
+Doc #           DocNum__c
+Order #         OrderNum__c
+Last Num        Award_Number__c
+Partner Name    VENDOR_NM__c
+TEC             TEC__c
+Start Date      StartDate__c
+End Date        EndDate__c
+-->
+<apex:column >
+<apex:facet name="header"><apex:commandLink value="Award Key" action="{!toggleSort}" rerender="results,debug">
+<apex:param name="sortField" value="AWARD_KEY__c" assignTo="{!sortField}"/>
+</apex:commandLink></apex:facet>
+
+<!-- <a href="/{!award.ID}">{!award.AWARD_KEY__c}</a> -->
+<a Closeid="setGlassValLink" href="#" onclick="setGlassRef('{!award.AWARD_KEY__c}');return false;">{!award.AWARD_KEY__c}</a>
+
+
+</apex:column>
+<apex:column ><apex:facet name="header">Project Title</apex:facet><apex:outputField value="{!award.PROJECTTITLE__c}"/></apex:column>
+<apex:column ><apex:facet name="header">Doc #</apex:facet><apex:outputField value="{!award.DocNum__c}"/></apex:column>
+<apex:column ><apex:facet name="header">Order #</apex:facet><apex:outputField value="{!award.OrderNum__c}"/></apex:column>
+<apex:column ><apex:facet name="header">Last Num</apex:facet><apex:outputField value="{!award.Last_Modification__c}"/></apex:column>
+<apex:column ><apex:facet name="header">Partner Name</apex:facet><apex:outputField value="{!Implementing_Mechanism__c.Partner_Name__c}"/></apex:column>
+
+
+
+<apex:column ><apex:facet name="header">TEC</apex:facet><apex:outputField value="{!award.TEC__c}"/></apex:column>
+<apex:column ><apex:facet name="header">Start Date</apex:facet><apex:outputText value="{0,date,MM/dd/yy}"><apex:param value="{!award.StartDate__c}" /></apex:outputText></apex:column>
+<apex:column ><apex:facet name="header">End Date</apex:facet><apex:outputText value="{0,date,MM/dd/yy}"><apex:param value="{!award.EndDate__c}" /></apex:outputText></apex:column>
+</apex:pageblockTable>
+</apex:pageBlock>
+
+  </td>
+  </tr>
+  </table>
+<!--  <apex:pageBlock title="Debug - SOQL" id="debug">
+      <apex:outputText value="{!debugSoql}"/>           
+  </apex:pageBlock>    
+  -->
+       
+       
+      </apex:form>
+<!-- ************************************************************* --> 
+<!-- This is the content of the modal dialog -->
+<!-- ************************************************************* --> 
+  </div>
+
+</div>
+    
+</apex:page>

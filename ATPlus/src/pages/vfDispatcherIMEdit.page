@@ -1,0 +1,4 @@
+<apex:page standardController="Implementing_Mechanism__c" extensions="clsDispatcherIMEditController" tabStyle="Implementing_Mechanism__c"
+    action="{!getRedir}">
+    <apex:messages />
+</apex:page>

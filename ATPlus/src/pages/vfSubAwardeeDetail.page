@@ -1,0 +1,113 @@
+<apex:page standardController="Sub_Awardee__c" tabStyle="Project_Implementation__tab" extensions="ClsUserProfileFinder,ClsTabController,ClsDeleteControllerExt" id="SubAwardeePage" sidebar="false" action="{!doAction}">
+ <apex:stylesheet value="{!$Resource.CustomTabCSS}"/>
+        
+      <apex:sectionHeader title="{!$ObjectType.Sub_Awardee__c.label}" subtitle="{!Sub_Awardee__c.name}"/>
+     <div style="height:5px; background:#1797C0;"></div> <br></br>
+<apex:outputText style="font-size:12px;font-weight:bold;" value="{!navigationLink}" escape="false"> </apex:outputText> 
+ <br></br>
+  <br></br>
+  
+   <apex:outputPanel rendered="{!HasErrorMessages}">               
+     <apex:pagemessages />        
+  </apex:outputPanel> 
+   <apex:tabPanel switchType="client"  id="SubAwardeePanel"  value="{!selectedTab}" onclick="setSelectedTabOnController()" contentStyle="font-size: 12px;"   tabClass="activeTab" inactiveTabClass="inactiveTab">
+      <apex:tab label="Overview" name="SubAwardeeDetails"  id="tabSubAwardeedetails" styleClass="activeTabBackground">
+      <apex:pageBlock mode="maindetail" id="SubAwardeePageBlock">      
+         <apex:pageBlockButtons >
+                <apex:form >
+                        <apex:commandButton action="{!edit}" value="Edit"/>
+                         <apex:commandLink styleClass="btn" style="text-decoration:none;" reRender="" action="{!customDelete}" value="Delete" onclick="return window.confirm('Are you sure?');">
+                        <apex:param name="deleUrl" assignTo="{!deleUrl}" value="/apex/vfIMBasicDetailFactSheet?id={!Sub_Awardee__c.ImpMech_Id__r.id}"/>
+                        </apex:commandLink>
+                </apex:form>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection showHeader="true" title="Basic Information" columns="2">
+                        <apex:outputField value="{!Sub_Awardee__c.ImpMech_Id__c}"/>
+                        <apex:outputField value="{!Sub_Awardee__c.ouName__c}"/>
+                        <apex:outputField value="{!Sub_Awardee__c.Implementing_Mechanism_Name__c}"/>
+                        <apex:outputField value="{!Sub_Awardee__c.Partner_Name__c}"/>
+                        <apex:outputField value="{!Sub_Awardee__c.Name}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Sub_Awardee__c.SubAwardee_Name__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Sub_Awardee__c.SubAward_Amount__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Sub_Awardee__c.SubAwardee_Address__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Sub_Awardee__c.SubAwardee_Type__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Sub_Awardee__c.SubAwardee_Status__c}"/>
+                        <apex:pageBlockSectionItem />
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="false" columns="2">
+                </apex:pageBlockSection>
+               <!-- ******************* System Information to be displayed only to SysAdmins******************* -->   
+               <!-- <apex:pageBlockSection showHeader="true" title="System Information" columns="2" id="SysHeadSection" rendered="{!$Profile.Name =='System Administrator(c)'}"> -->
+               <apex:pageBlockSection showHeader="true" title="System Information" columns="2" id="SysHeadSection" rendered="{!IsADMINUser}">
+                        <apex:outputField value="{!Sub_Awardee__c.CreatedById}"/>
+                        <apex:outputField value="{!Sub_Awardee__c.LastModifiedById}"/>
+                </apex:pageBlockSection>
+                              
+         </apex:pageBlock>     
+          <apex:relatedList title="Tasks" pagesize="20"  list="Activities__r"/>
+         <apex:relatedList pagesize="20" list="NotesAndAttachments"/> 
+      </apex:tab>
+    <!--     
+        <apex:tab label="Tasks" 
+                name="SubAwardeeTask" 
+               id="tabSubAwardeeTask" styleClass="activeTabBackground">
+         <apex:relatedList pagesize="20" title="" list="Activities__r"/>
+      </apex:tab>     
+ <apex:tab label="Notes and Attachments" 
+                name="LocationNotesAndAttachments" 
+               id="tabNoteSubAwardee">
+         <apex:relatedList pagesize="20" title="" list="NotesAndAttachments"/>
+      </apex:tab>     -->
+        
+   </apex:tabPanel>
+<apex:form >
+        <apex:actionFunction id="af" name="selectTabActionFunction" action="{!selectTab}" reRender="">
+            <apex:param name="selectedTab" assignTo="{!selectedTab}" value="{!selectedTab}"/>
+        </apex:actionFunction>
+    </apex:form>
+    
+<script type="text/javascript">
+    function getSelectedTabName() {
+    
+        if (RichFaces) {
+             var tabs = RichFaces.panelTabs['SubAwardeePage:SubAwardeePanel'];       
+            for (var i = 0; i < tabs.length; i++) {
+                var tab = tabs[i];           
+                if (RichFaces.isTabActive(tab.id + '_lbl')) {                         
+                    return tab.name;
+                }
+            }
+        }
+        return null;
+    }
+    function setSelectedTabOnController() {
+        selectTabActionFunction(getSelectedTabName());
+    }
+    
+function addLoadEvent(func) {   
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+
+function hideHeadSesction() {
+ twistSection(document.getElementById('SubAwardeePage:SubAwardeePageBlock:SysHeadSection').childNodes[0].childNodes[0]);
+}
+
+addLoadEvent(hideHeadSesction);               
+    
+</script>
+</apex:page>

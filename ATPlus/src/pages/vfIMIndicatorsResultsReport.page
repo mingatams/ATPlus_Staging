@@ -1,0 +1,66 @@
+<apex:page controller="ClsIMIndicatorsResultsReport1" standardStylesheets="false" tabStyle="Standard_Reports__tab" sidebar="false" >
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>AIDtracker | Indicator Details</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'Indicators-style.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/modernizr.custom.79639.js')}"/>        
+    <noscript><apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'css/noJS.css')}"/></noscript>
+</head> 
+<body> 
+<div class="clear"></div>
+<div class="indicatorResultsColumnHeaders">
+        <div class="indicatorResultsColumnHeaderR" style="width: 100%; text-align: center; font-size:150%;">
+            <h3>Development Objective ‐ Indicator ‐ IM Report</h3>
+            <apex:form style="float:left;"><apex:commandButton style="margin-right:10px;color: #8AA8BD; font-size: 14px;"  onclick="window.open('/apex/vfIMIndicatorsResultsReport1')" value="Print PDF"/>
+            <apex:commandButton style="margin-right:10px; color: #8AA8BD; font-size: 14px;"  onclick="window.open('/apex/vfIMIndicatorsResultsReport4')" value="Export"/></apex:form>
+        </div>
+</div>
+<div class="indicatorResultsColumnR" style="width: 100%; Height: 550Px;">
+    <apex:repeat value="{!doList}" var="d">
+        <!--alert({!recMap[d].hasChildren});
+        alert({!d.DO_Name__c});-->
+        <apex:repeat value="{!doProjectMap[d]}" var="do"  rendered="{!recMap[d].hasChildren}">
+        
+          <div class="indicatorResults" style="padding-bottom: 10px;">
+                <h5><apex:outputText value="{!d.DO_Name__c}" ></apex:outputText></h5><br></br>
+                <div class="head boxed period" style="width: 5%; text-align: left;"><p>INDICATOR ID</p></div>
+                <div class="head boxed period" style="width: 21%; text-align: left;"><p>INDICATOR NAME</p></div>
+                <div class="head boxed period" style="width: 7%; text-align: left;"><p>IR NAME</p></div>
+                <div class="head boxed period" style="width: 7%; text-align: left;"><p>SUB-IR NAME</p></div>
+                <div class="head boxed period" style="width: 8%; text-align: left;"><p>IMPLEMENTING MECHANISM</p></div>
+                <div class="head boxed period" style="width: 8%; text-align: left;"><p>PROJECT NAME</p></div>
+                <div class="head boxed period" style="width: 6%; text-align: left;"><p>PERIOD</p></div>
+                <div class="head boxed baseline" style="width: 4%; text-align: left;"><p>BASELINE</p></div>
+                <div class="head boxed target" style="width: 4%; text-align: left;"><p>TARGET</p></div>
+                <div class="head boxed target" style="width: 4%; text-align: left;"><p>ACTUAL</p></div>
+                <!--<apex:repeat value="{!doProjectMap[do.DO_Id__c]}" var="doProj">-->
+                    <apex:repeat value="{!ProjectImMap[do.Project_Id__c]}" var="projIm" rendered="{!recMap[do.Project_Id__c].hasChildren}">
+                        <apex:repeat value="{!iResultMap[projIm.Implementing_Mechanism_Number__c]}" var="iResult" rendered="{!recMap[projIm.Implementing_Mechanism_Number__c].hasChildren}">
+                            <div class="data boxed period row1" style="width: 5%; text-align: left;"><h3 style="color: black;"><apex:outputText value="{!iResult.Indicator_Code__c}"></apex:outputText></h3></div>
+                            <div class="data boxed period row1" style="width: 21%; text-align: left; line-height:100%;"><h3 style="line-height:10px; color: black;"><apex:outputText value="{!iResult.Indicator_Name__c}" ></apex:outputText></h3></div>
+                            <div class="data boxed period row1" style="width: 7%; text-align: left;"><h3 style="line-height:10px; color: black;"><apex:outputText value="{!do.IR_Name__c}"></apex:outputText></h3></div>
+                            <div class="data boxed period row1" style="width: 7%; text-align: left;"><h3 style="line-height:10px; color: black;"><apex:outputText value="{!do.SIR_Name__c}"></apex:outputText></h3></div>
+                            <div class="data boxed period row1" style="width: 8%; text-align: left;"><h3 style="line-height:10px; color: black;"><apex:outputText value="{!iResult.ImpMech_Name__c}"></apex:outputText></h3></div>
+                            <div class="data boxed period row1" style="width: 8%; text-align: left;"><h3 style="line-height:10px; color: black;"><apex:outputText value="{!do.Project_Name__c}"></apex:outputText></h3></div>
+                            <div class="data boxed period row1" style="width: 6%; text-align: left;"><h3 style="color: black;"><apex:outputText value="{!iResult.Reporting_Period_Name__c}"></apex:outputText></h3></div>
+                            <div class="data boxed baseline row1" style="width: 4%; text-align: left;"><h3 style="color: black;"><apex:outputText value="{!IF(iResult.Baseline__c != null,'{0,number,###,##0}','0')}"><apex:param value="{!iResult.Baseline__c}" /></apex:outputText></h3></div>
+                            <div class="data boxed target row1" style="width: 4%; text-align: left;"><h3 style="color: black;"><apex:outputText value="{!IF(iResult.Target__c != null,'{0,number,###,##0}','0')}"><apex:param value="{!iResult.Target__c}" /></apex:outputText></h3></div>
+                            <div class="data boxed target row1" style="width: 4%; text-align: left;"><h3 style="color: black;"><apex:outputText value="{!IF(iResult.Actual__c != null,'{0,number,###,##0}','0')}"><apex:param value="{!iResult.Actual__c}" /></apex:outputText></h3></div>
+                            <!--<div class="data boxed target row1"><h3 class="g"><apex:outputText value="{!IF(iResult.Variance__c != null,'{0,number,###,##0}','0')}"><apex:param value="{!iResult1.Variance__c}" /></apex:outputText></h3></div>-->
+                            </apex:repeat>
+                    <!--</apex:repeat>-->
+                </apex:repeat>
+            </div> 
+           
+        </apex:repeat>
+     </apex:repeat>   
+         <div class="clear"></div>
+         <div class="divider"></div>
+
+
+</div>
+</body>
+</html>
+</apex:page>

@@ -1,0 +1,74 @@
+<apex:page controller="ClsIMIndicatorsResultsReport" standardStylesheets="false" tabStyle="Standard_Reports__tab" sidebar="false" contentType="application/vnd.ms-excel#IMIndicatorsResultsReport.xls" >
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>AIDtracker | Indicator Details</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'Indicators-style.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.FactSheets, 'js/modernizr.custom.79639.js')}"/>        
+    <noscript><apex:stylesheet value="{!URLFOR($Resource.FactSheets, 'css/noJS.css')}"/></noscript>
+    <style type="text/css">
+ 
+    tr.QualHeader td {
+        border:1pt solid black;
+        font-weight:bold;
+        text-align:center;
+        border-color:#4e8bca ;
+        background-color:#4e8bca;
+        border-width:2px;
+        color:#ffffff;
+    }
+    
+    tr.border_bottom td {
+        border-bottom: 1pt dashed black;
+        border-color: #236FBD;
+    }
+</style>
+</head> 
+<body> 
+<div class="clear"></div>
+<div class="indicatorResultsColumnHeaders">
+        <div class="indicatorResultsColumnHeaderR" style="width: 100%; text-align: center; font-size:150%;"><h3>Development Objective ‐ Indicator ‐ IM Report</h3></div>
+</div>
+<div class="indicatorResultsColumnR" style="width: 100%; Height: 550Px;">
+    <apex:repeat value="{!dl}" var="do">        
+          <div class="indicatorResults" style="padding-bottom: 10px;">
+                <h5><apex:outputText value="{!do.doName}"></apex:outputText></h5>
+                <table width="2000px" columns="10">
+                <tr class="QualHeader">
+                    <td width="100px" align="left">INDICATOR ID</td>
+                    <td width="400px" align="left">INDICATOR NAME</td>
+                    <td width="140px" align="left">IR NAME</td>
+                    <td width="140px" align="left">SUB-IR NAME</td>
+                    <td width="160px" align="left">IMPLEMENTING MECHANISM</td>
+                    <td width="160px" align="left">PROJECT NAME</td>
+                    <td width="120px" align="left">PERIOD</td>
+                    <td width="80px" align="left">BASELINE</td>
+                    <td width="80px" align="left">TARGET</td>
+                    <td width="80px" align="left">ACTUAL</td>
+                </tr>
+                    <apex:repeat value="{!do.RclassList}" var="list">
+                        <tr valign="middle" >
+                            <td width="100px" align="left">{!list.indId}</td>
+                            <td width="400px" align="left">{!list.indName}</td>
+                            <td width="140px" align="left">{!list.irName}</td>
+                            <td width="140px" align="left">{!list.sirName}</td>
+                            <td width="160px" align="left">{!list.imName}</td>
+                            <td width="160px" align="left">{!list.projName}</td>
+                            <td width="120px" align="left">{!list.rPeriod}</td>
+                            <td width="80px" align="left">{!list.baseline}</td>
+                            <td width="80px" align="left">{!list.target}</td>
+                            <td width="80px" align="left">{!list.actual}</td>
+                        </tr>
+                </apex:repeat>
+                </table>
+            </div> 
+     </apex:repeat>   
+         <div class="clear"></div>
+         <div class="divider"></div>
+
+
+</div>
+</body>
+</html>
+</apex:page>
